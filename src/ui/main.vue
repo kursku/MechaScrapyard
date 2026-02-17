@@ -28,7 +28,7 @@
                     {{ fmt(r.val) }}/{{ fmt(r.max) }}
                 </span>
                 <span v-if="r.rate !== 0" :style="{ color: r.rate > 0 ? '#3a7' : '#a44', fontSize: '8px' }">
-                    {{ r.rate > 0 ? '▲' : '▼' }}{{ fmt(Math.abs(r.rate)) }}
+                    {{ r.rate > 0 ? '▲' : '▼' }}{{ fmt(Math.abs(r.rate)) }}/s
                 </span>
             </div>
         </div>
@@ -57,8 +57,7 @@
                                 <span style="color:#0fa;font-size:12px">▶ {{ runner.activeTask.name }}</span>
                                 <button class="btn btn--stop" @click="stopTask">■ STOP</button>
                             </div>
-                            <div v-if="!runner.activeTask.perpetual && runner.activeTask.length"
-                                 style="margin-bottom:3px">
+                            <div v-if="!runner.activeTask.perpetual && runner.activeTask.length" style="margin-bottom:3px">
                                 <div class="flex-center gap-6">
                                     <div class="progress-bar" style="flex:1">
                                         <div class="progress-bar__fill progress-bar__fill--task"
@@ -74,30 +73,32 @@
                         <!-- Task groups -->
                         <div v-for="grp in taskGroups" :key="grp.id">
                             <div class="section-header">── {{ grp.label }} ──</div>
-                            <div v-for="t in grp.items" :key="t.id"
-                                 class="item-row"
-                                 :class="{
-                                     'item-row--active': runner.activeTask === t,
-                                     'item-row--disabled': runner.activeTask && runner.activeTask !== t,
-                                     'item-row--unaffordable': !runner.activeTask && !canStartTask(t),
-                                 }"
-                                 @click="startTask(t)">
-                                <div class="flex-between">
-                                    <span class="item-row__name">
-                                        {{ runner.activeTask === t ? '▶' : '►' }} {{ t.name }}
-                                        <span v-if="t.perpetual" class="badge badge--idle">IDLE</span>
-                                        <span v-if="t.loot" class="badge badge--loot">✦</span>
-                                    </span>
-                                    <div class="flex gap-6" style="align-items:center">
-                                        <span v-for="(v, k) in t.cost" :key="k" class="item-row__cost"
-                                              :class="canAffordOne(k, v) ? 'cost--ok' : 'cost--no'">
-                                            {{ resourceIcon(k) }}{{ v }}
-                                        </span>
-                                        <span v-if="t.length" class="badge badge--timed">{{ t.length }}s</span>
-                                    </div>
-                                </div>
-                                <div class="item-row__desc">{{ t.desc }}</div>
-                            </div>
+
+                            <ListCard
+                                v-for="t in grp.items"
+                                :key="t.id"
+                                :lead="runner.activeTask === t ? '▶' : '►'"
+                                :name="t.name"
+                                :desc="t.desc"
+                                :flavor="t.flavor"
+                                :cost="t.cost"
+                                :canAffordOne="canAffordOne"
+                                :resourceIcon="resourceIcon"
+                                :fmt="fmt"
+                                :active="runner.activeTask === t"
+                                :disabled="!!runner.activeTask && runner.activeTask !== t"
+                                :unaffordable="!runner.activeTask && !canStartTask(t)"
+                                @click="startTask(t)"
+                            >
+                                <template #badges>
+                                    <span v-if="t.perpetual" class="badge badge--idle">IDLE</span>
+                                    <span v-if="t.loot" class="badge badge--loot">✦</span>
+                                </template>
+
+                                <template #meta>
+                                    <span v-if="t.length" class="badge badge--timed">{{ fmt(t.length) }}s</span>
+                                </template>
+                            </ListCard>
                         </div>
                     </template>
 
@@ -107,25 +108,25 @@
                         <div v-if="availableUpgrades.length === 0" class="empty-state">
                             No upgrades available. Keep progressing.
                         </div>
-                        <div v-for="u in availableUpgrades" :key="u.id"
-                             class="item-row"
-                             :class="{ 'item-row--unaffordable': !canAffordUpgrade(u) }"
-                             @click="buyUpgrade(u.id)">
-                            <div class="flex-between">
-                                <span style="color:#ff0;font-size:11px">
-                                    ★ {{ u.name }}
-                                    <span v-if="u.max > 1" style="color:#aa8;font-size:9px">[{{ u.owned }}/{{ u.max }}]</span>
-                                </span>
-                                <span style="font-size:9px">
-                                    <span v-for="(v, k) in scaledCost(u)" :key="k"
-                                          :class="canAffordOne(k, v) ? 'cost--ok' : 'cost--no'"
-                                          style="margin-right:4px">
-                                        {{ resourceIcon(k) }}{{ v }}
-                                    </span>
-                                </span>
-                            </div>
-                            <div class="item-row__desc">{{ u.desc }}</div>
-                        </div>
+
+                        <ListCard
+                            v-for="u in availableUpgrades"
+                            :key="u.id"
+                            lead="★"
+                            :name="u.name"
+                            :desc="u.desc"
+                            :flavor="u.flavor"
+                            :cost="scaledCost(u)"
+                            :canAffordOne="canAffordOne"
+                            :resourceIcon="resourceIcon"
+                            :fmt="fmt"
+                            :unaffordable="!canAffordUpgrade(u)"
+                            @click="buyUpgrade(u.id)"
+                        >
+                            <template #meta>
+                                <span v-if="u.max > 1" style="color:#94a3b8">[{{ u.owned }}/{{ u.max }}]</span>
+                            </template>
+                        </ListCard>
 
                         <!-- Built -->
                         <template v-if="builtUpgrades.length > 0">
@@ -157,26 +158,35 @@
                         <div v-if="recipes.length === 0" class="empty-state">
                             No recipes unlocked. Acquire Blueprints at the MARKET.
                         </div>
-                        <div v-for="r in recipes" :key="r.id"
-                             class="item-row"
-                             :class="{ 'item-row--disabled': runner.activeRecipe, 'item-row--unaffordable': !canAffordTask(r) }"
-                             :style="{ background: '#10080e', borderColor: canAffordTask(r) && !runner.activeRecipe ? '#5a2a4a' : '#1a1118' }"
-                             @click="startRecipe(r)">
-                            <div class="flex-between">
-                                <span :style="{ color: canAffordTask(r) ? '#f0a' : '#554', fontSize: '11px' }">◈ {{ r.name }}</span>
-                                <span style="font-size:9px">
-                                    <span v-for="(v, k) in r.cost" :key="k"
-                                          :class="canAffordOne(k, v) ? 'cost--ok' : 'cost--no'"
-                                          style="margin-right:4px">
-                                        {{ resourceIcon(k) }}{{ v }}
+
+                        <ListCard
+                            v-for="r in recipes"
+                            :key="r.id"
+                            lead="◈"
+                            :name="r.name"
+                            :desc="r.desc"
+                            :flavor="r.flavor"
+                            :cost="r.cost"
+                            :canAffordOne="canAffordOne"
+                            :resourceIcon="resourceIcon"
+                            :fmt="fmt"
+                            :disabled="!!runner.activeRecipe"
+                            :unaffordable="!canAffordTask(r)"
+                            @click="startRecipe(r)"
+                        >
+                            <template #meta>
+                                <span class="badge badge--timed">{{ fmt(r.length) }}s</span>
+                            </template>
+
+                            <template #bottom>
+                                <div class="list-subrow">
+                                    <span style="color:#6a4">→</span>
+                                    <span v-for="(v, k) in r.result" :key="k" class="list-subrow__item">
+                                        {{ resourceIcon(k) }}+{{ fmt(v) }}
                                     </span>
-                                </span>
-                            </div>
-                            <div style="font-size:9px;color:#6a4">
-                                → <span v-for="(v, k) in r.result" :key="k" style="margin-right:4px">{{ resourceIcon(k) }}+{{ v }}</span>
-                                ({{ r.length }}s)
-                            </div>
-                        </div>
+                                </div>
+                            </template>
+                        </ListCard>
                     </template>
 
                     <!-- MARKET TAB -->
@@ -185,23 +195,22 @@
                         <div v-if="bpForSale.length === 0 && bpOwned.length === 0" class="empty-state">
                             Build the Refinery to unlock the blueprint market.
                         </div>
-                        <div v-for="b in bpForSale" :key="b.id"
-                             class="item-row"
-                             :class="{ 'item-row--unaffordable': !canAffordTask(b) }"
-                             :style="{ background: '#12100a', borderColor: canAffordTask(b) ? '#5a5a2a' : '#1a1a10' }"
-                             @click="buyBlueprint(b.id)">
-                            <div class="flex-between">
-                                <span :style="{ color: canAffordTask(b) ? '#ff0' : '#554', fontSize: '11px' }">✦ {{ b.name }}</span>
-                                <span style="font-size:9px">
-                                    <span v-for="(v, k) in b.cost" :key="k"
-                                          :class="canAffordOne(k, v) ? 'cost--ok' : 'cost--no'"
-                                          style="margin-right:4px">
-                                        {{ resourceIcon(k) }}{{ v }}
-                                    </span>
-                                </span>
-                            </div>
-                            <div class="item-row__desc">{{ b.desc }}</div>
-                        </div>
+
+                        <ListCard
+                            v-for="b in bpForSale"
+                            :key="b.id"
+                            lead="✦"
+                            :name="b.name"
+                            :desc="b.desc"
+                            :flavor="b.flavor"
+                            :cost="b.cost"
+                            :canAffordOne="canAffordOne"
+                            :resourceIcon="resourceIcon"
+                            :fmt="fmt"
+                            :unaffordable="!canAffordTask(b)"
+                            @click="buyBlueprint(b.id)"
+                        />
+
                         <template v-if="bpOwned.length > 0">
                             <div class="section-header" style="margin-top:14px">── COLLECTED ──</div>
                             <div v-for="b in bpOwned" :key="b.id" class="built-item">
@@ -217,15 +226,14 @@
             <div class="layout__right">
                 <div class="log__header">── SYSTEM LOG ──</div>
                 <div ref="logPanel" class="log">
-                    <div v-for="(l, i) in logEntries" :key="i"
-                         class="log-entry" :class="'log-entry--' + l.type">
+                    <div v-for="(l, i) in logEntries" :key="i" class="log-entry" :class="'log-entry--' + l.type">
                         <span style="color:#1a1a1a">› </span>{{ l.text }}
                     </div>
                 </div>
                 <div class="log__footer">
                     <span>⏱ {{ fmtTime(game.timer?.totalTime || 0) }}</span>
                     <span>TICK {{ TICK_MS }}ms</span>
-        </div>
+                </div>
             </div>
         </div>
     </div>
@@ -238,6 +246,7 @@ import Persist from 'modules/persist';
 import { fmt, clamp, pct, fmtTime } from '@/util/format';
 import TerminalUI from './TerminalUI.vue';
 import HudOverlay from "@/ui/HudOverlay.vue";
+import ListCard from '@/ui/components/ListCard.vue';
 
 const TICK_MS = 200;
 
@@ -266,7 +275,8 @@ export default {
 
     components: {
         TerminalUI,
-        HudOverlay
+        HudOverlay,
+        ListCard,
     },
 
     computed: {
@@ -445,3 +455,17 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.list-subrow {
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.list-subrow__item {
+    color: #6a4;
+}
+</style>
