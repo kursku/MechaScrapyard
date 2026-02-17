@@ -1,0 +1,96 @@
+[
+    {
+        "id": "scrap",
+        "name": "Scrap Metal",
+        "desc": "Raw salvageable metal from the junkyard.",
+        "flavor": "One man's trash is another man's mecha.",
+        "group": "base",
+        "locked": false,
+        "max": 100,
+        "sortOrder": 10
+    },
+    {
+        "id": "creds",
+        "name": "Creds",
+        "desc": "Digital currency of New Tokyo.",
+        "flavor": "The only language everyone speaks.",
+        "group": "currency",
+        "locked": false,
+        "max": 200,
+        "sortOrder": 20
+    },
+    {
+        "id": "energy",
+        "name": "Energy",
+        "desc": "Your physical stamina. Regenerates over time.",
+        "flavor": "Rest is a weapon. Use it wisely.",
+        "group": "player",
+        "locked": false,
+        "val": 50,
+        "max": 50,
+        "rate": 0.3,
+        "sortOrder": 1
+    },
+    {
+        "id": "nano_infra",
+        "name": "Nano Infra",
+        "desc": "Nanoscale infrastructure material. Refined from raw scrap.",
+        "flavor": "The building blocks of tomorrow.",
+        "group": "refined",
+        "tags": "t_refined",
+        "max": 20,
+        "sortOrder": 100
+    },
+    {
+        "id": "ceramite",
+        "name": "Armor Plating",
+        "desc": "Ceramic-metal composite plating. High durability.",
+        "flavor": "When the streets fight back, you'll want this.",
+        "group": "refined",
+        "tags": "t_refined",
+        "max": 20,
+        "sortOrder": 110
+    },
+    {
+        "id": "nanofiber",
+        "name": "Nanofiber Fabric",
+        "desc": "Ultra-light woven nanofiber. Used in flexible armor and conduits.",
+        "flavor": "Stronger than steel, lighter than silk.",
+        "group": "refined",
+        "tags": "t_refined",
+        "max": 20,
+        "sortOrder": 120
+    },
+    {
+        "id": "parts",
+        "name": "Mecha Parts",
+        "desc": "Salvaged components usable in mecha assembly.",
+        "flavor": "Every bolt counts when you're building a giant.",
+        "group": "base",
+        "tags": "t_scrapyard",
+        "require": "g.garagem>0",
+        "max": 30,
+        "sortOrder": 15
+    },
+    {
+        "id": "data_chips",
+        "name": "Data Chips",
+        "desc": "Encrypted data fragments. Used for research and hacking.",
+        "flavor": "Knowledge is power — and power is expensive.",
+        "group": "currency",
+        "require": "g.mesa_pesquisa>0",
+        "max": 50,
+        "sortOrder": 25
+    },
+    {
+        "id": "space",
+        "name": "Space",
+        "desc": "Available area in your scrapyard sector.",
+        "flavor": "Floor space is at a premium in New Tokyo.",
+        "group": "base",
+        "val": 0,
+        "max": 0,
+        "locked": false,
+        "sortOrder": 0
+    }
+]

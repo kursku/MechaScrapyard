@@ -1,0 +1,12 @@
+[
+    { "id": "mecha_core",  "name": "Core",      "max": 1 },
+    { "id": "mecha_head",  "name": "Head",      "max": 1 },
+    { "id": "mecha_torso", "name": "Torso",     "max": 1 },
+    { "id": "mecha_larm",  "name": "Left Arm",  "max": 1 },
+    { "id": "mecha_rarm",  "name": "Right Arm", "max": 1 },
+    { "id": "mecha_lleg",  "name": "Left Leg",  "max": 1 },
+    { "id": "mecha_rleg",  "name": "Right Leg", "max": 1 },
+    { "id": "mecha_weapon_main", "name": "Main Weapon",  "max": 1 },
+    { "id": "mecha_weapon_sub",  "name": "Sub Weapon",   "max": 1 },
+    { "id": "mecha_module",      "name": "Module Slot",  "max": 2 }
+]

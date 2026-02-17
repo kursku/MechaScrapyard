@@ -1,0 +1,63 @@
+[
+    {
+        "id": "sect_scrapyard",
+        "name": "scrapyard",
+        "locked": false
+    },
+    {
+        "id": "sect_upgrades",
+        "name": "upgrades",
+        "locked": false
+    },
+    {
+        "id": "sect_home",
+        "name": "base",
+        "require": "g.sorting_station>0"
+    },
+    {
+        "id": "sect_refinery",
+        "name": "refinery",
+        "require": "g.refinery>0"
+    },
+    {
+        "id": "sect_market",
+        "name": "market",
+        "require": "g.refinery>0"
+    },
+    {
+        "id": "sect_mecha",
+        "name": "mecha",
+        "require": "g.garagem>0"
+    },
+    {
+        "id": "sect_skills",
+        "name": "skills",
+        "require": "g.mesa_pesquisa>0"
+    },
+    {
+        "id": "sect_combat",
+        "name": "combat",
+        "require": "g.garagem>0"
+    },
+    {
+        "id": "sect_map",
+        "name": "new tokyo",
+        "require": "g.workshop_lv2>0"
+    },
+    {
+        "id": "sect_player",
+        "name": "pilot",
+        "locked": false
+    },
+    {
+        "id": "sect_furniture",
+        "name": "structures",
+        "locked": false,
+        "parent": "base"
+    },
+    {
+        "id": "sect_settings",
+        "name": "settings",
+        "locked": false
+    }
+]

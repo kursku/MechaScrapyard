@@ -1,0 +1,16 @@
+{
+    "core": [
+        "tags",
+        "resources",
+        "upgrades",
+        "tasks",
+        "homes",
+        "furniture",
+        "skills",
+        "player",
+        "events",
+        "sections",
+        "equipslots"
+    ],
+    "modules": []
+}

@@ -1,0 +1,262 @@
+[
+    {
+        "id": "scavenge_scrap",
+        "name": "Scavenge Scrap",
+        "verb": "scavenging",
+        "desc": "Dig through the junkyard piles for usable metal.",
+        "flavor": "Every piece of rust tells a story.",
+        "tips": "Your bread and butter. Runs continuously until you stop it or run out of energy.",
+        "locked": false,
+        "perpetual": true,
+        "group": "scrapyard",
+        "tags": "t_scrapyard",
+        "run": {
+            "energy": 0.15
+        },
+        "effect": {
+            "scrap": 0.6
+        }
+    },
+    {
+        "id": "odd_jobs",
+        "name": "Odd Jobs",
+        "verb": "working",
+        "desc": "Run small errands for the neighborhood.",
+        "flavor": "Nobody asks questions about the kid from the scrapyard.",
+        "tips": "Quick way to earn Creds. Takes 10 seconds to complete.",
+        "locked": false,
+        "group": "income",
+        "tags": "t_income",
+        "cost": {
+            "energy": 5
+        },
+        "result": {
+            "creds": 8
+        },
+        "length": 10
+    },
+    {
+        "id": "train_muscle",
+        "name": "Heavy Lifting",
+        "verb": "training",
+        "desc": "Move heavy debris to build physical strength.",
+        "flavor": "Who needs a gym when you have tons of iron?",
+        "locked": false,
+        "group": "pilot",
+        "perpetual": true,
+        "run": {
+            "energy": 0.5
+        },
+        "effect": {
+            "muscle": 0.05
+        }
+    },
+    {
+        "id": "train_neuro",
+        "name": "Repair Circuitry",
+        "verb": "studying",
+        "desc": "Study old mecha schematics and repair broken logic boards.",
+        "flavor": "Patience is a neuro-transmitter.",
+        "locked": false,
+        "group": "pilot",
+        "perpetual": true,
+        "run": {
+            "energy": 0.4
+        },
+        "effect": {
+            "neuro": 0.05
+        }
+    },
+    {
+        "id": "train_reflex",
+        "name": "Drone Chasing",
+        "verb": "chasing",
+        "desc": "Practice reaction time by catching small salvage drones.",
+        "flavor": "Fast as a bolt, sharp as a blade.",
+        "locked": false,
+        "group": "pilot",
+        "perpetual": true,
+        "run": {
+            "energy": 0.6
+        },
+        "effect": {
+            "reflex": 0.05
+        }
+    },
+    {
+        "id": "train_grit",
+        "name": "Endure the Wastes",
+        "verb": "enduring",
+        "desc": "Spend time in the toxic fumes and harsh conditions of the lower yards.",
+        "flavor": "What doesn't melt you makes you harder.",
+        "locked": false,
+        "group": "pilot",
+        "perpetual": true,
+        "run": {
+            "energy": 0.7
+        },
+        "effect": {
+            "grit": 0.05
+        }
+    },
+    {
+        "id": "choice_scrap_thief",
+        "name": "Confront Scrap Thief",
+        "desc": "A local kid tried to steal your scrap. What do you do?",
+        "locked": false,
+        "group": "pilot",
+        "length": 5,
+        "choices": [
+            {
+                "id": "let_go",
+                "name": "Let him go",
+                "desc": "The kid is hungry. You let him keep a small piece. [+Idealist]",
+                "result": {
+                    "morality": 5,
+                    "reputation": 2,
+                    "scrap": -2
+                }
+            },
+            {
+                "id": "threaten",
+                "name": "Threaten him",
+                "desc": "Show him that stealing from you is a death sentence. [+Pragmatic]",
+                "result": {
+                    "morality": -5,
+                    "reputation": 5
+                }
+            }
+        ]
+    },
+    {
+        "id": "search_parts",
+        "name": "Search for Parts",
+        "verb": "searching",
+        "desc": "Search deeper into the scrapyard for valuable components.",
+        "flavor": "The deeper you dig, the better the finds.",
+        "tips": "Upgraded scavenging. Higher yield but costs more energy per second.",
+        "require": "g.sorting_station>0",
+        "perpetual": true,
+        "group": "scrapyard",
+        "tags": "t_scrapyard",
+        "run": {
+            "energy": 0.25
+        },
+        "effect": {
+            "scrap": 1.2,
+            "creds": 0.1
+        }
+    },
+    {
+        "id": "delivery_run",
+        "name": "Delivery Run",
+        "verb": "delivering",
+        "desc": "Deliver packages for a shady contact in the district.",
+        "flavor": "Don't open the box. Don't ask about the box.",
+        "tips": "Better pay than Odd Jobs. 15 seconds, higher Creds reward.",
+        "require": "g.workshop_lv2>0",
+        "group": "income",
+        "tags": "t_income",
+        "cost": {
+            "energy": 10
+        },
+        "result": {
+            "creds": 25
+        },
+        "length": 15
+    },
+    {
+        "id": "search_neon_bazaar",
+        "name": "Search Neon Bazaar",
+        "verb": "exploring",
+        "desc": "Venture into the black market district looking for rare schematics.",
+        "flavor": "Neon lights hide dark secrets — and rare tech.",
+        "tips": "35% chance to find the rare Nanofiber Loom blueprint each run. Worth repeating!",
+        "require": "g.workshop_lv2>0",
+        "group": "exploration",
+        "tags": "t_exploration",
+        "cost": {
+            "energy": 15,
+            "creds": 10
+        },
+        "result": {
+            "creds": 5
+        },
+        "length": 25,
+        "loot": {
+            "bp_nanofiber": 0.35
+        }
+    },
+    {
+        "id": "refine_nano_infra",
+        "name": "Refine: Nano Infra",
+        "verb": "refining",
+        "desc": "Process raw scrap into nano-scale infrastructure material.",
+        "require": "g.bp_nano_infra>0",
+        "group": "refinery",
+        "tags": "t_recipe",
+        "cost": {
+            "scrap": 15
+        },
+        "result": {
+            "nano_infra": 1
+        },
+        "length": 8,
+        "fill": "nano_infra"
+    },
+    {
+        "id": "refine_ceramite",
+        "name": "Refine: Armor Plating",
+        "verb": "forging",
+        "desc": "Forge ceramic-metal composite plating from refined materials.",
+        "require": "g.bp_ceramite>0",
+        "group": "refinery",
+        "tags": "t_recipe",
+        "cost": {
+            "scrap": 25,
+            "nano_infra": 3
+        },
+        "result": {
+            "ceramite": 1
+        },
+        "length": 12,
+        "fill": "ceramite"
+    },
+    {
+        "id": "refine_nanofiber",
+        "name": "Refine: Nanofiber Fabric",
+        "verb": "weaving",
+        "desc": "Weave ultra-light nanofiber from processed nano-materials.",
+        "require": "g.bp_nanofiber>0",
+        "group": "refinery",
+        "tags": "t_recipe",
+        "cost": {
+            "scrap": 20,
+            "nano_infra": 2
+        },
+        "result": {
+            "nanofiber": 1
+        },
+        "length": 15,
+        "fill": "nanofiber"
+    },
+    {
+        "id": "salvage_mecha_parts",
+        "name": "Salvage Mecha Parts",
+        "verb": "salvaging",
+        "desc": "Carefully disassemble wreckage to extract usable mecha components.",
+        "flavor": "Patience. One wrong cut and it's all scrap.",
+        "tips": "Produces Mecha Parts for restoring your father's mecha.",
+        "require": "g.garagem>0",
+        "group": "scrapyard",
+        "tags": "t_scrapyard",
+        "cost": {
+            "energy": 8,
+            "scrap": 10
+        },
+        "result": {
+            "parts": 2
+        },
+        "length": 20
+    }
+]

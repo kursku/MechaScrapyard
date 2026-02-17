@@ -1,0 +1,159 @@
+[
+    {
+        "id": "sorting_station",
+        "name": "Sorting Station",
+        "desc": "Build a station to sort and categorize incoming scrap.",
+        "flavor": "Order from chaos. Grandpa would approve.",
+        "tags": "t_structure",
+        "locked": false,
+        "max": 1,
+        "cost": { "scrap": 30, "creds": 15 },
+        "mod": {
+            "scrap.max": 50,
+            "scrap.rate": 0.1
+        },
+        "log": {
+            "name": "Sorting Station Built",
+            "desc": "Scrap collection is now more efficient. New tasks available."
+        }
+    },
+    {
+        "id": "workshop_lv2",
+        "name": "Upgrade Workshop",
+        "desc": "Restore grandpa's workshop to full working condition.",
+        "flavor": "The old man built mechas here. Time to follow in his footsteps.",
+        "tags": "t_structure",
+        "require": "g.sorting_station>0",
+        "max": 1,
+        "cost": { "scrap": 60, "creds": 40 },
+        "mod": {
+            "energy.max": 20,
+            "energy.rate": 0.1,
+            "creds.max": 100
+        },
+        "log": {
+            "name": "Workshop Restored",
+            "desc": "The workshop hums with renewed power. Your grandfather would be proud."
+        }
+    },
+    {
+        "id": "refinery",
+        "name": "Build Refinery",
+        "desc": "Repair the old processing bench to refine raw scrap into advanced materials.",
+        "flavor": "Turn junk into the future.",
+        "tags": "t_structure",
+        "require": "g.workshop_lv2>0",
+        "max": 1,
+        "cost": { "scrap": 100, "creds": 60 },
+        "mod": {},
+        "log": {
+            "name": "Refinery Online",
+            "desc": "The refinery is online. You can now process raw scrap into advanced materials."
+        }
+    },
+    {
+        "id": "garagem",
+        "name": "Restore Garage",
+        "desc": "Clear out the old locked garage. Something from the past awaits inside.",
+        "flavor": "Dad's tools are still here. So is something else...",
+        "tags": "t_structure",
+        "require": "g.workshop_lv2>0",
+        "max": 1,
+        "cost": { "scrap": 80, "creds": 50 },
+        "mod": {
+            "scrap.max": 100
+        },
+        "log": {
+            "name": "The Garage",
+            "desc": "Inside the garage you find it — your father's first mecha. Rusted, broken... but repairable."
+        }
+    },
+    {
+        "id": "scrap_compressor",
+        "name": "Scrap Compressor",
+        "desc": "Hydraulic compressor to store scrap in denser bricks.",
+        "flavor": "Same metal, smaller package.",
+        "tags": "t_structure,t_repeatable",
+        "require": "g.sorting_station>0",
+        "max": 3,
+        "cost": { "scrap": 50, "creds": 30 },
+        "costScale": 1.5,
+        "mod": {
+            "scrap.max": 40
+        }
+    },
+    {
+        "id": "energy_cell",
+        "name": "Energy Cell Upgrade",
+        "desc": "Install supplementary power cells to increase your energy reserves.",
+        "flavor": "More juice, more work.",
+        "tags": "t_structure,t_repeatable",
+        "require": "g.workshop_lv2>0",
+        "max": 5,
+        "cost": { "creds": 25, "scrap": 20 },
+        "costScale": 1.4,
+        "mod": {
+            "energy.max": 10
+        }
+    },
+    {
+        "id": "mesa_pesquisa",
+        "name": "Research Desk",
+        "desc": "A workbench for analyzing data chips and studying schematics.",
+        "flavor": "Knowledge is the real currency.",
+        "tags": "t_structure",
+        "require": "g.refinery>0",
+        "max": 1,
+        "cost": { "scrap": 60, "creds": 80, "nano_infra": 5 },
+        "mod": {
+            "data_chips.max": 50
+        },
+        "log": {
+            "name": "Research Desk",
+            "desc": "A proper research station. You can now analyze data chips and study advanced schematics."
+        }
+    },
+
+    {
+        "id": "bp_nano_infra",
+        "name": "BP: Nano Infra Process",
+        "desc": "Basic nano-material synthesis schematics. The foundation of advanced crafting.",
+        "tags": "t_blueprint",
+        "require": "g.refinery>0",
+        "max": 1,
+        "cost": { "creds": 30 },
+        "mod": {},
+        "log": {
+            "name": "Schematic Acquired",
+            "desc": "Schematics reveal how to synthesize Nano Infra from raw scrap."
+        }
+    },
+    {
+        "id": "bp_ceramite",
+        "name": "BP: Plating Molds",
+        "desc": "Industrial armor plating fabrication schematics. Requires Nano Infra as base.",
+        "tags": "t_blueprint",
+        "require": "g.refinery>0",
+        "max": 1,
+        "cost": { "creds": 75 },
+        "mod": {},
+        "log": {
+            "name": "Schematic Acquired",
+            "desc": "Schematics include data for producing Armor Plating."
+        }
+    },
+    {
+        "id": "bp_nanofiber",
+        "name": "BP: Nanofiber Loom",
+        "desc": "Rare fabric weaving schematics from the Neon Bazaar underground.",
+        "tags": "t_blueprint",
+        "require": "g.refinery>0",
+        "max": 1,
+        "cost": {},
+        "mod": {},
+        "log": {
+            "name": "Rare Schematic Found!",
+            "desc": "Nanofiber Loom schematics found! A new material is available for refinement."
+        }
+    }
+]
