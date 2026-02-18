@@ -614,6 +614,53 @@ body {
     background: #301010;
 }
 
+/* ── HUD Buttons ──────────────────────────── */
+.hud-btn {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hud-btn:hover {
+    background: rgba(0, 255, 65, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+.hud-btn-cta {
+    background: var(--cta);
+    border: none;
+    color: #fff;
+    padding: 10px 25px;
+    font-family: var(--font-mono);
+    font-weight: 900;
+    cursor: pointer;
+    letter-spacing: 2px;
+}
+
+.hud-btn-cta:hover {
+    background: #ff5555;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+}
+
+/* ── HUD Components ───────────────────────── */
+.hud-section-title {
+    color: var(--secondary);
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-dim);
+    padding-bottom: 5px;
+}
+
 /* ── Detail panel ─────────────────────────── */
 .detail-panel {
     border-bottom: 1px solid var(--border);

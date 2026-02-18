@@ -1,0 +1,63 @@
+[
+    {
+        "id": "mission_scrap_drone",
+        "name": "Rogue Drone Patrol",
+        "desc": "A malfunctioning scrap drone is harassing the neighborhood. Take it out.",
+        "flavor": "It's been stealing parts from Grandpa's sorting station for weeks.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "survey",
+        "difficulty": 1,
+        "cost": {
+            "energy": 15
+        },
+        "enemies": [
+            "scrap_drone"
+        ],
+        "turnLimit": 15,
+        "rewards": {
+            "glory": 3,
+            "creds": 15,
+            "scrap": 25
+        },
+        "firstClearBonus": {
+            "glory": 3,
+            "reputation": 1
+        },
+        "failRewards": {
+            "glory": 1,
+            "scrap": 5
+        }
+    },
+    {
+        "id": "mission_rogue_labor",
+        "name": "Rogue Labor Containment",
+        "desc": "An industrial Labor has gone haywire near the docks. Corporate wants it stopped — quietly.",
+        "flavor": "Whoever corrupted its BIOS knew what they were doing.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "secure",
+        "difficulty": 3,
+        "require": "g.mission_scrap_drone>=1",
+        "cost": {
+            "energy": 25
+        },
+        "enemies": [
+            "scrap_drone"
+        ],
+        "turnLimit": 30,
+        "rewards": {
+            "glory": 5,
+            "creds": 40,
+            "scrap": 15
+        },
+        "firstClearBonus": {
+            "glory": 3,
+            "reputation": 2
+        },
+        "failRewards": {
+            "glory": 2,
+            "creds": 10
+        }
+    }
+]

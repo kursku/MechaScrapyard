@@ -148,6 +148,10 @@ export default class Runner {
             }
         }
 
+        if (task.onComplete) {
+            result.onComplete = task.onComplete;
+        }
+
         Log.add(`✓ ${task.name} complete.`, 'success');
         result.taskCompleted = true;
         this.activeTask = null;

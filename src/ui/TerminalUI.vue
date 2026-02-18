@@ -1,9 +1,10 @@
 <script>
 import Game from "@/game";
 import { RollOver, ItemOut, default as itemPopup } from "@/ui/popups/itemPopup.vue";
+import CombatPanel from "./components/CombatPanel.vue";
 
 export default {
-    components: { itemPopup },
+    components: { itemPopup, CombatPanel },
     props: ['state'],
     data() {
         return {
@@ -99,6 +100,11 @@ export default {
         categories() {
             const allTasks = Object.values(this.state.items).filter(i => i.type === 'task');
             const groups = new Set(allTasks.filter(t => !t.locked).map(t => t.group).filter(g => g !== 'pilot'));
+            
+            // Check if combat/missions are available
+            const hasMissions = Object.values(this.state.items).some(i => i.type === 'mission' && !i.locked);
+            if (hasMissions) groups.add('combat');
+
             const list = Array.from(groups);
             list.unshift('pilot'); // Put PILOT first
             return list;
@@ -127,6 +133,9 @@ export default {
         },
         currentHome() {
             return Object.values(this.state.items).find(i => i.type === 'home' && i.owned > 0);
+        },
+        combatRunner() {
+            return Game.combatRunner;
         },
         runner() {
             return Game.runner;
@@ -218,8 +227,13 @@ export default {
             </nav>
 
             <div class="console-body">
+                <!-- COMBAT AREA -->
+                <section v-if="selectedCategory === 'combat'">
+                    <CombatPanel :state="state" :combatRunner="combatRunner" />
+                </section>
+
                 <!-- MISSION/OPERATION AREA -->
-                <section v-if="selectedCategory !== 'pilot'">
+                <section v-else-if="selectedCategory !== 'pilot'">
                     <h3 class="hud-section-title">> OPERAÇÕES: {{ selectedCategory.toUpperCase() }}</h3>
                     <div class="hud-task-grid">
                         <div v-for="task in tasks" :key="task.id"

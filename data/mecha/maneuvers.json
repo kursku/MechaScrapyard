@@ -1,0 +1,105 @@
+[
+    {
+        "id": "mnvr_mech_brawl",
+        "name": "Mech Brawl",
+        "desc": "Engage in brutal melee combat when an enemy is in range.",
+        "flavor": "Sometimes the best solution is a heavy iron fist.",
+        "type": "maneuver",
+        "maneuverType": "reaction",
+        "trigger": "on_hit_received",
+        "position": "fighter",
+        "rank": 1,
+        "locked": false,
+        "owned": 1,
+        "effect": {
+            "counterAttack": true,
+            "damageMod": 0.5,
+            "heatGen": 3
+        }
+    },
+    {
+        "id": "mnvr_berserker",
+        "name": "Berserker Protocol",
+        "desc": "When Stress > 60%: +20% ATK, -15% DEF.",
+        "flavor": "Pain is just fuel for the machine.",
+        "type": "maneuver",
+        "maneuverType": "instinct",
+        "trigger": "turn_start",
+        "triggerCondition": "stress>60",
+        "position": "fighter",
+        "rank": 3,
+        "locked": true,
+        "owned": 0,
+        "require": "g.skill_combat>=3&&g.glory>=50",
+        "cost": {
+            "glory": 20
+        },
+        "effect": {
+            "atkMod": 0.20,
+            "defMod": -0.15
+        }
+    },
+    {
+        "id": "mnvr_pile_bunker",
+        "name": "Pile Bunker Strike",
+        "desc": "Single devastating melee attack. +100% damage, +15 Heat.",
+        "flavor": "One shot. One kill. One very hot cockpit.",
+        "type": "maneuver",
+        "maneuverType": "maneuver",
+        "trigger": "action_replace",
+        "position": "fighter",
+        "rank": 5,
+        "locked": true,
+        "owned": 0,
+        "require": "g.skill_combat>=5&&g.glory>=150",
+        "cost": {
+            "glory": 50
+        },
+        "effect": {
+            "damageMod": 1.0,
+            "heatGen": 15,
+            "replaceAttack": true
+        }
+    },
+    {
+        "id": "mnvr_evasive",
+        "name": "Evasive Maneuver",
+        "desc": "35% chance to completely dodge an incoming attack.",
+        "flavor": "Can't hit what you can't catch.",
+        "type": "maneuver",
+        "maneuverType": "reaction",
+        "trigger": "on_hit_received",
+        "position": "scout",
+        "rank": 1,
+        "locked": true,
+        "owned": 0,
+        "require": "g.garagem>0",
+        "cost": {
+            "glory": 10
+        },
+        "effect": {
+            "dodgeChance": 0.35
+        }
+    },
+    {
+        "id": "mnvr_lock_and_load",
+        "name": "Lock & Load",
+        "desc": "Pre-calibrate sensors for a precision strike. +25% accuracy.",
+        "flavor": "Patience. Breath. Squeeze.",
+        "type": "maneuver",
+        "maneuverType": "instinct",
+        "trigger": "turn_start",
+        "triggerCondition": "always",
+        "position": "gunner",
+        "rank": 1,
+        "locked": true,
+        "owned": 0,
+        "require": "g.garagem>0",
+        "cost": {
+            "glory": 15
+        },
+        "effect": {
+            "accuracyMod": 0.25
+        }
+    }
+]

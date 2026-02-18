@@ -11,7 +11,9 @@
         "events",
         "sections",
         "equipslots",
-        "enemies"
+        "enemies",
+        "missions",
+        "maneuvers"
     ],
     "modules": []
 }

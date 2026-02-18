@@ -36,8 +36,18 @@ export default class GameState {
                     cor: 5
                 },
                 heat: 0,
-                stress: 0
+                stress: 0,
+                maneuvers: [],
+                tokens: {}
             }
+        });
+
+        this.activeCombat = reactive({
+            active: false,
+            enemy: null,
+            turn: 0,
+            phase: 'idle', // 'idle', 'player_turn', 'enemy_turn', 'win', 'lose'
+            log: []
         });
 
         this.loaded = false;
@@ -174,7 +184,16 @@ export default class GameState {
             if (saved.locked !== undefined) item.locked = saved.locked;
         }
         if (json.player) {
-            Object.assign(this.player, json.player);
+            this.player.name = json.player.name || this.player.name;
+            if (json.player.frame) {
+                // Keep the reactive object, just update properties
+                Object.assign(this.player.frame.attributes, json.player.frame.attributes);
+                Object.assign(this.player.frame.parts, json.player.frame.parts);
+                this.player.frame.heat = json.player.frame.heat || 0;
+                this.player.frame.stress = json.player.frame.stress || 0;
+                // Maneuvers and tokens usually reset or handle themselves in combat, 
+                // but we keep them empty in save for now to avoid bulky save files.
+            }
         }
     }
 }

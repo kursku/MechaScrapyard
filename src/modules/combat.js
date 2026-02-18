@@ -2,113 +2,100 @@ import { rollD100, rollBonusPool, resolveBonusDice } from '@/util/dice';
 import Log from '@/log';
 
 /**
- * CombatEngine — handles turn-based resolution for Mecha Scrapyard.
+ * Combat Utilities — pure functions for combat resolution.
  */
-export default class CombatEngine {
-    constructor(gameState) {
-        this.gameState = gameState;
+
+/**
+ * Calculate Target Percent for an attack.
+ * Combat Design §5.1
+ */
+export function calculateTargetPercent(attacker, defender, activeModifiers = { accuracyBonus: 0 }) {
+    let baseAccuracy = 50 + (activeModifiers.accuracyBonus || 0);
+    const atk = attacker.attributes.atk;
+    const def = defender.attributes.def;
+
+    // Heat Penalties (§7.1)
+    if (attacker.heat >= 76) {
+        baseAccuracy -= 15;
     }
 
-    /**
-     * Calculate Target Percent for an attack.
-     * Combat Design §5.1
-     */
-    calculateTargetPercent(attacker, defender) {
-        // baseAccuracy = 50
-        // targetPercent = baseAccuracy + (ATK × 2) - (DEF_alvo × 1.5)
-        const baseAccuracy = 50;
-        const atk = attacker.attributes.atk;
-        const def = defender.attributes.def;
-
-        return baseAccuracy + (atk * 2) - (def * 1.5);
+    // Stress Penalties (§7.2)
+    if (attacker.stress >= 51) {
+        baseAccuracy -= 10;
     }
 
-    /**
-     * Resolve a single attack from one unit to another.
-     * @param {Object} attacker - Frame data
-     * @param {Object} defender - Frame data
-     * @param {string} targetingPolicy - 'torso', 'arms', 'legs', or 'auto'
-     */
-    resolveAttack(attacker, defender, targetingPolicy = 'auto') {
-        const targetPercent = this.calculateTargetPercent(attacker, defender);
-        const result = rollD100(targetPercent);
+    return baseAccuracy + (atk * 2) - (def * 1.5);
+}
 
-        Log.add(`[COMBAT] ${attacker.name || 'Attacker'} rolls ${result.roll} vs ${Math.floor(targetPercent)}%`, 'combat');
+/**
+ * Select a target part based on policy.
+ * Combat Design §3.2
+ */
+export function selectTargetPart(policy) {
+    const roll = Math.random();
+    if (policy === 'torso') {
+        return roll < 0.7 ? 'torso' : (roll < 0.8 ? 'left_arm' : (roll < 0.9 ? 'right_arm' : 'legs'));
+    }
+    if (policy === 'auto') {
+        if (roll < 0.4) return 'torso';
+        if (roll < 0.6) return 'left_arm';
+        if (roll < 0.8) return 'right_arm';
+        return 'legs';
+    }
+    return policy || 'torso';
+}
 
-        if (result.success) {
-            // Select part
-            const partId = this.selectTargetPart(targetingPolicy);
-            const part = defender.parts[partId];
+/**
+ * Apply damage to a frame's part.
+ * Combat Design §3.1, §3.2
+ */
+export function applyDamage(defender, partId, amount, isCounter = false) {
+    const part = defender.parts[partId];
+    if (!part || part.status === 'destroyed') return { destroyed: false, integrityLoss: false };
 
-            // Basic damage calculation (Combat Design §3.2)
-            // For now, 1 level of avaria (33% of maxHP per level approx)
-            // Let's use 20 HP as a placeholder for "1 level" if maxHp is 100
-            let damage = 20;
+    let finalAmount = amount;
+    if (defender.tokens?.breach > 0) {
+        finalAmount += (defender.tokens.breach * 5);
+    }
 
-            if (result.critical) {
-                Log.add(`[COMBAT] CRITICAL HIT!`, 'combat');
-                damage *= 2;
-            }
+    part.hp = Math.max(0, part.hp - finalAmount);
 
-            // Bonus D6 pool (Combat Design §5.2)
-            // Bonus dice could come from skills/perks, let's assume 1d6 for now as baseline
-            const bonusDice = rollBonusPool(1);
-            const bonusResults = resolveBonusDice(bonusDice);
+    let result = {
+        damageDealt: finalAmount,
+        partId,
+        destroyed: false,
+        integrityLoss: false,
+        stressGained: 0
+    };
 
-            if (bonusResults.directHits > 0) {
-                Log.add(`[COMBAT] DIRECT HIT!`, 'combat');
-                damage += bonusResults.bonusAvaria * 10;
-                defender.stress += bonusResults.bonusStress;
-            }
+    if (part.hp < part.maxHp * 0.25) {
+        result.stressGained = 1;
+    }
 
-            this.applyDamage(defender, partId, damage);
-            return true;
+    if (part.hp <= 0) {
+        part.integrity--;
+        result.integrityLoss = true;
+        if (part.integrity <= 0) {
+            part.status = 'destroyed';
+            result.destroyed = true;
         } else {
-            Log.add(`[COMBAT] Miss!`, 'combat');
-            return false;
+            part.hp = part.maxHp;
         }
     }
 
-    /**
-     * Targeted random distribution (Combat Design §3.2)
-     */
-    selectTargetPart(policy) {
-        const roll = Math.random();
-        if (policy === 'torso') {
-            return roll < 0.7 ? 'torso' : (roll < 0.8 ? 'left_arm' : (roll < 0.9 ? 'right_arm' : 'legs'));
-        }
-        if (policy === 'auto') {
-            // 40% Torso, 20% each Arm, 20% Legs
-            if (roll < 0.4) return 'torso';
-            if (roll < 0.6) return 'left_arm';
-            if (roll < 0.8) return 'right_arm';
-            return 'legs';
-        }
-        // Fallback or explicit policies
-        return policy || 'torso';
-    }
+    return result;
+}
 
-    /**
-     * Apply damage to a specific part.
-     */
-    applyDamage(defender, partId, amount) {
-        const part = defender.parts[partId];
-        part.hp = Math.max(0, part.hp - amount);
+/**
+ * Check if a frame's torso is destroyed.
+ */
+export function isFrameDestroyed(frame) {
+    return frame.parts.torso.status === 'destroyed';
+}
 
-        Log.add(`[COMBAT] ${part.name} takes ${Math.floor(amount)} damage! (${Math.floor(part.hp)}/${part.maxHp})`, 'combat');
-
-        if (part.hp <= 0 && part.status !== 'destroyed') {
-            part.integrity--;
-            if (part.integrity <= 0) {
-                part.status = 'destroyed';
-                Log.add(`[COMBAT] ALERT: ${part.name} is INOPERABLE!`, 'error');
-                if (partId === 'torso') {
-                    Log.add(`[COMBAT] CATASTROPHIC FAILURE: Frame destroyed!`, 'error');
-                }
-            } else {
-                part.hp = part.maxHp; // Reset HP for next integrity layer
-                Log.add(`[COMBAT] ${part.name} integrity reduced to ${part.integrity}!`, 'warning');
-            }
-        }
-    }
+/**
+ * Get all operational parts of a frame.
+ */
+export function getOperationalParts(frame) {
+    return Object.values(frame.parts).filter(p => p.status === 'operational');
 }

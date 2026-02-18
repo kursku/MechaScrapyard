@@ -92,5 +92,30 @@
         "max": 0,
         "locked": false,
         "sortOrder": 0
+    },
+    {
+        "id": "glory",
+        "name": "Glory",
+        "desc": "Combat experience and prestige currency. Earned in battle, spent on advancement.",
+        "flavor": "Every scar tells a story. Every story earns respect.",
+        "group": "combat",
+        "icon": "⚔",
+        "color": "#f5c542",
+        "max": 500,
+        "sortOrder": 200,
+        "require": "g.garagem>0"
+    },
+    {
+        "id": "supply",
+        "name": "Supply",
+        "desc": "Ammunition and consumables for combat. Replenished between missions.",
+        "flavor": "You can never have enough bullets.",
+        "group": "combat",
+        "icon": "▸",
+        "color": "#fa5",
+        "val": 10,
+        "max": 20,
+        "sortOrder": 220,
+        "require": "g.garagem>0"
     }
 ]

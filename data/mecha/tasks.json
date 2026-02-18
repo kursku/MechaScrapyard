@@ -258,5 +258,42 @@
             "parts": 2
         },
         "length": 20
+    },
+    {
+        "id": "mission_scout",
+        "name": "Scout Local Sector",
+        "verb": "scouting",
+        "desc": "Check for aggressive drones in the area.",
+        "locked": false,
+        "group": "exploration",
+        "tags": [
+            "t_exploration"
+        ],
+        "cost": {
+            "energy": 10
+        },
+        "length": 10,
+        "onComplete": {
+            "trigger_combat": "mission_scrap_drone"
+        }
+    },
+    {
+        "id": "repair_frame",
+        "name": "Repair Frame",
+        "verb": "repairing",
+        "desc": "Perform maintenance and structural repairs on your mecha frame.",
+        "flavor": "It's dirty work, but someone's got to keep this bucket of bolts together.",
+        "tips": "Restores integrity to damaged parts. Each completion restores 1 integrity and full HP to all functional parts.",
+        "require": "g.garagem>0",
+        "group": "scrapyard",
+        "tags": [
+            "t_scrapyard"
+        ],
+        "cost": {
+            "energy": 20,
+            "scrap": 50,
+            "parts": 2
+        },
+        "length": 30
     }
 ]

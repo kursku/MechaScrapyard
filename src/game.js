@@ -3,10 +3,12 @@ import { clamp } from '@/util/format';
 import GameState from '@/gameState';
 import TechTree from '@/techTree';
 import Runner from 'modules/runner';
-import CombatEngine from 'modules/combat';
+import * as CombatUtils from 'modules/combat';
+import CombatRunner from 'modules/combatRunner';
 import Timer from '@/timer';
 import Log from '@/log';
 import Persist from 'modules/persist';
+import Events from '@/events';
 
 /**
  * TICK_MS — Game loop interval in milliseconds.
@@ -29,8 +31,8 @@ const Game = {
     /** @type {Runner} */
     runner: null,
 
-    /** @type {CombatEngine} */
-    combat: null,
+    /** @type {CombatRunner} */
+    combatRunner: null,
 
     /** @type {Timer} */
     timer: null,
@@ -53,7 +55,7 @@ const Game = {
         this.state = new GameState();
         this.techTree = new TechTree(this.state);
         this.runner = new Runner(this.state);
-        this.combat = new CombatEngine(this.state);
+        this.combatRunner = new CombatRunner(this.state);
         this.timer = new Timer();
 
         // Register all data items into state
@@ -67,11 +69,18 @@ const Game = {
         this._loadSkills(rawData.skills || []);
         this._loadSections(rawData.sections || []);
         this._loadEnemies(rawData.enemies || []);
+        this._loadMissions(rawData.missions || []);
+        this._loadManeuvers(rawData.maneuvers || []);
+        this._setCombatConfig(rawData.combat_config || null);
+
+        // Events
+        Events.on('COMBAT_END', (data) => this._onCombatEnd(data));
 
         // Restore save
         if (saveData) {
             this.state.fromJSON(saveData.state);
             this.runner.fromJSON(saveData.runner, this.state.items);
+            if (saveData.combatRunner) this.combatRunner.fromJSON(saveData.combatRunner);
             this.timer.fromJSON(saveData.timer);
             Log.fromJSON(saveData.log);
         } else {
@@ -128,6 +137,11 @@ const Game = {
         // 2. Update runner (active task + recipe)
         const result = this.runner.update(dt);
 
+        // 3. Update combat runner
+        if (this.combatRunner.active) {
+            this.combatRunner.update(dt);
+        }
+
         // 3. Handle loot drops
         if (result.lootDrops.length > 0) {
             for (const bpId of result.lootDrops) {
@@ -139,9 +153,27 @@ const Game = {
                 }
             }
         }
+        // 4. Handle Special Triggers
+        if (result.onComplete) {
+            if (result.onComplete.trigger_combat) {
+                const mid = result.onComplete.trigger_combat;
+                const mission = this.state.get(mid);
+                if (mission) {
+                    if (mission.locked) {
+                        mission.locked = false;
+                        Log.add(`[SYSTEM] Mission Unlocked: ${mission.name}`, 'system');
+                    }
+                    this.startMission(mid);
+                }
+            }
+        }
 
         // 4. Check unlocks & Home Transitions
-        if (result.taskCompleted || result.recipeCompleted || result.lootDrops.length > 0) {
+        if (result.taskCompleted) {
+            this._handleTaskSpecialEffects(this.runner.activeTask);
+            this.techTree.check();
+            this._checkHomeTransitions();
+        } else if (result.recipeCompleted || result.lootDrops.length > 0) {
             this.techTree.check();
             this._checkHomeTransitions();
         }
@@ -260,14 +292,111 @@ const Game = {
      */
     serialize() {
         return {
-            version: __VERSION,
             state: this.state.toJSON(),
             runner: this.runner.toJSON(),
+            combatRunner: this.combatRunner.toJSON(),
             timer: this.timer.toJSON(),
             log: Log.toJSON(),
+            version: __VERSION
         };
     },
 
+    /**
+     * Start a combat mission.
+     * @param {string} missionId - ID from missions.json
+     */
+    startMission(missionId) {
+        const mission = this.state.get(missionId);
+        if (!mission || mission.locked) return;
+
+        // Check energy cost
+        if (mission.cost && !this.state.payCost(mission.cost)) {
+            Log.add('✗ Insufficient resources for mission.', 'error');
+            return;
+        }
+
+        // Clone enemy templates
+        const enemies = (mission.enemies || []).map(eid => {
+            const template = this.state.get(eid);
+            return template ? JSON.parse(JSON.stringify(template)) : null;
+        }).filter(Boolean);
+
+        if (enemies.length === 0) {
+            // Fallback for missions referencing IDs not in enemies.json
+            const allEnemies = this.state.getByGroup('enemy');
+            if (allEnemies.length > 0) {
+                enemies.push(JSON.parse(JSON.stringify(allEnemies[0])));
+            }
+        }
+
+        this.combatRunner.startMission(mission, enemies);
+    },
+
+    /**
+     * Quick repair using glory.
+     */
+    quickRepairGlory() {
+        if (!this.state.payCost({ 'glory': 5 })) {
+            Log.add('✗ Insufficient Glory for emergency repairs.', 'error');
+            return;
+        }
+
+        const parts = this.state.player.frame.parts;
+        Object.values(parts).forEach(p => {
+            if (p.status !== 'destroyed') {
+                p.hp = p.maxHp;
+                Log.add(`✦ ${p.name} restored to full HP via Glory.`, 'system');
+            }
+        });
+    },
+
+    _onCombatEnd({ result, mission }) {
+        // Recovery (§3.2)
+        const frame = this.state.player.frame;
+        frame.heat = 0;
+
+        // Dissipate half stress
+        frame.stress = (frame.stress || 0) * 0.5;
+
+        Log.add(`[RECOVERY] Heat normalized. Stress reduced to ${Math.floor(frame.stress)}.`, 'system');
+    },
+
+    _handleTaskSpecialEffects(task) {
+        if (!task) return;
+
+        if (task.id === 'repair_frame') {
+            const parts = this.state.player.frame.parts;
+            Object.values(parts).forEach(p => {
+                if (p.status === 'destroyed') {
+                    p.status = 'operational';
+                    p.integrity = 1;
+                    p.hp = p.maxHp;
+                    Log.add(`🛠️ ${p.name} RESTORED!`, 'success');
+                } else {
+                    p.integrity = Math.min(p.integrity + 1, 3); // Max integrity 3 for now
+                    p.hp = p.maxHp;
+                    Log.add(`🛠️ ${p.name} structural integrity reinforced.`, 'success');
+                }
+            });
+        }
+    },
+
+    buyManeuver(id) {
+        const mnvr = this.state.items[id];
+        if (!mnvr || mnvr.locked || mnvr.owned > 0) return false;
+        if (mnvr.cost && !this.state.payCost(mnvr.cost)) {
+            Log.add(`✗ Can't afford ${mnvr.name}.`, 'error');
+            return false;
+        }
+        mnvr.owned = 1;
+        Log.add(`★ Maneuver Unlocked: ${mnvr.name}`, 'upgrade');
+        this.techTree.check();
+        return true;
+    },
+
+    equipManeuvers(ids) {
+        this.combatRunner.setManeuvers(ids);
+    },
     // ── Data loaders ─────────────────────────────────
 
     _loadResources(data) {
@@ -380,13 +509,43 @@ const Game = {
         }
     },
 
+    _loadMissions(data) {
+        for (const item of data) {
+            item.locked = item.locked ?? (item.require ? true : false);
+            item.completed = item.completed ?? 0;
+            item.type = item.type || 'mission';
+            item.group = 'combat';
+
+            const rItem = reactive(item);
+            this.state.register(rItem);
+            this.techTree.register(rItem);
+        }
+    },
+
     _loadEnemies(data) {
         for (const item of data) {
             item.type = 'enemy';
+            item.group = 'enemy';
+            item.name = item.name || 'Unknown Unit';
             const rItem = reactive(item);
             this.state.register(rItem);
         }
     },
+
+    _loadManeuvers(data) {
+        for (const item of data) {
+            item.type = 'maneuver';
+            item.group = 'maneuver';
+            const rItem = reactive(item);
+            this.state.register(rItem);
+        }
+    },
+
+    _setCombatConfig(data) {
+        if (!data) return;
+        const rItem = reactive(data);
+        this.state.register(rItem);
+    }
 };
 
 export default Game;
