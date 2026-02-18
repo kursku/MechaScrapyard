@@ -78,10 +78,10 @@ export default {
             const p = (this.playerFrame.stress || 0);
             const grt = this.state.items['grit']?.val || 1;
             const stressCap = 20 + (grt * 2);
-            const pct = (p / stressCap) * 100;
+            const pctVal = (p / stressCap) * 100;
             return {
-                width: pct + '%',
-                backgroundColor: pct > 75 ? '#ff3333' : '#00afff'
+                width: pctVal + '%',
+                backgroundColor: pctVal > 75 ? '#ff3333' : '#00afff'
             };
         }
     }
@@ -101,13 +101,13 @@ export default {
                     <div class="mission-main">
                         <div class="mission-name">{{ m.name.toUpperCase() }}</div>
                         <div class="mission-difficulty">
-                            <span v-for="i in m.difficulty" :key="i">★</span>
+                            <span v-for="i in (m.difficulty || 1)" :key="i">★</span>
                         </div>
                     </div>
                     <div class="mission-desc">{{ m.desc }}</div>
                     <div class="mission-footer">
-                        <span class="cost">COST: {{ m.cost.energy }} ENR</span>
-                        <span class="rewards">REWARDS: {{ m.rewards.glory }} GLORY</span>
+                        <span class="cost">COST: {{ m.cost?.energy || 0 }} ENR</span>
+                        <span class="rewards">REWARDS: {{ m.rewards?.glory || 0 }} GLORY</span>
                     </div>
                 </div>
                 <div v-if="missions.length === 0" class="empty-msg">
@@ -141,7 +141,7 @@ export default {
                         <div v-for="m in shopManeuvers" :key="m.id" class="maneuver-mini-card shop-item">
                             <div class="mnvr-header">
                                 <span class="mnvr-name">{{ m.name.toUpperCase() }}</span>
-                                <span class="cost">{{ m.cost.glory }} GLORY</span>
+                                <span class="cost">{{ m.cost?.glory || 0 }} GLORY</span>
                             </div>
                             <div class="mnvr-desc">{{ m.desc }}</div>
                             <button class="btn-buy" @click="buyManeuver(m.id)">UNLOCK</button>
@@ -184,11 +184,15 @@ export default {
                     </div>
                 </div>
 
-                <!-- ENEMY FRAME -->
-                <div class="frame-status enemy-side" v-for="enemy in currentEnemies" :key="enemy.name">
-                    <div class="frame-header">TARGET: {{ enemy.name.toUpperCase() }}</div>
+                <!-- ENEMIES -->
+                <div
+                    class="frame-status enemy-side"
+                    v-for="(enemy, idx) in currentEnemies"
+                    :key="enemy.id || enemy.name || idx"
+                >
+                    <div class="frame-header">TARGET: {{ (enemy.name || 'UNKNOWN').toUpperCase() }}</div>
                     <div class="parts-list">
-                        <div v-for="part in Object.values(enemy.parts)" :key="part.id" 
+                        <div v-for="part in Object.values(enemy.parts || {})" :key="part.id" 
                              class="part-row" :class="{ 'destroyed': part.status === 'destroyed' }">
                             <div class="part-label">{{ part.name.toUpperCase() }}</div>
                             <div class="part-integrity">
