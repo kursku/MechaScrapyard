@@ -1,0 +1,125 @@
+[
+    {
+        "id": "scrap_drone",
+        "name": "Scrap Drone",
+        "desc": "A small, buzzing drone used for scavenging. Aggressive but fragile.",
+        "attributes": {
+            "atk": 5,
+            "def": 3,
+            "enr": 10,
+            "cor": 2
+        },
+        "parts": {
+            "torso": {
+                "name": "Core",
+                "integrity": 1,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Manipulator E",
+                "integrity": 1,
+                "hp": 15,
+                "maxHp": 15,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Scrap Saw",
+                "integrity": 1,
+                "hp": 20,
+                "maxHp": 20,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Thrusters",
+                "integrity": 1,
+                "hp": 20,
+                "maxHp": 20,
+                "status": "operational"
+            }
+        }
+    },
+    {
+        "id": "rogue_labor",
+        "name": "Rogue Labor",
+        "desc": "An industrial mecha with a corrupted BIOS. Slow and heavy.",
+        "attributes": {
+            "atk": 12,
+            "def": 15,
+            "enr": 30,
+            "cor": 5
+        },
+        "parts": {
+            "torso": {
+                "name": "Chassis",
+                "integrity": 2,
+                "hp": 150,
+                "maxHp": 150,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Hydraulic Claw",
+                "integrity": 2,
+                "hp": 80,
+                "maxHp": 80,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Hydraulic Claw",
+                "integrity": 2,
+                "hp": 80,
+                "maxHp": 80,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Treads",
+                "integrity": 2,
+                "hp": 100,
+                "maxHp": 100,
+                "status": "operational"
+            }
+        }
+    },
+    {
+        "id": "security_unit",
+        "name": "Security Unit",
+        "desc": "Standard corporate security mecha. Well-balanced and lethal.",
+        "attributes": {
+            "atk": 15,
+            "def": 12,
+            "enr": 40,
+            "cor": 8
+        },
+        "parts": {
+            "torso": {
+                "name": "Armored Torso",
+                "integrity": 2,
+                "hp": 120,
+                "maxHp": 120,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Riot Shield",
+                "integrity": 2,
+                "hp": 100,
+                "maxHp": 100,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Stun Baton",
+                "integrity": 2,
+                "hp": 70,
+                "maxHp": 70,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Bipedal Legs",
+                "integrity": 2,
+                "hp": 80,
+                "maxHp": 80,
+                "status": "operational"
+            }
+        }
+    }
+]

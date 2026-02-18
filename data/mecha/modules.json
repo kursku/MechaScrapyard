@@ -10,7 +10,8 @@
         "player",
         "events",
         "sections",
-        "equipslots"
+        "equipslots",
+        "enemies"
     ],
     "modules": []
 }

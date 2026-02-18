@@ -21,6 +21,23 @@ export default class GameState {
         this.player = reactive({
             name: 'Pilot',
             titles: [],
+            // Combat Design §2.2 & §3.1
+            frame: {
+                parts: {
+                    torso: { id: 'torso', name: 'Torso', integrity: 3, hp: 100, maxHp: 100, status: 'operational' },
+                    left_arm: { id: 'left_arm', name: 'Left Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational' },
+                    right_arm: { id: 'right_arm', name: 'Right Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational' },
+                    legs: { id: 'legs', name: 'Legs', integrity: 2, hp: 60, maxHp: 60, status: 'operational' }
+                },
+                attributes: {
+                    atk: 10,
+                    def: 10,
+                    enr: 50,
+                    cor: 5
+                },
+                heat: 0,
+                stress: 0
+            }
         });
 
         this.loaded = false;

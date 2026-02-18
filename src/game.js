@@ -3,6 +3,7 @@ import { clamp } from '@/util/format';
 import GameState from '@/gameState';
 import TechTree from '@/techTree';
 import Runner from 'modules/runner';
+import CombatEngine from 'modules/combat';
 import Timer from '@/timer';
 import Log from '@/log';
 import Persist from 'modules/persist';
@@ -28,6 +29,9 @@ const Game = {
     /** @type {Runner} */
     runner: null,
 
+    /** @type {CombatEngine} */
+    combat: null,
+
     /** @type {Timer} */
     timer: null,
 
@@ -49,6 +53,7 @@ const Game = {
         this.state = new GameState();
         this.techTree = new TechTree(this.state);
         this.runner = new Runner(this.state);
+        this.combat = new CombatEngine(this.state);
         this.timer = new Timer();
 
         // Register all data items into state
@@ -61,6 +66,7 @@ const Game = {
         this._loadFurniture(rawData.furniture || []);
         this._loadSkills(rawData.skills || []);
         this._loadSections(rawData.sections || []);
+        this._loadEnemies(rawData.enemies || []);
 
         // Restore save
         if (saveData) {
@@ -371,6 +377,14 @@ const Game = {
             const rItem = reactive(item);
             this.state.register(rItem);
             this.techTree.register(rItem);
+        }
+    },
+
+    _loadEnemies(data) {
+        for (const item of data) {
+            item.type = 'enemy';
+            const rItem = reactive(item);
+            this.state.register(rItem);
         }
     },
 };
