@@ -23,6 +23,11 @@ export default {
         combatResult() {
             return this.combatRunner.result;
         },
+        showBattle() {
+            // IMPORTANT: after endCombat(), active becomes false immediately.
+            // We still want to show the battle screen so the player can see the result banner.
+            return this.isInCombat || !!this.combatResult;
+        },
         allManeuvers() {
             return Object.values(this.state.items).filter(i => i.type === 'maneuver');
         },
@@ -45,7 +50,9 @@ export default {
             Game.combatRunner.endCombat('defeat');
         },
         continueAfterCombat() {
+            // Return to mission list
             this.combatRunner.result = null;
+            this.combatRunner.combatLog = [];
         },
         buyManeuver(id) {
             Game.buyManeuver(id);
@@ -91,7 +98,7 @@ export default {
 <template>
     <div class="combat-panel-container">
         <!-- PRE-COMBAT INTERFACE -->
-        <div v-if="!isInCombat && !combatResult" class="pre-combat-grid">
+        <div v-if="!showBattle" class="pre-combat-grid">
             <!-- MISSION LIST -->
             <div class="mission-list column-panel">
                 <div class="hud-section-title">> AVAILABLE MISSIONS</div>
@@ -151,8 +158,8 @@ export default {
             </div>
         </div>
 
-        <!-- BATTLE VIEW -->
-        <div v-if="isInCombat" class="battle-view">
+        <!-- BATTLE VIEW (stays visible on result) -->
+        <div v-else class="battle-view">
             <div class="battle-grid">
                 <!-- PLAYER FRAME -->
                 <div class="frame-status player-side">
@@ -216,18 +223,20 @@ export default {
 
             <div class="battle-footer">
                 <div class="turn-info">TURN {{ combatRunner.turnNumber }}</div>
-                <button class="btn-retreat" @click="retreat">RETREAT</button>
+                <button class="btn-retreat" :disabled="!!combatResult" @click="retreat">
+                    RETREAT
+                </button>
             </div>
-        </div>
 
-        <!-- POST-COMBAT SUMMARY -->
-        <div v-if="combatResult" class="combat-summary" :class="combatResult">
-            <h2 class="result-banner">{{ combatResult.toUpperCase() }}</h2>
-            <div class="summary-details">
-                <p v-if="combatResult === 'victory'">Mission objectives completed. Salvage recovered.</p>
-                <p v-else>Mission failed. Frame sustained damage. Retreating to base.</p>
+            <!-- RESULT BANNER OVERLAY -->
+            <div v-if="combatResult" class="result-overlay" :class="combatResult">
+                <div class="result-title">{{ combatResult.toUpperCase() }}</div>
+                <div class="result-sub">
+                    <span v-if="combatResult === 'victory'">Mission objectives completed. Salvage recovered.</span>
+                    <span v-else>Mission failed. Partial salvage recovered.</span>
+                </div>
+                <button class="hud-btn" @click="continueAfterCombat">CONTINUE</button>
             </div>
-            <button class="hud-btn" @click="continueAfterCombat">CONTINUE</button>
         </div>
     </div>
 </template>
@@ -236,6 +245,7 @@ export default {
 .combat-panel-container {
     padding: 10px;
     font-family: var(--font-mono);
+    position: relative;
 }
 
 .mission-card {
@@ -263,6 +273,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
 }
 
 .battle-grid {
@@ -340,16 +351,10 @@ export default {
 
 .btn-retreat:hover { background: var(--error); color: #000; }
 
-.combat-summary {
-    text-align: center;
-    border: 2px solid var(--primary);
-    padding: 30px;
-    background: rgba(0, 0, 0, 0.9);
+.btn-retreat:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-
-.combat-summary.defeat { border-color: var(--error); }
-.result-banner { font-size: 24px; margin-bottom: 15px; letter-spacing: 5px; }
-.summary-details { margin-bottom: 20px; font-size: 12px; }
 
 .pre-combat-grid {
     display: grid;
@@ -416,4 +421,44 @@ export default {
 .loadout-section { margin-bottom: 25px; }
 
 .destroyed { opacity: 0.4; filter: grayscale(1); }
+
+/* Result overlay */
+.result-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid var(--border-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px;
+}
+
+.result-overlay.victory {
+    border-color: var(--primary);
+}
+
+.result-overlay.defeat {
+    border-color: var(--error);
+}
+
+.result-title {
+    font-size: 26px;
+    letter-spacing: 6px;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.result-overlay.defeat .result-title {
+    color: var(--error);
+}
+
+.result-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    max-width: 520px;
+}
 </style>
