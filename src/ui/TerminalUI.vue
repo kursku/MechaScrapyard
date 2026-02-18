@@ -8,7 +8,9 @@ export default {
     props: ['state'],
     data() {
         return {
-            selectedCategory: 'scrapyard'
+            selectedCategory: 'scrapyard',
+            renderTick: 0,
+            _renderInterval: null,
         };
     },
     methods: {
@@ -86,11 +88,16 @@ export default {
     },
     computed: {
         resources() {
+            // Force UI updates even when the underlying source is non-reactive (class instances, timers)
+            this.renderTick;
+
             // Trigger update when runner changes active task (to update net rates)
             const _ = Game.runner.activeTask;
             return Object.values(this.state.items).filter(i => i.type === 'resource');
         },
         tasks() {
+            this.renderTick;
+
             const allTasks = Object.values(this.state.items).filter(i => i.type === 'task');
             if (this.selectedCategory === 'pilot') {
                 return allTasks.filter(t => !t.locked && t.group === 'pilot');
@@ -98,6 +105,8 @@ export default {
             return allTasks.filter(t => !t.locked && t.group === this.selectedCategory);
         },
         categories() {
+            this.renderTick;
+
             const allTasks = Object.values(this.state.items).filter(i => i.type === 'task');
             const groups = new Set(allTasks.filter(t => !t.locked).map(t => t.group).filter(g => g !== 'pilot'));
             
@@ -110,12 +119,15 @@ export default {
             return list;
         },
         morphology() {
+            this.renderTick;
             return Object.values(this.state.items).filter(i => i.type === 'player_stat' && !i.hide);
         },
         skills() {
+            this.renderTick;
             return Object.values(this.state.items).filter(i => i.type === 'skill' && !i.locked);
         },
         upgrades() {
+            this.renderTick;
             return Object.values(this.state.items).filter(i => 
                 (i.type === 'upgrade' || i.type === 'furniture') && 
                 !i.locked && 
@@ -123,27 +135,45 @@ export default {
             );
         },
         morality() {
+            this.renderTick;
             return this.state.get("morality");
         },
         reputation() {
+            this.renderTick;
             return this.state.get("reputation");
         },
         energy() {
+            this.renderTick;
             return this.state.get("energy");
         },
         currentHome() {
+            this.renderTick;
             return Object.values(this.state.items).find(i => i.type === 'home' && i.owned > 0);
         },
         combatRunner() {
+            // CombatRunner is a class instance, not reactive; this tick ensures it repaints.
+            this.renderTick;
             return Game.combatRunner;
         },
         runner() {
+            this.renderTick;
             return Game.runner;
         },
         isCritical() {
+            this.renderTick;
             const energy = this.state.get('energy');
             return energy && (energy.val / energy.max) < 0.15;
         }
+    },
+    mounted() {
+        const TICK_MS = 200;
+        this._renderInterval = setInterval(() => {
+            this.renderTick++;
+        }, TICK_MS);
+    },
+    beforeUnmount() {
+        if (this._renderInterval) clearInterval(this._renderInterval);
+        this._renderInterval = null;
     }
 };
 </script>
