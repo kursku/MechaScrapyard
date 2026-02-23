@@ -1,0 +1,319 @@
+[
+    {
+        "id": "zone_scrapyard",
+        "name": "Ferro-Velho District",
+        "shortName": "Scrapyard",
+        "desc": "Home. Grandpa's territory. Piles of rust and possibility.",
+        "flavor": "Every piece of junk was something beautiful once.",
+        "icon": "⚙",
+        "color": "#6d8",
+        "locked": false,
+        "require": "",
+        "phase": 1,
+        "discovered": true,
+        "subAreas": [
+            {
+                "id": "scrapyard_piles",
+                "name": "Scrap Piles",
+                "desc": "The main salvage field."
+            },
+            {
+                "id": "scrapyard_workshop",
+                "name": "Workshop",
+                "desc": "Grandpa's domain."
+            },
+            {
+                "id": "scrapyard_garage",
+                "name": "Garage",
+                "desc": "Your father's locked workspace.",
+                "require": "g.garage>0"
+            }
+        ],
+        "availableTasks": [
+            "scavenge_scrap",
+            "scavenge_industrial",
+            "scavenge_tech_district",
+            "scavenge_residential"
+        ],
+        "availableMissions": [
+            "msn_rogue_drone_patrol"
+        ],
+        "npcs": [
+            "grandpa"
+        ],
+        "narrativeHook": "This is where it all starts — and where the truth is buried."
+    },
+    {
+        "id": "zone_downtown",
+        "name": "Downtown District",
+        "shortName": "Downtown",
+        "desc": "Corporate towers cast long shadows. Neon signs promise everything. The streets deliver less.",
+        "flavor": "Money flows upward. Everything else flows down.",
+        "icon": "🏢",
+        "color": "#88f",
+        "locked": true,
+        "require": "g.garage>0&&g.msn_rogue_drone_patrol>0",
+        "phase": 2,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "downtown_merchant_row",
+                "name": "Merchant Row",
+                "desc": "Licensed vendors. Overpriced, but legal."
+            },
+            {
+                "id": "downtown_police_hq",
+                "name": "NTPD Headquarters",
+                "desc": "Your father's former precinct.",
+                "require": "g.rep_police>=10"
+            },
+            {
+                "id": "downtown_data_bazaar",
+                "name": "Data Bazaar",
+                "desc": "Information brokers.",
+                "require": "g.skill_hacking>=2"
+            },
+            {
+                "id": "downtown_neon_strip",
+                "name": "Neon Strip",
+                "desc": "Entertainment district. Bars, fights, rumors."
+            }
+        ],
+        "availableTasks": [
+            "search_neon_bazaar",
+            "delivery_run"
+        ],
+        "availableMissions": [
+            "msn_corporate_warning"
+        ],
+        "npcs": [
+            "detective_tanaka",
+            "merchant_liu"
+        ],
+        "narrativeHook": "Your father walked these streets. His case files are somewhere in that precinct."
+    },
+    {
+        "id": "zone_slums",
+        "name": "The Slums",
+        "shortName": "Slums",
+        "desc": "Where the city dumps what it doesn't want. People included.",
+        "flavor": "The only law here is survival.",
+        "icon": "🏚",
+        "color": "#a86",
+        "locked": true,
+        "require": "g.garage>0&&g.skill_combat>=2",
+        "phase": 2,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "slums_rats_nest",
+                "name": "Rat's Nest",
+                "desc": "Black market hub."
+            },
+            {
+                "id": "slums_clinic",
+                "name": "Underground Clinic",
+                "desc": "Unlicensed medicine."
+            },
+            {
+                "id": "slums_shadow_exchange",
+                "name": "Shadow Exchange",
+                "desc": "Parts, weapons, no questions.",
+                "require": "g.rep_underground>=10"
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [],
+        "npcs": [
+            "doc_yumi",
+            "fixer_nine"
+        ],
+        "narrativeHook": "Your father moonlighted at the clinic. Someone there remembers him."
+    },
+    {
+        "id": "zone_industrial",
+        "name": "Industrial Wasteland",
+        "shortName": "Industrial",
+        "desc": "Abandoned factories. Toxic runoff. The skeletons of a manufacturing empire.",
+        "flavor": "The machines stopped. The pollution didn't.",
+        "icon": "🏭",
+        "color": "#c84",
+        "locked": true,
+        "require": "g.refinery>0&&g.skill_combat>=3",
+        "phase": 3,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "industrial_echo_station",
+                "name": "Echo Station",
+                "desc": "Abandoned relay. Still broadcasting..."
+            },
+            {
+                "id": "industrial_crucible",
+                "name": "The Crucible",
+                "desc": "Mecha graveyard. Top-tier salvage."
+            },
+            {
+                "id": "industrial_rust_river",
+                "name": "Rust River",
+                "desc": "Toxic waterway. Rare materials."
+            },
+            {
+                "id": "industrial_iron_market",
+                "name": "Iron Market",
+                "desc": "Surplus military equipment.",
+                "require": "g.rep_military>=10"
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [],
+        "npcs": [
+            "scavenger_boss_krell"
+        ],
+        "narrativeHook": "Fusion cells. Quantum circuits. The good stuff is here — guarded by worse stuff."
+    },
+    {
+        "id": "zone_arena",
+        "name": "Underground Arena",
+        "shortName": "Arena",
+        "desc": "Mecha fight. People bet. Everyone profits except the losers.",
+        "flavor": "The crowd wants blood. Give them a show.",
+        "icon": "⚔",
+        "color": "#f84",
+        "locked": true,
+        "require": "g.garage>0&&g.skill_combat>=2&&g.glory>=10",
+        "phase": 2,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "arena_pit",
+                "name": "The Pit",
+                "desc": "Where fights happen."
+            },
+            {
+                "id": "arena_betting_floor",
+                "name": "Betting Floor",
+                "desc": "Odds, wagers, ruined lives."
+            },
+            {
+                "id": "arena_champion_lounge",
+                "name": "Champion's Lounge",
+                "desc": "VIP area.",
+                "require": "g.glory>=100"
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [
+            "msn_arena_registration"
+        ],
+        "npcs": [
+            "promoter_silva"
+        ],
+        "narrativeHook": "Glory opens doors that creds can't. But glory has a cost."
+    },
+    {
+        "id": "zone_corporate",
+        "name": "Corporate Sector",
+        "shortName": "Corporate",
+        "desc": "Clean streets. Polished facades. Armed guards.",
+        "flavor": "Progress through technology. Control through progress.",
+        "icon": "🏛",
+        "color": "#4af",
+        "locked": true,
+        "require": "g.rep_corporate>=10||g.rep_police>=25",
+        "phase": 3,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "corporate_taeyang_hq",
+                "name": "Taeyang Forge HQ",
+                "desc": "The company that destroyed your father.",
+                "require": "g.rep_corporate>=25"
+            },
+            {
+                "id": "corporate_labs",
+                "name": "Research Labs",
+                "desc": "Cutting-edge tech."
+            },
+            {
+                "id": "corporate_boardroom",
+                "name": "Executive Floor",
+                "desc": "Where decisions are made.",
+                "require": "g.rep_corporate>=50"
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [],
+        "npcs": [
+            "exec_park",
+            "security_chief_ono"
+        ],
+        "narrativeHook": "Taeyang Forge. The name on the evidence that convicted your father."
+    },
+    {
+        "id": "zone_cyber_facility",
+        "name": "Cybernetic Research Facility",
+        "shortName": "CyberLab",
+        "desc": "Neural interfaces. Augmentation labs. The line between human and machine.",
+        "flavor": "Upgrade everything.",
+        "icon": "🧠",
+        "color": "#f4a",
+        "locked": true,
+        "require": "g.cybernetic_bench>0&&g.skill_hacking>=4",
+        "phase": 4,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "cyber_augment_lab",
+                "name": "Augmentation Lab",
+                "desc": "Permanent enhancements."
+            },
+            {
+                "id": "cyber_recovery_ward",
+                "name": "Recovery Ward",
+                "desc": "Adjustment period."
+            },
+            {
+                "id": "cyber_archive_vault",
+                "name": "Archive Vault",
+                "desc": "Ghost in the System.",
+                "require": "g.skill_hacking>=7"
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [],
+        "npcs": [
+            "dr_chen"
+        ],
+        "narrativeHook": "A sentient AI trapped in the archive. It has answers. And questions."
+    },
+    {
+        "id": "zone_nexus",
+        "name": "The Nexus",
+        "shortName": "Nexus",
+        "desc": "New Tokyo's heart. Political, economic, military center.",
+        "flavor": "All roads lead here. Not all lead back.",
+        "icon": "★",
+        "color": "#ff4",
+        "locked": true,
+        "require": "g.msn_conspiracy_revealed>0",
+        "phase": 5,
+        "discovered": false,
+        "subAreas": [
+            {
+                "id": "nexus_council",
+                "name": "City Council",
+                "desc": "The final confrontation."
+            },
+            {
+                "id": "nexus_tower",
+                "name": "Taeyang Central Tower",
+                "desc": "The truth, at the top."
+            }
+        ],
+        "availableTasks": [],
+        "availableMissions": [],
+        "npcs": [],
+        "narrativeHook": "Everything you've built — it comes down to this."
+    }
+]

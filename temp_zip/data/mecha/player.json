@@ -1,0 +1,284 @@
+[
+  {
+    "id": "level",
+    "name": "Pilot Level",
+    "desc": "Overall experience as a pilot. Each level grants 1 attribute point to distribute freely.",
+    "val": 1,
+    "max": 30,
+    "stat": true,
+    "locked": false,
+    "hide": true,
+    "mod": {
+      "energy.max": 3
+    },
+    "notes": "Level 30 cap = 29 attribute points to distribute over 6 stats (avg ~5 per stat). Combined with grow-by-use, a maxed pilot has ~8-10 in primary stats and ~4-6 in secondaries."
+  },
+  {
+    "id": "exp",
+    "name": "Experience",
+    "desc": "Accumulated experience from missions, crafting, and exploration.",
+    "val": 0,
+    "max": 100,
+    "locked": false,
+    "hide": true,
+    "levelUp": {
+      "formula": "level * 80 + 20",
+      "reward": "attribute_point",
+      "rewardAmount": 1
+    },
+    "notes": "EXP threshold scales linearly: level 1→2 = 100 XP, level 10→11 = 820 XP, level 30 = 2420 XP. Sources: combat (primary), task completion, exploration events. Resets to 0 on level up."
+  },
+  {
+    "id": "attribute_points",
+    "name": "Attribute Points",
+    "desc": "Unspent points from level-ups. Assign to any attribute at the Garage terminal.",
+    "val": 0,
+    "max": 99,
+    "locked": false,
+    "hide": true,
+    "notes": "Accumulated but unspent points. Player can bank them or spend immediately. UI shows notification badge when points > 0."
+  },
+  {
+    "id": "muscle",
+    "name": "Muscle",
+    "desc": "Raw power. Drives melee damage, heavy weapon handling, and physical labor efficiency.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "💪",
+    "color": "#f55",
+    "growthActivity": [
+      "combat_melee",
+      "gathering_heavy",
+      "manual_labor"
+    ],
+    "growthRate": 0.02,
+    "derived": {
+      "meleeBonus": {
+        "formula": "muscle * 0.3",
+        "target": "ATK",
+        "desc": "+0.3 ATK per point"
+      },
+      "defContrib": {
+        "formula": "muscle * 0.1",
+        "target": "DEF",
+        "desc": "+0.1 DEF per point"
+      },
+      "carryCapacity": {
+        "formula": "muscle * 2",
+        "desc": "+2 kg carry capacity per point"
+      }
+    },
+    "mod": {
+      "scrap.rate": "0.03"
+    },
+    "notes": "Primary stat for Striker maneuvers. Melee builds want muscle 7+. The ATK contribution (×0.3) is the largest single-stat ATK modifier. Also contributes slightly to DEF (×0.1) — strong pilots absorb hits better."
+  },
+  {
+    "id": "reflex",
+    "name": "Reflex",
+    "desc": "Speed, coordination, and reaction time. Governs accuracy, evasion, and combat initiative.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "🤸",
+    "color": "#5f5",
+    "growthActivity": [
+      "combat_ranged",
+      "combat_evasion",
+      "arena_fights"
+    ],
+    "growthRate": 0.02,
+    "derived": {
+      "atkContrib": {
+        "formula": "reflex * 0.2",
+        "target": "ATK",
+        "desc": "+0.2 ATK per point"
+      },
+      "accuracyBonus": {
+        "formula": "reflex * 2",
+        "desc": "+2 flat accuracy per point"
+      },
+      "initiativeBonus": {
+        "formula": "reflex * 1",
+        "desc": "+1 initiative per point"
+      }
+    },
+    "mod": {},
+    "notes": "Secondary ATK contributor (×0.2) but PRIMARY accuracy stat. Reflex 8 = +16 accuracy, which is enormous. Key stat for Light frame pilots and long-range weapon users. Also determines turn order via initiative."
+  },
+  {
+    "id": "focus",
+    "name": "Focus",
+    "desc": "Mental precision and concentration. Powers targeting systems, crafting quality, and energy management.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "🎯",
+    "color": "#5ff",
+    "growthActivity": [
+      "crafting",
+      "research",
+      "combat_long_range"
+    ],
+    "growthRate": 0.02,
+    "derived": {
+      "enrContrib": {
+        "formula": "focus * 0.3",
+        "target": "ENR",
+        "desc": "+0.3 ENR per point"
+      },
+      "targetingBonus": {
+        "formula": "focus * 1.5",
+        "desc": "+1.5 targeting precision per point"
+      },
+      "craftSpeedMod": {
+        "formula": "1 - (focus * 0.03)",
+        "desc": "-3% craft time per point"
+      }
+    },
+    "mod": {
+      "craft.speed": "-0.03"
+    },
+    "notes": "Primary ENR contributor (×0.3). ENR fuels special actions and energy weapons. Also directly improves crafting speed. Tactician and Support maneuvers often require focus. The 'precision' stat — makes everything slightly better."
+  },
+  {
+    "id": "grit",
+    "name": "Grit",
+    "desc": "Mental fortitude and physical endurance. Determines stress resistance, panic threshold, and damage absorption.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "🛡️",
+    "color": "#fb5",
+    "growthActivity": [
+      "combat_damage_taken",
+      "long_missions",
+      "stress_recovery"
+    ],
+    "growthRate": 0.02,
+    "derived": {
+      "defContrib": {
+        "formula": "grit * 0.4",
+        "target": "DEF",
+        "desc": "+0.4 DEF per point (largest DEF contributor)"
+      },
+      "corContrib": {
+        "formula": "grit * 0.2",
+        "target": "COR",
+        "desc": "+0.2 COR per point"
+      },
+      "stressCap": {
+        "formula": "20 + (grit * 5)",
+        "desc": "Stress cap = 20 + 5 per point"
+      },
+      "stressRecovery": {
+        "formula": "grit * 2",
+        "desc": "+2 stress recovery per idle cycle"
+      }
+    },
+    "mod": {},
+    "notes": "THE defensive stat. DEF contribution (×0.4) is the largest single modifier to any derived stat. Grit 8 = +3.2 DEF, which is meaningful on any frame. Also determines stress cap — low grit pilots panic fast. Essential for Heavy frame pilots (high passive stress/turn) and Defender maneuvers."
+  },
+  {
+    "id": "neuro",
+    "name": "Neuro",
+    "desc": "Technical aptitude, system knowledge, and neural interface efficiency. Powers hacking, repairs, and tech weapons.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "🧠",
+    "color": "#8cf",
+    "growthActivity": [
+      "hacking",
+      "research",
+      "dismantle",
+      "repair"
+    ],
+    "growthRate": 0.02,
+    "derived": {
+      "enrContrib": {
+        "formula": "neuro * 0.2",
+        "target": "ENR",
+        "desc": "+0.2 ENR per point"
+      },
+      "hackBonus": {
+        "formula": "neuro * 3",
+        "desc": "+3% hack success per point"
+      },
+      "repairQuality": {
+        "formula": "neuro * 0.02",
+        "desc": "+2% repair condition restored per point"
+      },
+      "dismantleYield": {
+        "formula": "neuro * 0.05",
+        "desc": "+5% dismantle material yield per point"
+      }
+    },
+    "mod": {
+      "research.speed": "-0.03"
+    },
+    "notes": "Secondary ENR contributor (×0.2). The 'idle efficiency' stat — every point makes hacking, repair, dismantle, and research better. Support maneuvers often require neuro. Less impactful in direct combat but invaluable for the economic loop."
+  },
+  {
+    "id": "charisma",
+    "name": "Charisma",
+    "desc": "Social presence, negotiation skill, and leadership. Affects prices, reputation gains, and squad morale.",
+    "val": 1,
+    "max": 10,
+    "augMax": 15,
+    "stat": true,
+    "locked": false,
+    "icon": "🗣️",
+    "color": "#f5f",
+    "growthActivity": [
+      "social_events",
+      "trading",
+      "arena_fights"
+    ],
+    "growthRate": 0.015,
+    "derived": {
+      "corContrib": {
+        "formula": "charisma * 0.3",
+        "target": "COR",
+        "desc": "+0.3 COR per point (largest COR contributor)"
+      },
+      "priceModBuy": {
+        "formula": "1 - (charisma * 0.02)",
+        "desc": "-2% buy price per point"
+      },
+      "priceModSell": {
+        "formula": "1 + (charisma * 0.03)",
+        "desc": "+3% sell price per point"
+      },
+      "repGainMod": {
+        "formula": "1 + (charisma * 0.05)",
+        "desc": "+5% reputation gain per point"
+      }
+    },
+    "mod": {},
+    "notes": "Primary COR contributor (×0.3). COR determines panic resistance and crisis bonuses. Charisma 8 = +2.4 COR and -16% buy prices. The 'economy' stat — saves money and builds reputation faster. Least impactful in direct combat math but shapes the entire economic game. Grows slower than other stats (0.015 vs 0.02)."
+  },
+  {
+    "id": "reputation",
+    "name": "Reputation",
+    "desc": "How well known you are in New Tokyo. Affects faction access, mission availability, and NPC reactions.",
+    "val": 0,
+    "max": 100,
+    "stat": true,
+    "locked": false,
+    "hide": false,
+    "icon": "🌟",
+    "notes": "Meta-stat. Not an attribute — a consequence of actions. Reputation 0-20 = nobody, 21-50 = known, 51-80 = respected, 81-100 = legendary. Different from faction-specific rep (rep_police, rep_military, etc.)."
+  }
+]

@@ -1,0 +1,449 @@
+﻿[
+
+  {
+    "id": "frame_hayabusa_mk1",
+    "name": "Hayabusa Mk.I",
+    "desc": "Dad's first build. A lightweight patrol frame from another era. Designed for speed and efficiency, not firepower.",
+    "flavor": "Rusted, dented, held together by stubbornness and duct tape.",
+    "type": "frame",
+    "category": "light",
+    "mfr": "hayabusa_eng",
+    "origin": "custom",
+    "tier": 1,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":  { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand": { "accepts": "hand",     "linkedPart": "right_arm" },
+      "backpack":   { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 2,
+      "base_def": 2,
+      "base_enr": 6,
+      "base_cor": 4
+    },
+    "heatCap": 80,
+    "heatGenMod": 0.8,
+    "heatDissipMod": 1.4,
+    "stressPerTurn": 0.3,
+    "stressPerCritHit": 2.0,
+    "supplyEfficiency": 1.2,
+    "weightRange": {
+      "torso": [4, 8],
+      "arm":   [2, 5],
+      "legs":  [3, 7]
+    },
+    "require": "g.garage>0",
+    "value": 0,
+    "notes": "Starter frame. Cannot be sold or dismantled. The emotional anchor of the game â€” the player starts and ends their journey in a Hayabusa."
+  },
+
+  {
+    "id": "frame_sora_c100",
+    "name": "Sora C-100 'Courier'",
+    "desc": "Mass-produced civilian delivery frame. Fast, light, disposable. Half the Couriers in New Tokyo end up in scrapyards within two years.",
+    "flavor": "The speedometer goes up to 180. The structural warranty doesn't.",
+    "type": "frame",
+    "category": "light",
+    "mfr": "sora_motor",
+    "origin": "civilian",
+    "tier": 1,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":  { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand": { "accepts": "hand",     "linkedPart": "right_arm" },
+      "backpack":   { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 1,
+      "base_def": 2,
+      "base_enr": 5,
+      "base_cor": 4
+    },
+    "heatCap": 75,
+    "heatGenMod": 0.75,
+    "heatDissipMod": 1.5,
+    "stressPerTurn": 0.3,
+    "stressPerCritHit": 2.5,
+    "supplyEfficiency": 1.3,
+    "weightRange": {
+      "torso": [3, 7],
+      "arm":   [1, 4],
+      "legs":  [2, 6]
+    },
+    "require": "",
+    "value": 40,
+    "notes": "The 'worse but cheaper' alternative to the Hayabusa. Lower base stats across the board, but best-in-class supplyEfficiency (1.3) and heat dissipation (1.5). Runs incredibly cool and cheap. The scrapyard is full of these â€” a player who can't afford better can always find a Courier. Ideal early-game sidegrade for players who want sustained farming."
+  },
+
+  {
+    "id": "frame_phantom_wraith",
+    "name": "Wraith",
+    "desc": "Phantom Works stealth prototype. No production line, no serial number, no records. Built for pilots who don't officially exist.",
+    "flavor": "The only proof it was here is the damage it left behind.",
+    "type": "frame",
+    "category": "light",
+    "mfr": "phantom_works",
+    "origin": "exile",
+    "tier": 3,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":  { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand": { "accepts": "hand",     "linkedPart": "right_arm" },
+      "backpack":   { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 4,
+      "base_def": 1,
+      "base_enr": 7,
+      "base_cor": 2
+    },
+    "heatCap": 70,
+    "heatGenMod": 0.7,
+    "heatDissipMod": 1.6,
+    "stressPerTurn": 0.4,
+    "stressPerCritHit": 3.0,
+    "supplyEfficiency": 1.2,
+    "weightRange": {
+      "torso": [3, 6],
+      "arm":   [1, 4],
+      "legs":  [2, 5]
+    },
+    "require": "g.rep_exile>=2",
+    "value": 200,
+    "notes": "The glass cannon frame. Highest ATK and ENR of any Light frame, but DEF 1 and COR 2 means a few hits will panic the pilot. stressPerCritHit 3.0 is the highest in the game â€” every critical hit is a psychological earthquake. Built for veterans who never get hit. The Wraith rewards perfect play and punishes mistakes brutally."
+  },
+
+
+  {
+    "id": "frame_sora_m300",
+    "name": "Sora M-300 'Workhorse'",
+    "desc": "Sora's medium-class utility frame. The civilian standard for construction, transport, and light security. Boring, reliable, everywhere.",
+    "flavor": "Your first real mecha. Not the last, but you'll remember it.",
+    "type": "frame",
+    "category": "medium",
+    "mfr": "sora_motor",
+    "origin": "civilian",
+    "tier": 2,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 3,
+      "base_def": 3,
+      "base_enr": 5,
+      "base_cor": 4
+    },
+    "heatCap": 100,
+    "heatGenMod": 1.0,
+    "heatDissipMod": 1.1,
+    "stressPerTurn": 0.5,
+    "stressPerCritHit": 1.0,
+    "supplyEfficiency": 1.1,
+    "weightRange": {
+      "torso": [7, 12],
+      "arm":   [4, 8],
+      "legs":  [5, 10]
+    },
+    "require": "",
+    "value": 80,
+    "notes": "The first Medium frame the player can reasonably acquire. Slightly below medium baseline in ATK/DEF (3/3 vs 4/4), but slightly above in ENR and supplyEfficiency. The 'affordable upgrade' from the starting Light frame. Sora's mass production means these are common on the market and in scrapyards."
+  },
+
+  {
+    "id": "frame_kz_7m",
+    "name": "KZ-7M 'Ironback'",
+    "desc": "Industrial labor frame converted for combat. Originally built for dockyard cargo handling. Someone welded armor plates on and called it a fighter.",
+    "flavor": "It wasn't designed for war. War just happened to it.",
+    "type": "frame",
+    "category": "medium",
+    "mfr": "kz_industrial",
+    "origin": "labor",
+    "tier": 2,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 4,
+      "base_def": 5,
+      "base_enr": 3,
+      "base_cor": 4
+    },
+    "heatCap": 105,
+    "heatGenMod": 1.05,
+    "heatDissipMod": 0.95,
+    "stressPerTurn": 0.55,
+    "stressPerCritHit": 0.8,
+    "supplyEfficiency": 0.95,
+    "weightRange": {
+      "torso": [9, 14],
+      "arm":   [5, 9],
+      "legs":  [6, 11]
+    },
+    "require": "",
+    "value": 70,
+    "notes": "The 'tanky medium'. DEF 5 is above medium baseline (4), pushing toward heavy territory. Higher weight ranges accept heavier parts. Slightly worse heat dissipation and supply efficiency reflect the industrial origins â€” not optimized for combat. The player who wants durability before they can afford a Heavy. Common in scrapyards because KZ frames are everywhere."
+  },
+
+  {
+    "id": "frame_aegis_sentinel",
+    "name": "AT-M4 'Sentinel'",
+    "desc": "Aegis-Tac standard patrol frame. Issued to every Corporate Security unit in New Tokyo. Designed for extended deployment, not heroics.",
+    "flavor": "Standard. Secure. Sufficient. The frame that runs on paperwork and procedure.",
+    "type": "frame",
+    "category": "medium",
+    "mfr": "aegis_tac",
+    "origin": "police",
+    "tier": 3,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 4,
+      "base_def": 5,
+      "base_enr": 4,
+      "base_cor": 5
+    },
+    "heatCap": 100,
+    "heatGenMod": 0.95,
+    "heatDissipMod": 1.05,
+    "stressPerTurn": 0.45,
+    "stressPerCritHit": 0.9,
+    "supplyEfficiency": 1.0,
+    "weightRange": {
+      "torso": [8, 13],
+      "arm":   [4, 8],
+      "legs":  [5, 10]
+    },
+    "require": "g.rep_police>=2",
+    "value": 150,
+    "notes": "The 'best medium frame' for most players. Highest COR in the medium class (5) means better panic resistance. Slightly better heat profile than baseline (generates less, dissipates more). No weaknesses, no extremes â€” pure Aegis-Tac reliability. Gated behind police reputation because these don't end up in scrapyards; they're returned to Aegis-Tac for refurbishment."
+  },
+
+  {
+    "id": "frame_phantom_revenant",
+    "name": "Revenant",
+    "desc": "Phantom Works combat prototype. Aggressively optimized for offense at the cost of survivability. Runs hot, hits hard, forgives nothing.",
+    "flavor": "Three prototypes were built. Two exploded during testing. This is the one that didn't. Probably.",
+    "type": "frame",
+    "category": "medium",
+    "mfr": "phantom_works",
+    "origin": "exile",
+    "tier": 3,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso", "maxTier": 3 },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 6,
+      "base_def": 3,
+      "base_enr": 5,
+      "base_cor": 3
+    },
+    "heatCap": 90,
+    "heatGenMod": 1.1,
+    "heatDissipMod": 1.15,
+    "stressPerTurn": 0.6,
+    "stressPerCritHit": 1.5,
+    "supplyEfficiency": 0.9,
+    "weightRange": {
+      "torso": [6, 11],
+      "arm":   [3, 7],
+      "legs":  [4, 9]
+    },
+    "require": "g.rep_exile>=2",
+    "value": 180,
+    "notes": "The 'aggressive medium'. ATK 6 is HEAVY-class offense in a medium chassis. But DEF 3 and COR 3 mean it's fragile for its class, and stressPerCritHit 1.5 makes critical hits psychologically devastating. Higher heat generation than baseline but also higher dissipation â€” runs warm, cools fast. The risk-reward medium for players who want offense without committing to a Light frame's fragility."
+  },
+
+
+  {
+    "id": "frame_kz_9h",
+    "name": "KZ-9H 'Goliath'",
+    "desc": "Industrial heavy lifter converted for combat. Originally designed for deep mining and megastructure construction. Obscenely durable, painfully slow, cheap to acquire because nobody wants to maintain one.",
+    "flavor": "It was built to hold up buildings. Holding up in a fight is just a bonus.",
+    "type": "frame",
+    "category": "heavy",
+    "mfr": "kz_industrial",
+    "origin": "labor",
+    "tier": 2,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso" },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso" },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 5,
+      "base_def": 7,
+      "base_enr": 2,
+      "base_cor": 4
+    },
+    "heatCap": 125,
+    "heatGenMod": 1.25,
+    "heatDissipMod": 0.75,
+    "stressPerTurn": 0.75,
+    "stressPerCritHit": 0.4,
+    "supplyEfficiency": 0.75,
+    "weightRange": {
+      "torso": [14, 22],
+      "arm":   [8, 14],
+      "legs":  [10, 16]
+    },
+    "require": "",
+    "value": 120,
+    "notes": "The 'accessible heavy'. DEF 7 is the highest of any frame, but ATK 5 is below heavy baseline (6). Worst heat dissipation (0.75) and supply efficiency (0.75) in the game â€” this thing eats resources. Available early because decommissioned KZ heavies are cheap and plentiful. The frame for players who want to feel invincible and don't mind paying for it. Maintenance costs will pressure them toward better options long-term."
+  },
+
+  {
+    "id": "frame_kuroda_type90",
+    "name": "Type 90 'Fortress'",
+    "desc": "Kuroda's mainline battle frame. Purpose-built for military operations. Every system is mil-spec, every joint is overengineered, every bolt costs more than a Sora Courier.",
+    "flavor": "The manual is classified. The maintenance log is classified. The price tag should be classified too.",
+    "type": "frame",
+    "category": "heavy",
+    "mfr": "kuroda_heavy",
+    "origin": "military",
+    "tier": 4,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso" },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso" },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 7,
+      "base_def": 7,
+      "base_enr": 2,
+      "base_cor": 6
+    },
+    "heatCap": 130,
+    "heatGenMod": 1.15,
+    "heatDissipMod": 0.85,
+    "stressPerTurn": 0.65,
+    "stressPerCritHit": 0.3,
+    "supplyEfficiency": 0.8,
+    "weightRange": {
+      "torso": [15, 24],
+      "arm":   [9, 15],
+      "legs":  [11, 18]
+    },
+    "require": "g.rep_military>=3",
+    "value": 350,
+    "notes": "The 'best heavy'. ATK 7 + DEF 7 + COR 6 makes it the most complete frame in the game. Better heat profile than the Goliath (generates less, dissipates more). Lowest stressPerCritHit in the game (0.3) â€” the cockpit armor absorbs everything. Gated behind high military reputation and extreme cost. The endgame frame for players who want to dominate through raw power. Repair costs are proportionally enormous."
+  },
+
+  {
+    "id": "frame_phantom_leviathan",
+    "name": "Leviathan",
+    "desc": "Phantom Works heavy assault prototype. An experiment in maximum offensive output crammed into a heavy chassis. The engineers who built it called it 'the angry one.'",
+    "flavor": "It doesn't have an ejection system. The designers assumed if you're in a Leviathan, you've already decided how this ends.",
+    "type": "frame",
+    "category": "heavy",
+    "mfr": "phantom_works",
+    "origin": "exile",
+    "tier": 4,
+    "slots": {
+      "torso": true,
+      "left_arm": true,
+      "right_arm": true,
+      "legs": true
+    },
+    "equipSlots": {
+      "left_hand":      { "accepts": "hand",     "linkedPart": "left_arm" },
+      "right_hand":     { "accepts": "hand",     "linkedPart": "right_arm" },
+      "left_shoulder":  { "accepts": "shoulder", "linkedPart": "torso" },
+      "right_shoulder": { "accepts": "shoulder", "linkedPart": "torso" },
+      "backpack":       { "accepts": "backpack", "linkedPart": "torso" }
+    },
+    "baseStats": {
+      "base_atk": 8,
+      "base_def": 5,
+      "base_enr": 3,
+      "base_cor": 4
+    },
+    "heatCap": 110,
+    "heatGenMod": 1.3,
+    "heatDissipMod": 0.9,
+    "stressPerTurn": 0.8,
+    "stressPerCritHit": 0.7,
+    "supplyEfficiency": 0.7,
+    "weightRange": {
+      "torso": [12, 20],
+      "arm":   [7, 13],
+      "legs":  [9, 15]
+    },
+    "require": "g.rep_exile>=3",
+    "value": 280,
+    "notes": "The 'berserker heavy'. ATK 8 is the highest base_atk of ANY frame in the game. But DEF 5 is below heavy baseline (6) and supply efficiency 0.7 is the worst in the game. Highest stressPerTurn (0.8) means the pilot accumulates stress faster than any other heavy. This is a sprinter â€” deal massive damage fast and end the fight before the costs overwhelm you. The philosophical opposite of the Fortress: offense over endurance."
+  }
+]
+

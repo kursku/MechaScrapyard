@@ -1,0 +1,111 @@
+[
+    {
+        "id": "level",
+        "name": "Pilot Level",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "hide": true,
+        "mod": {
+            "energy.max": 5
+        }
+    },
+    {
+        "id": "exp",
+        "name": "Experience",
+        "val": 0,
+        "max": 1000,
+        "locked": false,
+        "hide": true
+    },
+    {
+        "id": "neuro",
+        "name": "Neuro",
+        "desc": "Hacking, logic, and technical aptitude.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "🧠",
+        "color": "#8cf"
+    },
+    {
+        "id": "muscle",
+        "name": "Muscle",
+        "desc": "Raw power, mecha combat, and heavy handling.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "💪",
+        "color": "#f55"
+    },
+    {
+        "id": "reflex",
+        "name": "Reflex",
+        "desc": "Agility, evasion, and reaction speed.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "🤸",
+        "color": "#5f5"
+    },
+    {
+        "id": "grit",
+        "name": "Grit",
+        "desc": "Survival instinct, resilience, and pain tolerance.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "🛡️",
+        "color": "#fb5"
+    },
+    {
+        "id": "charisma",
+        "name": "Charisma",
+        "desc": "Influence, diplomacy, and bargaining ability.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "🗣️",
+        "color": "#f5f"
+    },
+    {
+        "id": "focus",
+        "name": "Focus",
+        "desc": "Crafting precision, research speed, and idle efficiency.",
+        "val": 1,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "icon": "🎯",
+        "color": "#5ff"
+    },
+    {
+        "id": "morality",
+        "name": "Morality",
+        "desc": "Your moral compass. Positive = Idealist, Negative = Pragmatic.",
+        "val": 0,
+        "min": -100,
+        "max": 100,
+        "stat": true,
+        "locked": false,
+        "hide": false,
+        "icon": "⚖️"
+    },
+    {
+        "id": "reputation",
+        "name": "Reputation",
+        "desc": "How well known you are in New Tokyo.",
+        "val": 0,
+        "max": 1000,
+        "stat": true,
+        "locked": false,
+        "hide": false,
+        "icon": "🌟"
+    }
+]

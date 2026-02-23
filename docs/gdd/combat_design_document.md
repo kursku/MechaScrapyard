@@ -1,10 +1,30 @@
-# MECHA SCRAPYARD — Combat Design Document v1.0
+# MECHA SCRAPYARD — Combat Design Document v1.1
+
 ## Sistema de Combate Idle Tático
 
 **Projeto:** Mecha Scrapyard (Idle/Incremental RPG)
 **Engine:** Lost Dice → Vue 3 + Vite
 **Referências:** Front Mission RPG (Lost Dice), Mechanized Body (Playtest 2025), GDD Original
 **Data:** Fevereiro 2026
+**Revisão:** v1.2 — Inline cross-references (→) to companion GDD documents in all major sections
+
+---
+
+## DOCUMENTOS COMPLEMENTARES
+
+Este documento define a mecânica de combate. Os sistemas de economia, progressão, peças e base do jogador estão detalhados em documentos dedicados. Referências cruzadas são indicadas por `→ [ARQUIVO]` ao longo do texto. Para o índice completo com ordem de leitura, ver **Apêndice C**.
+
+| Documento | Escopo |
+|-----------|--------|
+| **gdd_3_4_parts_frame_assembly.md** | Categorias de Frame (Light/Medium/Heavy), peças modulares, compatibilidade, equipment slots, stats derivados |
+| **gdd_8_economy.md** | Modelo de 4 tiers de moeda, Glory dual, cadeia de recursos, manutenção, prestige |
+| **gdd_6_scrapyard_progression.md** | 5 fases do Scrapyard, estruturas, gates de desbloqueio, impacto de moralidade |
+| **resource_catalog_unlock_logic.md** | 22 recursos com JSON specs, lógica de `require`, Supply auto-reload, reputação multi-facção |
+| **combat_implementation_plan.md** | Plano em 5 fases, CombatRunner, data contracts |
+| **IMPL_SPEC_stances_targeting.md** | Stances + Targeting no CombatRunner |
+| **IMPL_SPEC_weapon_system.md** | Armas, slots de equip, supply em combate |
+| **IMPL_SPEC_debuff_tokens_breach_burn.md** | BREACH + BURN token logic |
+| **parts_implementation_flow.mermaid** | Diagrama de fluxo do ciclo de peças |
 
 ---
 
@@ -25,6 +45,9 @@
 13. Esquadrão & Atributos Coletivos
 14. Balanceamento Idle
 15. Roadmap de Implementação
+Apêndice A: Glossário de Termos
+Apêndice B: Referências Cruzadas (Tabletop → Digital)
+Apêndice C: Companion Document Index
 
 ---
 
@@ -54,7 +77,10 @@ Em New Tokyo, ninguém concorda em como chamar essas máquinas. O termo muda dep
 
 **No código:** O termo interno é **Frame** (variáveis, JSON keys, data structures). `frame_integrity`, `frame_parts`, `FrameConfig`.
 
+> **📎 See `gdd_3_4_parts_frame_assembly.md` §3.4.10** for the complete nomenclature reference table, replicated for consistency across documents.
+
 **Na narrativa:** O texto varia por contexto:
+
 - **System Log:** usa Frame ("Frame integrity at 60%")
 - **Avô/Mecânicos:** usa Frame ("This Frame belonged to your father")
 - **Diálogos de rua/Arena:** usa Rig ("Nice Rig. Shame I gotta wreck it.")
@@ -90,6 +116,8 @@ Energia  (ENR)   = base_energia + (FOC × 0.3) + (NEU × 0.2)
 Coragem  (COR)   = base_moral + (GRT × 0.2) + (CHA × 0.3)
 ```
 
+> **📎 See `gdd_3_4_parts_frame_assembly.md` §3.4.7** for category-specific `base_*` values that feed these formulas. Key insight — the "Progression Inversion": a novice pilot in a Heavy Frame functions adequately (high base stats carry them), while the same novice in a Light Frame struggles. But a veteran pilot in a Light Frame outperforms Heavy because pilot attributes dominate base values and Light's efficiency bonuses compound. Light bookends the player's journey — from weakness to mastery.
+
 ### 2.2 Camada do Frame
 
 Quatro atributos derivados que só existem quando o piloto está embarcado:
@@ -116,6 +144,9 @@ No contexto idle, isso se traduz em: **missão falha, mas o piloto sobrevive** (
 ---
 
 ## 3. SISTEMA ESTRUTURAL (INTEGRIDADE POR PEÇA)
+
+> **→ Detalhamento completo em `gdd_3_4_parts_frame_assembly.md`**
+> As categorias de Frame (Light/Medium/Heavy) definem níveis de integridade diferentes por peça. Light tem 5 níveis totais (frágil, barato), Medium tem 9 (baseline), Heavy tem 11 (tanque, caro de manter). A §3.4.1 do documento de peças detalha HP por nível, custos de reparo por categoria, e a interação com o sistema econômico de manutenção.
 
 ### 3.1 As 4 Peças Estruturais
 
@@ -256,6 +287,7 @@ targetPercent = baseAccuracy + (ATK × 2) - (DEF_alvo × 1.5) + equipModifiers +
 ```
 
 Onde:
+
 - `baseAccuracy` = 50 (baseline) — qualquer piloto mediano acerta metade das vezes
 - `ATK × 2` = atributo ofensivo contribui fortemente
 - `DEF_alvo × 1.5` = defesa do alvo reduz chance de acerto
@@ -273,6 +305,7 @@ Em certas situações, o jogador ganha dados bônus d6 do sistema Mechanized Bod
 | **1-2** | Miss | Sem efeito bônus |
 
 **Quando se ganha dados bônus d6:**
+
 - Habilidade ativada (+1d6 a +3d6 dependendo do nível)
 - Coragem em crise (Torso crítico: +COR/4 d6 arredondando para baixo)
 - Perk do piloto (gastar uso de Perk = +2d6 no próximo ataque)
@@ -312,6 +345,12 @@ No idle, isso se manifesta como **munição/energia** por missão. Armas mais fo
 ---
 
 ## 6. ARMAMENTO & EQUIPAMENTO
+
+> **→ Equipment slots expandidos em `gdd_3_4_parts_frame_assembly.md` §3.4.4**
+> O documento de peças expande os 4 slots originais para 5 (adicionando `backpack`), define tier limits por categoria de Frame (Medium: shoulder ≤ tier 3, Heavy: all tiers), e detalha backpack utilities (Extra Coolant, Ammo Crate, Sensor Array, Stress Dampener). A linked part rule (braço destruído → arma offline) é formalizada lá.
+>
+> **→ Implementação em `IMPL_SPEC_weapon_system.md`**
+> Contém o `weapons.json` completo com data contracts, equip system, e regras de slot.
 
 ### 6.1 Categorias de Armas
 
@@ -398,6 +437,12 @@ Isso cria uma decisão interessante: **uma arma forte ou duas fracas?**
 
 ## 7. HEAT & STRESS (RECURSOS REVERSOS)
 
+> **→ Perfis térmicos e de Stress por categoria em `gdd_3_4_parts_frame_assembly.md` §3.4.1**
+> Cada categoria de Frame tem perfil distinto: Light (heat gen 0.8×, dissip +40%, stress/crit +2.0), Medium (baseline), Heavy (heat gen 1.2×, dissip -20%, stress/turn +0.7). A §3.4.5 detalha os combos emergentes Stance × Category (ex: Light+Cautious = "Phantom", Heavy+Offensive = "Berserker").
+>
+> **→ Supply como recurso global em `resource_catalog_unlock_logic.md`**
+> Supply é recurso global com auto-reload pago (2 scrap/ponto). Frame category afeta supply efficiency: Light 1.2×, Heavy 0.8×. Detalhes completos no catálogo.
+
 ### 7.1 Heat (Recurso do Frame)
 
 Heat é um recurso reverso: começa em 0, acumula com ações, e penaliza em excesso.
@@ -439,6 +484,7 @@ Stress Atual: 0 ──────────────────── Str
 | 100% (Colapso) | Piloto desmaia. Mecha em shutdown. |
 
 **Fontes de Stress:**
+
 - Receber dano quando Heavily Damaged (Mechanized Body: 1 Stress por hit após perder primeira barra)
 - Direct Hit (resultado 6 no d6 bônus): +1 Stress
 - Aliado destruído: +3 Stress
@@ -446,6 +492,7 @@ Stress Atual: 0 ──────────────────── Str
 - Condição Atordoado: +2 Stress
 
 **Redução de Stress:**
+
 - Entre missões: descanso natural (Stress -= GRT × 2 por ciclo idle)
 - Ação "Catch Your Breath" (MB): reduz 1 Stress + recupera 1 uso de habilidade
 - Itens consumíveis (stims, calmantes)
@@ -469,6 +516,9 @@ Isso cria um momento de tensão claro no log de combate:
 ---
 
 ## 8. DEBUFFS & STATUS TOKENS
+
+> **→ Implementação em `IMPL_SPEC_debuff_tokens_breach_burn.md`**
+> Contém processamento por turno, resolução de stacks, interações entre tokens, e integração com o CombatRunner.
 
 Adaptados do Mechanized Body, com limite de 6 tokens por unidade:
 
@@ -513,21 +563,25 @@ Inspirado nas Maneuver Cards do Mechanized Body, cada unidade possui 3 habilidad
 ### 9.3 Exemplos por Posição
 
 **Lutador (Fighter):**
+
 - [Reaction] **Mech Brawl** — Quando inimigo entra em melee: contra-ataque automático (MUS + d4)
 - [Instinct] **Berserker Protocol** — Se Stress > 60%: +20% ATK, -15% DEF
 - [Maneuver] **Pile Bunker Strike** — Ataque único com +100% dano, +15 Heat
 
 **Comando (Leader):**
+
 - [Reaction] **Tactical Redirect** — Quando aliado é atacado: 30% de redirecionar ataque para si
 - [Instinct] **Rally Cry** — Início do turno: todos aliados -2 Stress se COR > 7
 - [Maneuver] **Coordinated Strike** — Próximo ataque aliado ganha +3d6 bônus
 
 **Artilheiro (Gunner):**
+
 - [Reaction] **Point Defense** — Contra mísseis: 40% de interceptar projétil (nega dano)
 - [Instinct] **Lock & Load** — Se não moveu: +25% precisão no próximo ataque
 - [Maneuver] **Salvo Barrage** — Ataca todas as unidades em zona (½ dano cada, +20 Heat)
 
 **Batedor (Scout):**
+
 - [Reaction] **Evasive Maneuver** — Quando atacado: 35% de esquivar completamente
 - [Instinct] **Silent Step** — Se nenhum inimigo o atacou: pode mover sem custo
 - [Maneuver] **Mark Target** — Aplica 2 TARGET LOCK + 1 BREACH em um alvo
@@ -612,6 +666,7 @@ Do Mechanized Body, adaptados como missões idle que usam atributos do piloto:
 | **Sobrevivência** | GRT | Travessia do Wasteland | Checks com custo de recursos |
 
 **Dificuldades (do MB):**
+
 - Challenging: Stress 1-2 em falha (missões básicas)
 - Daunting: Stress 2-3 em falha (missões intermediárias)
 - Risky: Stress 3-4 em falha (missões avançadas)
@@ -619,6 +674,12 @@ Do Mechanized Body, adaptados como missões idle que usam atributos do piloto:
 ---
 
 ## 12. ESPÓLIOS & ECONOMIA DE GLÓRIA
+
+> **→ Sistema econômico completo em `gdd_8_economy.md`**
+> A §8.1 expande Glory com tabelas de custo detalhadas (Rank 1→10: 4/6/8/12/16/20/24/30/40 Glory), diminishing returns em missões repetidas (100%→75%→50%), e o "Glory Dilemma" (gastar em avanço vs manutenção). A §8.3 detalha blueprints e reverse engineering. A §8.4 formaliza custos de manutenção por categoria de Frame.
+>
+> **→ Catálogo de recursos em `resource_catalog_unlock_logic.md`**
+> Glory, Parts, Supply definidos como recursos com `require: "g.garagem>0"`. Supply auto-reload mechanic documentado com custos.
 
 ### 12.1 Glória (XP/Moeda Dupla)
 
@@ -664,6 +725,12 @@ Ao destruir um inimigo, rolar 1d8 (sistema do FMRPG):
 
 ## 13. ESQUADRÃO & ATRIBUTOS COLETIVOS
 
+> **→ Economia de esquadrão em `gdd_8_economy.md` §8.6**
+> Três atributos (Reputation, War Funds, Connections) com progressão d6→d8→d10→d12 e custos de Glory (10/20/35/50). Detalhado com impacto mecânico em missões, vendors, e intel.
+>
+> **→ Massive Hangar em `gdd_6_scrapyard_progression.md` §6.3 Phase 5**
+> Squad management requer Massive Hangar (Phase 5). Até 3 Frames ativos, cada um com loadout independente.
+
 ### 13.1 Formação do Esquadrão
 
 Adaptado do sistema coletivo do FMRPG, o jogador eventualmente comanda um esquadrão de até 4 mechas (incluindo o próprio). Membros são NPCs recrutáveis.
@@ -688,6 +755,12 @@ Adaptado do sistema coletivo do FMRPG, o jogador eventualmente comanda um esquad
 
 ## 14. BALANCEAMENTO IDLE
 
+> **→ Curvas de progressão e guardrails em `gdd_8_economy.md` §8.5 e §8.8**
+> Scaling de custos (`actualCost = baseCost × 1.5^owned`), diminishing returns por missão, anti-hoarding via storage caps, anti-grind via condition degradation. Timeline de prestige: Run 1 = 8-12h, Run 2 = 4-6h, Run 3+ = 2-4h.
+>
+> **→ Timeline de desbloqueio em `gdd_6_scrapyard_progression.md` §6.4**
+> Phase 1: 0-15min, Phase 2: 15-60min, Phase 3: 1-3h (primeiro combate), Phase 4: 3-8h, Phase 5: 8-12h+. Prestige pode pular phases via upgrades permanentes.
+
 ### 14.1 Tempo de Combate
 
 | Dificuldade da Missão | Duração Alvo | Turnos |
@@ -700,6 +773,7 @@ Adaptado do sistema coletivo do FMRPG, o jogador eventualmente comanda um esquad
 ### 14.2 Economia de Dano
 
 **Regra dos Terços:** Em um combate equilibrado:
+
 - 33% dos ataques acertam com efeito total
 - 33% acertam com efeito parcial (glancing)
 - 33% erram (mas geram progresso parcial via Fail Forward)
@@ -733,6 +807,15 @@ Mesmo em derrota total:
 
 ## 15. ROADMAP DE IMPLEMENTAÇÃO
 
+> **→ Plano detalhado em `combat_implementation_plan.md`**
+> 5 fases com specs de código: CombatRunner class, data contracts para missions.json/enemies.json/weapons.json, integração com game.js, UI de combat panel. Cada fase tem arquivos tocados, métodos a implementar, e testes de verificação.
+>
+> **→ Specs de implementação individuais:**
+>
+> - `IMPL_SPEC_stances_targeting.md` — Stances + Targeting (Sprint 2B, Pacote 1)
+> - `IMPL_SPEC_weapon_system.md` — Armas + Equip + Supply (Sprint 2B, Pacote 2)
+> - `IMPL_SPEC_debuff_tokens.md` — BREACH/BURN/ERROR/SLOW (Sprint 2B, Pacote 3)
+
 ### Sprint 2A — Fundação de Combate (2 semanas)
 
 1. Implementar estrutura de peças do Frame (4 zonas + integridade por nível)
@@ -743,27 +826,27 @@ Mesmo em derrota total:
 
 ### Sprint 2B — Profundidade Tática (2 semanas)
 
-6. Heat system (acúmulo, dissipação, penalidades)
-7. Stress system (acúmulo, recuperação, condições)
-8. 4 debuff tokens básicos (BREACH, BURN, ERROR, SLOW)
-9. Stances de combate (Ofensiva, Balanceada, Defensiva, Cautelosa)
-10. Sistema de escudos (3 tipos)
+1. Heat system (acúmulo, dissipação, penalidades)
+2. Stress system (acúmulo, recuperação, condições)
+3. 4 debuff tokens básicos (BREACH, BURN, ERROR, SLOW)
+4. Stances de combate (Ofensiva, Balanceada, Defensiva, Cautelosa)
+5. Sistema de escudos (3 tipos)
 
 ### Sprint 2C — Progressão (2 semanas)
 
-11. Glória como recurso (ganho e gasto)
-12. Espólios de batalha (loot table d8)
-13. 4 Posições com habilidades de Rank 1-3
-14. Sistema de armas (3 categorias, 4 slots)
-15. 3 tipos de missão (Survey, Secure, Arena)
+1. Glória como recurso (ganho e gasto)
+2. Espólios de batalha (loot table d8)
+3. 4 Posições com habilidades de Rank 1-3
+4. Sistema de armas (3 categorias, 4 slots)
+5. 3 tipos de missão (Survey, Secure, Arena)
 
 ### Sprint 3 — Expansão
 
-16. Habilidades condicionais (Maneuver Cards, 3 por posição)
-17. Esquadrão (NPCs aliados, atributos coletivos)
-18. Ramificação moral nas Patentes
-19. Skill Challenges (missões não-combate)
-20. Boss encounters com mecânicas únicas
+1. Habilidades condicionais (Maneuver Cards, 3 por posição)
+2. Esquadrão (NPCs aliados, atributos coletivos)
+3. Ramificação moral nas Patentes
+4. Skill Challenges (missões não-combate)
+5. Boss encounters com mecânicas únicas
 
 ---
 
@@ -786,7 +869,9 @@ Mesmo em derrota total:
 | Coragem | FMRPG | Atributo que brilha em momentos de crise |
 | Supply | FMRPG | Recurso consumível para usar armas/escudos |
 
-## APÊNDICE B: REFERÊNCIAS CRUZADAS
+## APÊNDICE B: REFERÊNCIAS CRUZADAS (Tabletop → Digital)
+
+> **Note:** This table maps tabletop RPG mechanics to their digital adaptation in this combat document. For how these mechanics interact with the broader game systems (economy, scrapyard progression, parts lifecycle), see **Appendix C: Companion Document Index**.
 
 | Mecânica Final | Front Mission RPG | Mechanized Body | GDD Original |
 |---------------|-------------------|-----------------|--------------|
@@ -808,5 +893,47 @@ Mesmo em derrota total:
 
 ---
 
-*Documento gerado em Fevereiro 2026. Versão 1.0.*
+## APÊNDICE C: COMPANION DOCUMENT INDEX
+
+This combat design document is part of a larger GDD ecosystem. Each companion document expands on systems referenced here and should be consulted for implementation details.
+
+### Core GDD Documents
+
+| Document | Scope | Key Cross-References to This Document |
+|----------|-------|--------------------------------------|
+| **`gdd_3_4_parts_frame_assembly.md`** | Frame categories (Light/Medium/Heavy), modular parts, compatibility rules, equipment slots, Frankenstein builds | §3 Structural System (category-specific integrity), §4.3 Stances (stance × category combos), §6.3 Equipment Slots (backpack, shoulder tier limits), §7 Heat & Stress (category thermal/stress profiles) |
+| **`gdd_6_scrapyard_progression.md`** | 5 scrapyard phases, structure catalog, progressive disclosure, morality impact | §14 Balancing (combat unlock timing at Phase 3), §13 Squad (Massive Hangar at Phase 5), §12 Glory Economy (Garage as combat gate) |
+| **`gdd_8_economy.md`** | Four-tier currency, resource chains, Glory economy, maintenance costs, prestige system | §5.4 Supply (cost scaling), §12 Glory Economy (earning/spending tables, rank costs), §14 Balancing (fail-forward rewards, diminishing returns, prestige acceleration) |
+| **`resource_catalog_unlock_logic.md`** | 22 resources with JSON definitions, unlock conditions, group organization, auto-reload mechanic | §5.4 Supply (auto-reload paid in scrap), §12 Glory (unlock via `g.garagem>0`), §7 Heat (category modifiers reference) |
+
+### Implementation Specs
+
+| Document | Sprint | Implements |
+|----------|--------|-----------|
+| **`IMPL_SPEC_stances_targeting.md`** | 2B (Packet 1) | §4.3 Stances + §3.2 Targeting as functional code in CombatRunner |
+| **`IMPL_SPEC_weapon_system.md`** | 2C | §6 Armament: weapons.json, equip slots, supply cost integration, UI |
+| **`IMPL_SPEC_debuff_tokens_breach_burn.md`** | 2B (Packet 2) | §8 Debuffs: BREACH + BURN token logic and interactions |
+| **`combat_implementation_plan.md`** | 2A–3 | Full 5-phase implementation roadmap: CombatRunner → UI → Heat/Stress → Glory → Debuffs |
+
+### Visual References
+
+| Document | Type | Shows |
+|----------|------|-------|
+| **`parts_implementation_flow.mermaid`** | Mermaid diagram | Parts system pipeline: data flow from JSON → loader → inventory → combat → degradation → dismantle → knowledge → blueprint |
+
+### Reading Order for New Contributors
+
+1. **This document** (combat_design_document.md) — understand the combat philosophy and mechanics
+2. **gdd_3_4_parts_frame_assembly.md** — understand what the player is building and how categories shape combat
+3. **gdd_8_economy.md** — understand how resources flow through combat and back
+4. **gdd_6_scrapyard_progression.md** — understand when each system becomes available to the player
+5. **resource_catalog_unlock_logic.md** — understand the concrete data structure behind the economy
+6. **combat_implementation_plan.md** + IMPL_SPECs — implement
+
+---
+
+*Documento gerado em Fevereiro 2026. Versão 1.2.*
+*v1.0: Combat design foundation.*
+*v1.1: Appendix C — Companion Document Index.*
+*v1.2: Inline cross-references (→) in §3, §6, §7, §8, §12, §13, §14, §15 + top-level Documentos Complementares table.*
 *Próxima revisão: após Sprint 2A (validação com protótipo jogável).*

@@ -7,7 +7,8 @@
         "group": "base",
         "locked": false,
         "max": 100,
-        "sortOrder": 10
+        "sortOrder": 10,
+        "abbr": "S"
     },
     {
         "id": "creds",
@@ -17,7 +18,8 @@
         "group": "currency",
         "locked": false,
         "max": 200,
-        "sortOrder": 20
+        "sortOrder": 20,
+        "abbr": "\u00a2"
     },
     {
         "id": "energy",
@@ -29,7 +31,8 @@
         "val": 50,
         "max": 50,
         "rate": 0.3,
-        "sortOrder": 1
+        "sortOrder": 1,
+        "abbr": "E"
     },
     {
         "id": "nano_infra",
@@ -39,7 +42,8 @@
         "group": "refined",
         "tags": "t_refined",
         "max": 20,
-        "sortOrder": 100
+        "sortOrder": 100,
+        "abbr": "Ni"
     },
     {
         "id": "ceramite",
@@ -49,7 +53,8 @@
         "group": "refined",
         "tags": "t_refined",
         "max": 20,
-        "sortOrder": 110
+        "sortOrder": 110,
+        "abbr": "Ce"
     },
     {
         "id": "nanofiber",
@@ -59,7 +64,8 @@
         "group": "refined",
         "tags": "t_refined",
         "max": 20,
-        "sortOrder": 120
+        "sortOrder": 120,
+        "abbr": "Nf"
     },
     {
         "id": "parts",
@@ -70,17 +76,19 @@
         "tags": "t_scrapyard",
         "require": "g.garagem>0",
         "max": 30,
-        "sortOrder": 15
+        "sortOrder": 15,
+        "abbr": "P"
     },
     {
         "id": "data_chips",
         "name": "Data Chips",
         "desc": "Encrypted data fragments. Used for research and hacking.",
-        "flavor": "Knowledge is power — and power is expensive.",
+        "flavor": "Knowledge is power \u2014 and power is expensive.",
         "group": "currency",
         "require": "g.mesa_pesquisa>0",
         "max": 50,
-        "sortOrder": 25
+        "sortOrder": 25,
+        "abbr": "Dc"
     },
     {
         "id": "space",
@@ -91,7 +99,8 @@
         "val": 0,
         "max": 0,
         "locked": false,
-        "sortOrder": 0
+        "sortOrder": 0,
+        "abbr": "?"
     },
     {
         "id": "glory",
@@ -99,11 +108,12 @@
         "desc": "Combat experience and prestige currency. Earned in battle, spent on advancement.",
         "flavor": "Every scar tells a story. Every story earns respect.",
         "group": "combat",
-        "icon": "⚔",
+        "icon": "\u2694",
         "color": "#f5c542",
         "max": 500,
         "sortOrder": 200,
-        "require": "g.garagem>0"
+        "require": "g.garagem>0",
+        "abbr": "G"
     },
     {
         "id": "supply",
@@ -111,11 +121,12 @@
         "desc": "Ammunition and consumables for combat. Replenished between missions.",
         "flavor": "You can never have enough bullets.",
         "group": "combat",
-        "icon": "▸",
+        "icon": "\u25b8",
         "color": "#fa5",
         "val": 10,
         "max": 20,
         "sortOrder": 220,
-        "require": "g.garagem>0"
+        "require": "g.garagem>0",
+        "abbr": "Sp"
     }
 ]

@@ -1,0 +1,63 @@
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#0fa', 'primaryTextColor': '#000', 'primaryBorderColor': '#0fa', 'lineColor': '#4a6', 'secondaryColor': '#1a3a2a', 'tertiaryColor': '#0c1210', 'edgeLabelBackground': '#0c1210', 'clusterBkg': '#0c1210', 'clusterBorder': '#2a5a3a', 'titleColor': '#0fa', 'nodeTextColor': '#000'}}}%%
+
+flowchart TD
+    subgraph PHASE_1["FASE 1 — Dados & Estrutura"]
+        A1[/"parts.json\n(Part Templates por origem)"/]
+        A2[/"frames.json\n(Chassi Light/Med/Heavy)"/]
+        A3["game.js\n_loadParts() + _loadFrames()"]
+        A1 --> A3
+        A2 --> A3
+    end
+
+    subgraph PHASE_2["FASE 2 — Inventário de Partes"]
+        B1["Part como Item\n{id, condition, origin, stats}"]
+        B2["Garage State\nframe.parts.torso = partId"]
+        B3["Regras de Compatibilidade\ncategory_compat + weight_mismatch"]
+        B1 --> B2
+        B2 --> B3
+    end
+
+    subgraph PHASE_3["FASE 3 — Obtenção"]
+        C1["⚔ SALVAGE\nLoot de combate → peça específica"]
+        C2["💰 COMPRA\nNeon Bazaar / Facções → catálogo"]
+        C3["🔧 CRAFT\nBlueprint + materiais → peça custom"]
+        C1 --> D1
+        C2 --> D1
+        C3 --> D1
+    end
+
+    subgraph PHASE_4["FASE 4 — Ciclo de Vida"]
+        D1["Peça no Inventário"]
+        D2{"Instalar\nno Frame?"}
+        D3["Combate\ncondition degrada"]
+        D4{"condition\n< 0.2?"}
+        D5["🔄 Restaurar\n(task + materiais)"]
+        D6["♻ Desmontar\n→ materiais + conhecimento"]
+        D7["💀 Inutilizada"]
+        D1 --> D2
+        D2 -->|Sim| D3
+        D2 -->|Não| D6
+        D3 --> D4
+        D4 -->|Não| D3
+        D4 -->|Sim| D5
+        D5 -->|OK| D3
+        D4 -->|Descarte| D6
+        D7 --> D6
+    end
+
+    subgraph PHASE_5["FASE 5 — Engenharia Reversa"]
+        E1["Desmontar peça\norigem: police"]
+        E2["knowledge_police_arm += 1"]
+        E3{"knowledge\n>= 3?"}
+        E4["🔓 Desbloqueia Blueprint\nPolice-Grade Arm Servo"]
+        E1 --> E2
+        E2 --> E3
+        E3 -->|Sim| E4
+        E4 --> C3
+        E3 -->|Não| E1
+    end
+
+    PHASE_1 --> PHASE_2
+    PHASE_2 --> PHASE_3
+    PHASE_3 --> PHASE_4
+    PHASE_4 --> PHASE_5

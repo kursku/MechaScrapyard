@@ -1,0 +1,2117 @@
+{
+  "archetypes": [
+    {
+      "id": "scrap_rat",
+      "name": "Scrap Rat",
+      "desc": "Bottom-feeders of the scrapyard food chain. Desperate scavengers who bolted weapons onto civilian frames and call themselves pilots.",
+      "flavor": "They scatter when you rev the engine. Most of them.",
+      "faction": null,
+      "origin": "civilian",
+      "threatTier": "fodder",
+      "phaseRange": [
+        3,
+        3
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          1,
+          3
+        ],
+        "REF": [
+          1,
+          3
+        ],
+        "FOC": [
+          1,
+          2
+        ],
+        "GRT": [
+          1,
+          2
+        ],
+        "TEC": [
+          0,
+          1
+        ],
+        "CHA": [
+          0,
+          1
+        ]
+      },
+      "framePool": [
+        "frame_sora_c100"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "sora_motor"
+        ],
+        "tierRange": [
+          1,
+          1
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short"
+        ],
+        "mfr": [
+          "sora_motor",
+          null
+        ],
+        "tierRange": [
+          1,
+          1
+        ],
+        "maxWeapons": 2
+      },
+      "stanceBias": "offensive",
+      "targetingBias": "random",
+      "lootProfile": {
+        "equipDrop": 0.15,
+        "bonusDrops": [
+          {
+            "id": "scrap",
+            "amount": [
+              5,
+              15
+            ],
+            "chance": 1.0
+          },
+          {
+            "id": "cred",
+            "amount": [
+              1,
+              3
+            ],
+            "chance": 0.5
+          }
+        ]
+      },
+      "gloryReward": [
+        1,
+        2
+      ],
+      "notes": "Tutorial enemy. Should die in 3-5 turns against the starter Hayabusa."
+    },
+    {
+      "id": "rogue_drone",
+      "name": "Rogue Drone",
+      "desc": "Autonomous patrol drone with corrupted navigation software. No pilot — just malfunctioning AI following ghost waypoints.",
+      "flavor": "It doesn't hate you. It doesn't even know you exist. That makes it worse, somehow.",
+      "faction": null,
+      "origin": "civilian",
+      "threatTier": "fodder",
+      "phaseRange": [
+        3,
+        4
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          0,
+          0
+        ],
+        "REF": [
+          3,
+          4
+        ],
+        "FOC": [
+          3,
+          4
+        ],
+        "GRT": [
+          99,
+          99
+        ],
+        "TEC": [
+          0,
+          0
+        ],
+        "CHA": [
+          0,
+          0
+        ]
+      },
+      "framePool": [
+        "frame_sora_c100"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "sora_motor",
+          "daewon_dynamics"
+        ],
+        "tierRange": [
+          1,
+          2
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "short"
+        ],
+        "mfr": [
+          "shibata_arms",
+          "aegis_tac"
+        ],
+        "tierRange": [
+          1,
+          2
+        ],
+        "maxWeapons": 1
+      },
+      "stanceBias": "balanced",
+      "targetingBias": "nearest",
+      "lootProfile": {
+        "equipDrop": 0.2,
+        "bonusDrops": [
+          {
+            "id": "scrap",
+            "amount": [
+              8,
+              20
+            ],
+            "chance": 1.0
+          },
+          {
+            "id": "electronic_scrap",
+            "amount": [
+              1,
+              3
+            ],
+            "chance": 0.6
+          }
+        ]
+      },
+      "gloryReward": [
+        1,
+        2
+      ],
+      "notes": "No pilot = GRT 99 (immune to stress/panic). Low MUS means melee useless. Drops electronic components."
+    },
+    {
+      "id": "rogue_labor",
+      "name": "Rogue Labor",
+      "desc": "Dockyard workers who kept their rigs after getting fired. They fight because the rig is all they have left.",
+      "flavor": "The hydraulic arm was meant for cargo containers. It works on mecha too.",
+      "faction": null,
+      "origin": "labor",
+      "threatTier": "common",
+      "phaseRange": [
+        3,
+        4
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          3,
+          5
+        ],
+        "REF": [
+          2,
+          4
+        ],
+        "FOC": [
+          1,
+          3
+        ],
+        "GRT": [
+          2,
+          4
+        ],
+        "TEC": [
+          1,
+          3
+        ],
+        "CHA": [
+          1,
+          2
+        ]
+      },
+      "framePool": [
+        "frame_kz_7m",
+        "frame_sora_m300"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "kz_industrial",
+          "sora_motor"
+        ],
+        "tierRange": [
+          1,
+          2
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short"
+        ],
+        "mfr": [
+          "kz_industrial",
+          "shibata_arms",
+          null
+        ],
+        "tierRange": [
+          1,
+          2
+        ],
+        "maxWeapons": 3
+      },
+      "stanceBias": "offensive",
+      "targetingBias": "strongest_part",
+      "lootProfile": {
+        "equipDrop": 0.2,
+        "bonusDrops": [
+          {
+            "id": "scrap",
+            "amount": [
+              10,
+              25
+            ],
+            "chance": 1.0
+          },
+          {
+            "id": "ferrous_scrap",
+            "amount": [
+              2,
+              5
+            ],
+            "chance": 0.5
+          },
+          {
+            "id": "cred",
+            "amount": [
+              2,
+              6
+            ],
+            "chance": 0.4
+          }
+        ]
+      },
+      "gloryReward": [
+        2,
+        4
+      ],
+      "notes": "Bread-and-butter enemy of Phase 3. First enemy that drops medium-category parts."
+    },
+    {
+      "id": "scrapyard_raider",
+      "name": "Scrapyard Raider",
+      "desc": "Organized scavengers who strip wrecks and ambush other pilots for parts. Cheap weapons, improvised tactics.",
+      "flavor": "They painted skulls on their frames. It's less intimidating when the paint is peeling.",
+      "faction": "exile_adjacent",
+      "origin": "exile",
+      "threatTier": "common",
+      "phaseRange": [
+        3,
+        4
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          2,
+          4
+        ],
+        "REF": [
+          3,
+          5
+        ],
+        "FOC": [
+          2,
+          4
+        ],
+        "GRT": [
+          2,
+          4
+        ],
+        "TEC": [
+          2,
+          4
+        ],
+        "CHA": [
+          1,
+          3
+        ]
+      },
+      "framePool": [
+        "frame_sora_c100",
+        "frame_sora_m300",
+        "frame_kz_7m"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "sora_motor",
+          "kz_industrial",
+          "phantom_works"
+        ],
+        "tierRange": [
+          1,
+          2
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short",
+          "long"
+        ],
+        "mfr": [
+          "red_creek",
+          "shibata_arms",
+          null
+        ],
+        "tierRange": [
+          1,
+          2
+        ],
+        "maxWeapons": 3
+      },
+      "stanceBias": "balanced",
+      "targetingBias": "weakest_part",
+      "lootProfile": {
+        "equipDrop": 0.25,
+        "bonusDrops": [
+          {
+            "id": "scrap",
+            "amount": [
+              8,
+              20
+            ],
+            "chance": 1.0
+          },
+          {
+            "id": "cred",
+            "amount": [
+              3,
+              8
+            ],
+            "chance": 0.6
+          }
+        ]
+      },
+      "gloryReward": [
+        2,
+        4
+      ],
+      "notes": "Wildcard enemy. Red Creek weapons make them inconsistent. Targets weakest part. Higher equipDrop (0.25)."
+    },
+    {
+      "id": "corporate_security",
+      "name": "Corporate Security Unit",
+      "desc": "Aegis-Tac trained, Aegis-Tac equipped, Aegis-Tac loyal. Professional, disciplined, merciless toward unlicensed pilots.",
+      "flavor": "They follow procedure. The procedure says neutralize. They neutralize.",
+      "faction": "police",
+      "origin": "police",
+      "threatTier": "elite",
+      "phaseRange": [
+        3,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          3,
+          5
+        ],
+        "REF": [
+          4,
+          6
+        ],
+        "FOC": [
+          3,
+          5
+        ],
+        "GRT": [
+          4,
+          6
+        ],
+        "TEC": [
+          2,
+          4
+        ],
+        "CHA": [
+          2,
+          3
+        ]
+      },
+      "framePool": [
+        "frame_aegis_sentinel",
+        "frame_kz_7m"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "aegis_tac",
+          "sora_motor"
+        ],
+        "tierRange": [
+          2,
+          3
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "short",
+          "long"
+        ],
+        "mfr": [
+          "aegis_tac",
+          "shibata_arms"
+        ],
+        "tierRange": [
+          2,
+          3
+        ],
+        "maxWeapons": 4
+      },
+      "stanceBias": "balanced",
+      "targetingBias": "tactical",
+      "lootProfile": {
+        "equipDrop": 0.1,
+        "bonusDrops": [
+          {
+            "id": "cred",
+            "amount": [
+              8,
+              15
+            ],
+            "chance": 0.7
+          },
+          {
+            "id": "nano_infra",
+            "amount": [
+              1,
+              2
+            ],
+            "chance": 0.3
+          }
+        ]
+      },
+      "gloryReward": [
+        4,
+        7
+      ],
+      "notes": "First 'real' threat. Low equipDrop (Aegis recovers gear). High cred drops. Spans Phases 3-5."
+    },
+    {
+      "id": "bounty_hunter",
+      "name": "Bounty Hunter",
+      "desc": "Freelance combat pilots who hunt for bounties, grudges, or sport. Eclectic builds optimized for their current target.",
+      "flavor": "The bounty board is public. Your name appeared on it three jobs ago.",
+      "faction": null,
+      "origin": "mixed",
+      "threatTier": "elite",
+      "phaseRange": [
+        4,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          3,
+          6
+        ],
+        "REF": [
+          4,
+          7
+        ],
+        "FOC": [
+          3,
+          6
+        ],
+        "GRT": [
+          3,
+          6
+        ],
+        "TEC": [
+          3,
+          5
+        ],
+        "CHA": [
+          2,
+          4
+        ]
+      },
+      "framePool": [
+        "frame_kz_7m",
+        "frame_aegis_sentinel",
+        "frame_phantom_revenant",
+        "frame_kz_9h"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "aegis_tac",
+          "kz_industrial",
+          "phantom_works",
+          "daewon_dynamics"
+        ],
+        "tierRange": [
+          2,
+          3
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short",
+          "long"
+        ],
+        "mfr": [
+          "shibata_arms",
+          "valletta_precision",
+          "taeyang_forge"
+        ],
+        "tierRange": [
+          2,
+          4
+        ],
+        "maxWeapons": 4
+      },
+      "stanceBias": "adaptive",
+      "targetingBias": "tactical",
+      "lootProfile": {
+        "equipDrop": 0.2,
+        "bonusDrops": [
+          {
+            "id": "cred",
+            "amount": [
+              10,
+              25
+            ],
+            "chance": 0.8
+          },
+          {
+            "id": "scrap",
+            "amount": [
+              5,
+              15
+            ],
+            "chance": 0.5
+          }
+        ]
+      },
+      "gloryReward": [
+        5,
+        9
+      ],
+      "notes": "Miniboss-lite. Wide frame/weapon pool means every encounter is different. Can appear in medium OR heavy."
+    },
+    {
+      "id": "taeyang_enforcer",
+      "name": "Taeyang Enforcer",
+      "desc": "Corporate security for Taeyang Forge. Heat-weapon specialists who run hot and hit hard.",
+      "flavor": "The thermal signature is visible from three blocks away. They want you to see them coming.",
+      "faction": "civilian_corporate",
+      "origin": "civilian",
+      "threatTier": "elite",
+      "phaseRange": [
+        4,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          4,
+          6
+        ],
+        "REF": [
+          3,
+          5
+        ],
+        "FOC": [
+          3,
+          5
+        ],
+        "GRT": [
+          3,
+          5
+        ],
+        "TEC": [
+          2,
+          4
+        ],
+        "CHA": [
+          1,
+          3
+        ]
+      },
+      "framePool": [
+        "frame_sora_m300",
+        "frame_kz_7m"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "daewon_dynamics",
+          "sora_motor"
+        ],
+        "tierRange": [
+          2,
+          3
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short"
+        ],
+        "mfr": [
+          "taeyang_forge"
+        ],
+        "tierRange": [
+          2,
+          4
+        ],
+        "maxWeapons": 3
+      },
+      "stanceBias": "offensive",
+      "targetingBias": "strongest_part",
+      "lootProfile": {
+        "equipDrop": 0.15,
+        "bonusDrops": [
+          {
+            "id": "cred",
+            "amount": [
+              6,
+              12
+            ],
+            "chance": 0.6
+          },
+          {
+            "id": "polymer_scrap",
+            "amount": [
+              2,
+              5
+            ],
+            "chance": 0.5
+          }
+        ]
+      },
+      "gloryReward": [
+        4,
+        7
+      ],
+      "notes": "Themed threat. ALL weapons Taeyang. Daewon torsos for cooling. Player's gateway to energy weapon builds."
+    },
+    {
+      "id": "military_patrol",
+      "name": "Military Patrol",
+      "desc": "Kuroda-equipped military units operating in restricted zones. Fully trained, fully armed, following lethal orders.",
+      "flavor": "The IFF transponder marks you as 'unknown.' In military terms, 'unknown' means 'target.'",
+      "faction": "military",
+      "origin": "military",
+      "threatTier": "threat",
+      "phaseRange": [
+        4,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          4,
+          6
+        ],
+        "REF": [
+          5,
+          7
+        ],
+        "FOC": [
+          4,
+          6
+        ],
+        "GRT": [
+          5,
+          7
+        ],
+        "TEC": [
+          3,
+          5
+        ],
+        "CHA": [
+          2,
+          4
+        ]
+      },
+      "framePool": [
+        "frame_kuroda_type90",
+        "frame_kz_9h"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "kuroda_heavy",
+          "aegis_tac"
+        ],
+        "tierRange": [
+          3,
+          4
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "short",
+          "long"
+        ],
+        "mfr": [
+          "kuroda_heavy",
+          "shibata_arms",
+          "valletta_precision"
+        ],
+        "tierRange": [
+          3,
+          5
+        ],
+        "maxWeapons": 5
+      },
+      "stanceBias": "defensive",
+      "targetingBias": "tactical",
+      "lootProfile": {
+        "equipDrop": 0.08,
+        "bonusDrops": [
+          {
+            "id": "cred",
+            "amount": [
+              15,
+              30
+            ],
+            "chance": 0.5
+          },
+          {
+            "id": "nano_infra",
+            "amount": [
+              2,
+              4
+            ],
+            "chance": 0.4
+          },
+          {
+            "id": "ceramite",
+            "amount": [
+              1,
+              2
+            ],
+            "chance": 0.2
+          }
+        ]
+      },
+      "gloryReward": [
+        6,
+        10
+      ],
+      "notes": "Late-game wall. Heavy frames, tier 3-5 weapons, defensive stance. Very low equipDrop. Drops rare materials."
+    },
+    {
+      "id": "exile_operative",
+      "name": "Exile Operative",
+      "desc": "Phantom Works field agents. No serial numbers, no manufacturer registry matches. They appear, fight, and vanish.",
+      "flavor": "After the fight, you check the combat log. The enemy frame's ID reads 'NULL.'",
+      "faction": "exile",
+      "origin": "exile",
+      "threatTier": "threat",
+      "phaseRange": [
+        4,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          3,
+          6
+        ],
+        "REF": [
+          5,
+          8
+        ],
+        "FOC": [
+          4,
+          7
+        ],
+        "GRT": [
+          3,
+          5
+        ],
+        "TEC": [
+          4,
+          6
+        ],
+        "CHA": [
+          1,
+          2
+        ]
+      },
+      "framePool": [
+        "frame_phantom_wraith",
+        "frame_phantom_revenant"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "phantom_works",
+          "daewon_dynamics"
+        ],
+        "tierRange": [
+          3,
+          4
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short"
+        ],
+        "mfr": [
+          "taeyang_forge",
+          "daewon_dynamics"
+        ],
+        "tierRange": [
+          3,
+          5
+        ],
+        "maxWeapons": 3
+      },
+      "stanceBias": "offensive",
+      "targetingBias": "weakest_part",
+      "lootProfile": {
+        "equipDrop": 0.12,
+        "bonusDrops": [
+          {
+            "id": "quantum_circuitry",
+            "amount": [
+              1,
+              2
+            ],
+            "chance": 0.3
+          },
+          {
+            "id": "cred",
+            "amount": [
+              10,
+              20
+            ],
+            "chance": 0.5
+          }
+        ]
+      },
+      "gloryReward": [
+        6,
+        10
+      ],
+      "notes": "Glass cannon enemy. Phantom frames with REF up to 8. GRT 3-5 means they can panic. Drops Phantom parts + quantum circuitry."
+    },
+    {
+      "id": "arena_fighter",
+      "name": "Arena Fighter",
+      "desc": "Licensed combat pilots in the underground arena circuit. Every build optimized for spectacle and violence.",
+      "flavor": "The announcer calls your name. The crowd boos. Your opponent grins.",
+      "faction": "arena",
+      "origin": "mixed",
+      "threatTier": "elite",
+      "phaseRange": [
+        3,
+        5
+      ],
+      "pilotStatRange": {
+        "MUS": [
+          3,
+          7
+        ],
+        "REF": [
+          3,
+          7
+        ],
+        "FOC": [
+          2,
+          6
+        ],
+        "GRT": [
+          3,
+          6
+        ],
+        "TEC": [
+          2,
+          5
+        ],
+        "CHA": [
+          3,
+          6
+        ]
+      },
+      "framePool": [
+        "frame_sora_m300",
+        "frame_kz_7m",
+        "frame_aegis_sentinel",
+        "frame_phantom_revenant",
+        "frame_kz_9h"
+      ],
+      "partsPreference": {
+        "mfr": [
+          "any"
+        ],
+        "tierRange": [
+          1,
+          4
+        ]
+      },
+      "weaponPreference": {
+        "categories": [
+          "fight",
+          "short",
+          "long"
+        ],
+        "mfr": [
+          "any"
+        ],
+        "tierRange": [
+          1,
+          5
+        ],
+        "maxWeapons": 5
+      },
+      "stanceBias": "adaptive",
+      "targetingBias": "adaptive",
+      "lootProfile": {
+        "equipDrop": 0.0,
+        "bonusDrops": [
+          {
+            "id": "glory",
+            "amount": [
+              3,
+              8
+            ],
+            "chance": 1.0
+          },
+          {
+            "id": "cred",
+            "amount": [
+              10,
+              30
+            ],
+            "chance": 0.8
+          }
+        ]
+      },
+      "gloryReward": [
+        5,
+        12
+      ],
+      "notes": "Scales via wide ranges. No equipDrop (arena rules). Highest glory/cred rewards. 'any' = system picks freely."
+    }
+  ],
+  "encounterPools": [
+    {
+      "phase": 3,
+      "zone": "scrapyard_outskirts",
+      "name": "Scrapyard Outskirts",
+      "desc": "The edges of the scrapyard where feral drones patrol and desperate scavengers pick through debris.",
+      "encounters": [
+        {
+          "archetype": "scrap_rat",
+          "weight": 45
+        },
+        {
+          "archetype": "rogue_drone",
+          "weight": 40
+        },
+        {
+          "archetype": "rogue_labor",
+          "weight": 10
+        },
+        {
+          "archetype": "scrapyard_raider",
+          "weight": 5
+        }
+      ],
+      "modifierChance": 0.15,
+      "maxModifiers": 1
+    },
+    {
+      "phase": 3,
+      "zone": "industrial_docks",
+      "name": "Industrial Docks",
+      "desc": "Abandoned port facilities crawling with displaced workers and their repurposed rigs.",
+      "encounters": [
+        {
+          "archetype": "rogue_labor",
+          "weight": 40
+        },
+        {
+          "archetype": "scrap_rat",
+          "weight": 20
+        },
+        {
+          "archetype": "rogue_drone",
+          "weight": 15
+        },
+        {
+          "archetype": "scrapyard_raider",
+          "weight": 15
+        },
+        {
+          "archetype": "corporate_security",
+          "weight": 10
+        }
+      ],
+      "modifierChance": 0.2,
+      "maxModifiers": 1
+    },
+    {
+      "phase": 3,
+      "zone": "arena_amateur",
+      "name": "Arena — Amateur Circuit",
+      "desc": "The underground arena's entry tier. Unranked fights, small crowds, big dreams.",
+      "encounters": [
+        {
+          "archetype": "arena_fighter",
+          "weight": 70
+        },
+        {
+          "archetype": "scrapyard_raider",
+          "weight": 20
+        },
+        {
+          "archetype": "rogue_labor",
+          "weight": 10
+        }
+      ],
+      "modifierChance": 0.25,
+      "maxModifiers": 1
+    },
+    {
+      "phase": 4,
+      "zone": "corporate_perimeter",
+      "name": "Corporate Perimeter",
+      "desc": "The contested borders between corporate zones and the scrapyard.",
+      "encounters": [
+        {
+          "archetype": "corporate_security",
+          "weight": 35
+        },
+        {
+          "archetype": "rogue_labor",
+          "weight": 20
+        },
+        {
+          "archetype": "scrapyard_raider",
+          "weight": 15
+        },
+        {
+          "archetype": "bounty_hunter",
+          "weight": 15
+        },
+        {
+          "archetype": "taeyang_enforcer",
+          "weight": 10
+        },
+        {
+          "archetype": "military_patrol",
+          "weight": 5
+        }
+      ],
+      "modifierChance": 0.3,
+      "maxModifiers": 2
+    },
+    {
+      "phase": 4,
+      "zone": "neon_bazaar_backstreets",
+      "name": "Neon Bazaar Backstreets",
+      "desc": "The dangerous alleys behind the market district. Deals go wrong here.",
+      "encounters": [
+        {
+          "archetype": "scrapyard_raider",
+          "weight": 30
+        },
+        {
+          "archetype": "bounty_hunter",
+          "weight": 25
+        },
+        {
+          "archetype": "taeyang_enforcer",
+          "weight": 20
+        },
+        {
+          "archetype": "rogue_labor",
+          "weight": 15
+        },
+        {
+          "archetype": "exile_operative",
+          "weight": 10
+        }
+      ],
+      "modifierChance": 0.3,
+      "maxModifiers": 2
+    },
+    {
+      "phase": 4,
+      "zone": "arena_professional",
+      "name": "Arena — Professional Circuit",
+      "desc": "Ranked fights with real stakes. The crowd knows your name now.",
+      "encounters": [
+        {
+          "archetype": "arena_fighter",
+          "weight": 80
+        },
+        {
+          "archetype": "bounty_hunter",
+          "weight": 15
+        },
+        {
+          "archetype": "exile_operative",
+          "weight": 5
+        }
+      ],
+      "modifierChance": 0.35,
+      "maxModifiers": 2
+    },
+    {
+      "phase": 5,
+      "zone": "restricted_zone",
+      "name": "Restricted Military Zone",
+      "desc": "Active military territory. Every frame here is authorized to kill.",
+      "encounters": [
+        {
+          "archetype": "military_patrol",
+          "weight": 40
+        },
+        {
+          "archetype": "corporate_security",
+          "weight": 25
+        },
+        {
+          "archetype": "bounty_hunter",
+          "weight": 15
+        },
+        {
+          "archetype": "exile_operative",
+          "weight": 15
+        },
+        {
+          "archetype": "taeyang_enforcer",
+          "weight": 5
+        }
+      ],
+      "modifierChance": 0.4,
+      "maxModifiers": 2
+    },
+    {
+      "phase": 5,
+      "zone": "arena_championship",
+      "name": "Arena — Championship Circuit",
+      "desc": "The final tier. Broadcast across New Tokyo. Every fight is a statement.",
+      "encounters": [
+        {
+          "archetype": "arena_fighter",
+          "weight": 60
+        },
+        {
+          "archetype": "bounty_hunter",
+          "weight": 20
+        },
+        {
+          "archetype": "exile_operative",
+          "weight": 15
+        },
+        {
+          "archetype": "military_patrol",
+          "weight": 5
+        }
+      ],
+      "modifierChance": 0.5,
+      "maxModifiers": 2
+    }
+  ],
+  "modifiers": [
+    {
+      "id": "veteran",
+      "name": "Veteran",
+      "desc": "Experienced pilot with higher stats and better loot.",
+      "icon": "⭐",
+      "effect": {
+        "pilotStatMod": 1.2,
+        "gloryMod": 1.5,
+        "lootMod": 1.3
+      },
+      "rarity": "uncommon",
+      "weight": 20
+    },
+    {
+      "id": "damaged",
+      "name": "Damaged",
+      "desc": "Battle-worn frame. Lower HP, dropped parts have reduced condition.",
+      "icon": "🔧",
+      "effect": {
+        "hpMod": 0.7,
+        "lootConditionRange": [
+          0.3,
+          0.6
+        ],
+        "gloryMod": 0.7
+      },
+      "rarity": "common",
+      "weight": 25
+    },
+    {
+      "id": "well_armed",
+      "name": "Well-Armed",
+      "desc": "Carrying unusually powerful weapons. Higher weapon tier, guaranteed weapon drop.",
+      "icon": "🔫",
+      "effect": {
+        "weaponTierMod": 1,
+        "weaponDropGuarantee": true,
+        "gloryMod": 1.3
+      },
+      "rarity": "uncommon",
+      "weight": 15
+    },
+    {
+      "id": "desperate",
+      "name": "Desperate",
+      "desc": "Nothing to lose. Locked in Offensive stance, ignores stress.",
+      "icon": "💀",
+      "effect": {
+        "stanceLock": "offensive",
+        "stressImmune": true,
+        "pilotStatMod": 1.1
+      },
+      "rarity": "uncommon",
+      "weight": 15
+    },
+    {
+      "id": "ambush",
+      "name": "Ambush",
+      "desc": "Caught off guard. Enemy acts first with a free attack.",
+      "icon": "⚡",
+      "effect": {
+        "initiativeOverride": "enemy_first",
+        "firstTurnBonus": "free_attack",
+        "gloryMod": 1.2
+      },
+      "rarity": "uncommon",
+      "weight": 15
+    },
+    {
+      "id": "pack",
+      "name": "Pack",
+      "desc": "Not alone. Brought a Scrap Rat along for backup.",
+      "icon": "👥",
+      "effect": {
+        "additionalEnemy": "scrap_rat",
+        "gloryMod": 1.5
+      },
+      "rarity": "rare",
+      "weight": 10
+    },
+    {
+      "id": "prototype",
+      "name": "Prototype Equipment",
+      "desc": "One item is tier +2, but frame takes bonus heat from instability.",
+      "icon": "🔬",
+      "effect": {
+        "singleItemTierMod": 2,
+        "heatGenMod": 1.3,
+        "lootMod": 1.5
+      },
+      "rarity": "rare",
+      "weight": 8
+    },
+    {
+      "id": "scavenger",
+      "name": "Scavenger",
+      "desc": "Carrying extra salvage. Bonus material drops on defeat.",
+      "icon": "🎒",
+      "effect": {
+        "bonusMaterialDrops": [
+          {
+            "id": "scrap",
+            "amount": [
+              15,
+              30
+            ]
+          },
+          {
+            "id": "ferrous_scrap",
+            "amount": [
+              3,
+              8
+            ]
+          },
+          {
+            "id": "electronic_scrap",
+            "amount": [
+              2,
+              5
+            ]
+          }
+        ]
+      },
+      "rarity": "common",
+      "weight": 20
+    }
+  ],
+  "bosses": [
+    {
+      "id": "boss_iron_volk",
+      "name": "Iron Volk",
+      "title": "Warlord of the Rustlands",
+      "desc": "The man who controls the raider gangs east of the scrapyard. Ex-KZ factory foreman who lost everything in the corporate restructuring. Now he takes what he wants.",
+      "flavor": "His frame is a monument to salvage — every plate, every bolt stolen from someone who couldn't fight back.",
+      "faction": null,
+      "origin": "scrapyard",
+      "phase": 3,
+      "difficulty": 5,
+      "loadout": {
+        "frame": "frame_kz_7m",
+        "parts": {
+          "torso": "torso_kz_mk2",
+          "left_arm": "arm_kz_crane_mk1",
+          "right_arm": "arm_kz_reinforced",
+          "legs": "legs_kz_heavy_duty"
+        },
+        "weapons": {
+          "right_hand": "wpn_rc_pipe_maul",
+          "left_hand": "wpn_sb_mg440"
+        },
+        "backpack": "backpack_ammo_crate"
+      },
+      "pilotStats": {
+        "muscle": 5,
+        "reflex": 3,
+        "focus": 2,
+        "grit": 6,
+        "neuro": 2,
+        "charisma": 4
+      },
+      "stance": "offensive",
+      "targetingBias": "weakest_part",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Intimidation",
+          "trigger": "combat_start",
+          "desc": "Volk opens with aggressive swings, targeting weakest parts.",
+          "effect": {
+            "atkMod": 0.1
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Cornered Animal",
+          "trigger": "torso_hp_below_50",
+          "desc": "When hurt, Volk switches to desperate all-out assault.",
+          "dialogue": "You think you can take MY territory? I BUILT this!",
+          "effect": {
+            "atkMod": 0.3,
+            "defMod": -0.2,
+            "stanceOverride": "offensive"
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_mech_brawl",
+        "mnvr_power_strike"
+      ],
+      "narrative": {
+        "intro": [
+          "The frame is massive. KZ Ironback, covered in welded plates and gang markings.",
+          "The pilot's voice crackles: 'So you're the kid from the Hayashi scrapyard.'",
+          "'Word on the street is your old man hid something valuable in that junkyard. Something the corps want.'",
+          "'I don't care about corp business. I care about territory. And you're standing in mine.'",
+          "'Let's see if the son fights as well as the father ran.'"
+        ],
+        "defeat": [
+          "The Ironback crashes to its knees. Hydraulic fluid pools beneath it.",
+          "Volk's voice, quieter now: 'Fine. Keep your pile of rust.'",
+          "'But listen, kid — the corps came asking about your scrapyard. Suits. Taeyang markings.'",
+          "'Whatever your old man buried there, they want it bad. I'm not your biggest problem.'",
+          "'Remember that when the real wolves come knocking.'"
+        ],
+        "player_defeat": [
+          "Volk's frame looms over yours. He could finish it.",
+          "'Tell the old man to pack up. Or don't. The corps will do it for me eventually.'",
+          "'Your father ran from his problems. Don't make the same mistake.'",
+          "He turns and walks away. Your frame is damaged, but intact."
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "The scrapyard kid! I've been hearing about you. The Hayashi name still means something around here."
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "You hit harder than I expected. Your old man was an engineer, not a fighter. Where'd you learn that?"
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 10,
+        "cred": 25,
+        "scrap": 30
+      },
+      "uniqueDrop": {
+        "id": "item_volks_insignia",
+        "name": "Volk's Insignia",
+        "desc": "A welded steel badge. Carrying it means the raider gangs won't attack you in the Outskirts.",
+        "effect": "Raiders in scrapyard_outskirts won't initiate combat (patrol becomes peaceful scavenging)"
+      },
+      "equipDrop": 0.4,
+      "linkedMission": "msn_iron_volk",
+      "require": "g.msn_unwelcome_visitors>0&&g.skill_combat>=2",
+      "sortOrder": 1,
+      "notes": "Phase 3 boss. The raider gangs' leader. KZ Ironback is the player's first Medium enemy with a FULL loadout (2 weapons, backpack, all parts matched). Pilot stats are moderate — grit 6 is his defining trait (hard to stress out). Phase 2 trigger when torso is half dead makes the fight escalate. Drops Volk's Insignia which provides a permanent passive in the Outskirts. equipDrop 40% means high chance of getting a KZ part or Red Creek weapon."
+    },
+    {
+      "id": "boss_crimson_nail",
+      "name": "Crimson Nail",
+      "title": "Taeyang Enforcer Captain",
+      "desc": "Taeyang Forge's top enforcer in New Tokyo. She runs the illegal weapons trade through the docks. Ruthlessly efficient, her frame runs hotter than any combat spec allows.",
+      "flavor": "The heat shimmer around her frame is visible from fifty meters. The air itself recoils.",
+      "faction": "taeyang",
+      "origin": "military",
+      "phase": 4,
+      "difficulty": 7,
+      "loadout": {
+        "frame": "frame_phantom_revenant",
+        "parts": {
+          "torso": "torso_ty_suncore",
+          "left_arm": "arm_ty_thermal_mk1",
+          "right_arm": "arm_ty_thermal_mk1",
+          "legs": "legs_rc_sprinter"
+        },
+        "weapons": {
+          "right_hand": "wpn_ty_corona",
+          "left_hand": "wpn_ty_sunbreak"
+        },
+        "backpack": "backpack_coolant_advanced"
+      },
+      "pilotStats": {
+        "muscle": 4,
+        "reflex": 6,
+        "focus": 5,
+        "grit": 4,
+        "neuro": 5,
+        "charisma": 3
+      },
+      "stance": "offensive",
+      "targetingBias": "strongest_part",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Controlled Burn",
+          "trigger": "combat_start",
+          "desc": "Crimson Nail fights with precise thermal strikes, building heat steadily.",
+          "effect": {
+            "accuracyBonus": 5
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Thermal Overload",
+          "trigger": "own_heat_above_60",
+          "desc": "At high heat, she weaponizes her frame's thermal output. All attacks deal bonus heat damage.",
+          "dialogue": "You feel that? That's your frame melting. Beautiful, isn't it?",
+          "effect": {
+            "bonusHeatDamage": 5,
+            "heatDissipBonus": 3
+          }
+        },
+        {
+          "phase": 3,
+          "name": "Supernova",
+          "trigger": "torso_hp_below_30",
+          "desc": "Near death, she dumps all safeties. Massive damage but frame is self-destructing.",
+          "dialogue": "Taeyang doesn't make weapons that fail. Taeyang makes weapons that BURN.",
+          "effect": {
+            "atkMod": 0.5,
+            "selfDamage": 3,
+            "heatGenMod": 2.0
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_power_strike",
+        "mnvr_relentless",
+        "mnvr_berserker"
+      ],
+      "narrative": {
+        "intro": [
+          "The Phantom Revenant radiates heat. Its thermal weapons glow like embers in the dark.",
+          "A woman's voice, calm and professional: 'Another freelancer interfering with Taeyang logistics.'",
+          "'These shipments have been running for years. Through administrations. Through police investigations. Through... inconveniences.'",
+          "'Your family name has appeared in our files before. Hayashi. The cop who asked too many questions.'",
+          "'Let me demonstrate what happens to people who ask too many questions.'"
+        ],
+        "defeat": [
+          "The Revenant's thermal systems vent in a massive plume. Crimson Nail's cockpit opens.",
+          "'You survived. That's more than most manage.'",
+          "'I'm a field operative. I don't make policy. But I'll tell you this — the people who ordered your father silenced are still in power.'",
+          "'And they're paying attention to you now.'",
+          "She ejects. The frame is yours to salvage."
+        ],
+        "player_defeat": [
+          "The heat is unbearable. Your frame's systems shut down one by one.",
+          "'Thermal shutdown. Predictable.' Her voice is clinical.",
+          "'Go home, Hayashi. Repair your frame. And think carefully about whether you want to keep pulling this thread.'",
+          "'Your father pulled it. Look what happened to him.'"
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "Taeyang thermal weapons. The same model your father was investigating when his career ended. Ironic, isn't it?"
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "Heat management failing? Your father would have known to prepare for this. He studied our weapons extensively."
+          },
+          {
+            "trigger": "phase_change_2",
+            "text": "Final protocol. If I go down, the shipment data goes with me. Nothing for you to find. Nothing for anyone to find."
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 12,
+        "cred": 30,
+        "scrap": 10
+      },
+      "uniqueDrop": {
+        "id": "blueprint_ty_thermal_coating",
+        "name": "Blueprint: Taeyang Thermal Coating",
+        "desc": "Apply Taeyang thermal insulation to any part. Grants heatMod -3 to the modified part.",
+        "effect": "Crafting blueprint: apply heatMod -3 to any single part"
+      },
+      "equipDrop": 0.3,
+      "linkedMission": "msn_crimson_nail",
+      "require": "g.msn_taeyang_contract>0",
+      "sortOrder": 2,
+      "notes": "Phase 4 boss. The Taeyang threat. Phantom Revenant (ATK 6!) with dual Taeyang weapons makes her a damage monster. Three combat phases that escalate heat — she WANTS to overheat because Phase 2 weaponizes it. The player needs thermal management (Coolant Flush, TY-C3 Regulator) or they'll cook. Blueprint drop teaches the player about crafting customization."
+    },
+    {
+      "id": "boss_deadlock",
+      "name": "Deadlock",
+      "title": "The Patient Hunter",
+      "desc": "The most expensive bounty hunter in New Tokyo. Never failed a contract in twelve years. Specializes in target analysis — by the time you fight, he already knows every weakness your frame has.",
+      "flavor": "He's been watching you for a week. He knows your patrol routes, your repair schedule, your favorite stance.",
+      "faction": null,
+      "origin": "mixed",
+      "phase": 4,
+      "difficulty": 8,
+      "loadout": {
+        "frame": "frame_aegis_sentinel",
+        "parts": {
+          "torso": "torso_at_shield",
+          "left_arm": "arm_dw_interface",
+          "right_arm": "arm_at_220",
+          "legs": "legs_ghost_step"
+        },
+        "weapons": {
+          "right_hand": "wpn_vp_vsr7",
+          "left_hand": "wpn_sb_hurricane"
+        },
+        "backpack": "backpack_sensor_advanced"
+      },
+      "pilotStats": {
+        "muscle": 3,
+        "reflex": 7,
+        "focus": 7,
+        "grit": 5,
+        "neuro": 4,
+        "charisma": 2
+      },
+      "stance": "balanced",
+      "targetingBias": "tactical",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Assessment",
+          "trigger": "combat_start",
+          "desc": "Deadlock observes for the first 2 turns, attacking cautiously while scanning.",
+          "effect": {
+            "defMod": 0.2,
+            "atkMod": -0.2,
+            "revealPlayerLoadout": true
+          },
+          "duration": 2
+        },
+        {
+          "phase": 2,
+          "name": "Exploitation",
+          "trigger": "after_turn_2",
+          "desc": "Having analyzed the player, Deadlock targets their most vulnerable configuration.",
+          "dialogue": "Stance: predictable. Targeting: textbook. Loadout: sentimental. Let me show you what I see.",
+          "effect": {
+            "accuracyBonus": 10,
+            "targetOverride": "player_weakest_overall"
+          }
+        },
+        {
+          "phase": 3,
+          "name": "Contract Fulfilled",
+          "trigger": "player_part_destroyed",
+          "desc": "After destroying a part, Deadlock presses the advantage relentlessly.",
+          "dialogue": "One down. The contract says 'neutralize,' not 'destroy.' But I'm thorough.",
+          "effect": {
+            "bonusAttackOnPartKill": true,
+            "atkMod": 0.15
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_aimed_shot",
+        "mnvr_system_scan",
+        "mnvr_exploit_weakness"
+      ],
+      "narrative": {
+        "intro": [
+          "You don't see the frame until it moves. Aegis Sentinel, matte black, no markings.",
+          "A measured voice: 'Contract accepted. Target: Hayashi.'",
+          "'Someone is paying well to stop your investigation. Professional rates. No questions asked.'",
+          "'For what it's worth — I read your father's case file. Interesting reading.'",
+          "'But a contract is a contract. Nothing personal.'"
+        ],
+        "defeat": [
+          "Deadlock's frame powers down. Controlled. Deliberate.",
+          "'Contract failed. Penalty clause activated. My problem, not yours.'",
+          "'Professional courtesy: the bounty on you was placed through a Taeyang subsidiary. Shell company. Layered encryption.'",
+          "'Your father had a bounty too. Six years ago. Same subsidiary. Same encryption.'",
+          "'Draw your own conclusions.'",
+          "The Sentinel vanishes into the industrial haze."
+        ],
+        "player_defeat": [
+          "Your frame collapses. Deadlock stands over you.",
+          "'Contract says alive. Lucky for you.'",
+          "'I'll collect my fee and move on. But here's free advice: whoever wants you stopped has deep pockets and long patience.'",
+          "'Your father lasted six years before they got to him. You've lasted... less.'",
+          "Deadlock walks away. You're alive. Barely."
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "Interesting frame. Hayabusa engineering signature. Your father's work, modified by amateur hands. No offense."
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "You adapted. Good. Most targets don't survive my assessment phase. Your father trained you well — even if he wasn't around to do it personally."
+          },
+          {
+            "trigger": "phase_change_2",
+            "text": "Contract escalation. Lethal force authorized. For what it's worth, I respect the effort."
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 15,
+        "cred": 40,
+        "scrap": 5
+      },
+      "uniqueDrop": {
+        "id": "item_bounty_dossier",
+        "name": "Deadlock's Dossier",
+        "desc": "The bounty contract and all intelligence gathered on you. Includes the identity of who placed the bounty.",
+        "effect": "Reveals who placed the bounty — advances the corporate conspiracy narrative arc"
+      },
+      "equipDrop": 0.25,
+      "linkedMission": "msn_bounty_on_player",
+      "require": "g.msn_taeyang_contract>0&&g.skill_combat>=3",
+      "sortOrder": 3,
+      "notes": "Phase 4 endgame boss. The 'intelligent' fight. Aegis Sentinel with Valletta sniper + Shibata SMG covers all ranges. Ghost Step legs give initiative 2. DW Interface Arm + SenseGrid backpack = accuracy stacking nightmare. Phase 1 he HOLDS BACK (studying you) which is more terrifying than attacking. Phase 2 he exploits whatever he found. Tactician maneuvers (Aimed Shot, System Scan, Exploit Weakness) mean he fights like the best version of the player. The dossier drop advances the story — someone ordered this hit."
+    },
+    {
+      "id": "boss_commander_steele",
+      "name": "Commander Steele",
+      "title": "Kuroda Heavy Industries — Field Commander",
+      "desc": "Career military officer. Twenty years in Kuroda's defense division. Her Type 90 Fortress is a mobile command post — she doesn't just fight, she coordinates the entire sector's defenses.",
+      "flavor": "The frame doesn't move fast. It doesn't need to. Everything within weapons range is already dead.",
+      "faction": "military",
+      "origin": "military",
+      "phase": 5,
+      "difficulty": 9,
+      "loadout": {
+        "frame": "frame_kuroda_type90",
+        "parts": {
+          "torso": "torso_type88",
+          "left_arm": "arm_type44_combat",
+          "right_arm": "arm_type44_combat",
+          "legs": "legs_kuroda_type66"
+        },
+        "weapons": {
+          "right_hand": "wpn_kr_type12",
+          "left_hand": "wpn_sb_mg770",
+          "right_shoulder": "wpn_kr_type00",
+          "left_shoulder": "wpn_kr_type12"
+        },
+        "backpack": "backpack_dampener_advanced"
+      },
+      "pilotStats": {
+        "muscle": 5,
+        "reflex": 5,
+        "focus": 7,
+        "grit": 8,
+        "neuro": 4,
+        "charisma": 6
+      },
+      "stance": "defensive",
+      "targetingBias": "tactical",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Standard Engagement Protocol",
+          "trigger": "combat_start",
+          "desc": "Steele fights by the book. Defensive stance, tactical targeting, overwhelming firepower.",
+          "effect": {
+            "defMod": 0.15
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Authorization: Lethal Force",
+          "trigger": "own_hp_below_60",
+          "desc": "Steele escalates her rules of engagement. All weapons fire simultaneously.",
+          "dialogue": "Command, this is Steele. Upgrading threat classification to Omega. Lethal force authorized.",
+          "effect": {
+            "allWeaponsFire": true,
+            "atkMod": 0.2
+          }
+        },
+        {
+          "phase": 3,
+          "name": "Last Order",
+          "trigger": "torso_hp_below_25",
+          "desc": "Near defeat, Steele transmits all combat data and calls for reinforcement.",
+          "dialogue": "You're better than your file suggests. Transmitting updated assessment. They'll send someone worse next time.",
+          "effect": {
+            "stanceOverride": "offensive",
+            "atkMod": 0.3,
+            "defMod": -0.1
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_brace_impact",
+        "mnvr_fortress_stance",
+        "mnvr_last_stand",
+        "mnvr_aimed_shot"
+      ],
+      "narrative": {
+        "intro": [
+          "The Type 90 Fortress stands like a wall. Four weapon systems armed. Kuroda Military designation.",
+          "Commander Steele's voice is clipped. Professional. Not hostile — assessing.",
+          "'Unregistered frame in a restricted military zone. State your designation.'",
+          "A pause. Recognition.",
+          "'...Hayashi. I should have known. You move exactly like him.'",
+          "'Your father filed a report through my office once. Legitimate intelligence. It disappeared overnight.'",
+          "'I've always wondered who erased it. Today isn't about that. Today is about whether you deserve to leave this zone alive.'"
+        ],
+        "defeat": [
+          "The Fortress drops to one knee. Steele opens her cockpit. No fear — just calculation.",
+          "'Impressive. Kazuo would have been proud.'",
+          "'Listen carefully. Your father's report was real. Taeyang thermal weapons through the docks. Protection from NTPD Internal Affairs. The corruption charges were fabricated. I verified it personally.'",
+          "'I don't know who gave the final order. But it wasn't Kuroda. We're soldiers, not politicians.'",
+          "'You fight like him. From me, that's the highest compliment.'",
+          "'Now get out of my zone. And Hayashi — be careful who you trust with what you find.'"
+        ],
+        "player_defeat": [
+          "Your frame is down. Steele's weapons are still trained on you.",
+          "'Stand down. Combat over.' A long pause.",
+          "'Your father had more experience when he filed that report. You're not ready for what's in this zone.'",
+          "'Come back when you are. I'll be here.'",
+          "The weapons power down. You're allowed to leave."
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "NTPD engineering signatures in a civilian frame. Your father's fingerprints are all over this machine."
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "Lethal force authorized. Don't take it personally — take it as respect."
+          },
+          {
+            "trigger": "phase_change_2",
+            "text": "Last protocol. I'm transmitting combat data to Kuroda Command. Whatever happens here, they'll know a Hayashi came knocking."
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 20,
+        "cred": 50,
+        "scrap": 15
+      },
+      "uniqueDrop": {
+        "id": "item_military_clearance",
+        "name": "Steele's Authorization Code",
+        "desc": "A one-time military clearance code. Opens the deepest section of the restricted zone.",
+        "effect": "Unlocks the path to the Phantom Works relay — required for The Phantom Signal mission"
+      },
+      "equipDrop": 0.15,
+      "linkedMission": "msn_restricted_access",
+      "require": "g.msn_dads_last_route>0&&g.hangar_massive>0",
+      "sortOrder": 4,
+      "notes": "Phase 5 boss. The WALL. Type 90 Fortress with full Kuroda loadout including Heaven's Gate on shoulder (14 base damage). 4 weapons firing simultaneously in Phase 2 is devastating. Grit 8 + Neural Regulator + Fortress Protocol maneuver = nearly impossible to stress out. The player MUST have a plan — DPS race (Striker build) or attrition (Defender build) or precision dismantling (Tactician targeting arms to disable weapons). Her hint about knowing Dad creates a narrative thread. equipDrop 15% because military recovers gear."
+    },
+    {
+      "id": "boss_null",
+      "name": "Null",
+      "title": "Phantom Works — Unknown Designation",
+      "desc": "No file. No record. No name. The operative who tests whether you deserve your father's legacy. Pilots a frame that shouldn't exist — Phantom stealth technology at its most advanced.",
+      "flavor": "The frame's IFF reads NULL. The sensor ghost reads NULL. The pilot reads NULL. Everything is NULL.",
+      "faction": "exile",
+      "origin": "exile",
+      "phase": 5,
+      "difficulty": 10,
+      "loadout": {
+        "frame": "frame_phantom_wraith",
+        "parts": {
+          "torso": "torso_dw_x5",
+          "left_arm": "arm_phantom_glitch",
+          "right_arm": "arm_dw_interface",
+          "legs": "legs_ghost_step"
+        },
+        "weapons": {
+          "right_hand": "wpn_pw_quantum_edge",
+          "left_hand": "wpn_pw_nullbeam"
+        },
+        "backpack": "backpack_sensor_advanced"
+      },
+      "pilotStats": {
+        "muscle": 4,
+        "reflex": 9,
+        "focus": 8,
+        "grit": 5,
+        "neuro": 8,
+        "charisma": 3
+      },
+      "stance": "cautious",
+      "targetingBias": "tactical",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Ghost Protocol",
+          "trigger": "combat_start",
+          "desc": "Null fights from stealth. High evasion, moderate damage. Testing the player.",
+          "effect": {
+            "evasionBonus": 20,
+            "atkMod": -0.3
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Recognition",
+          "trigger": "player_lands_3_hits",
+          "desc": "After taking hits, Null acknowledges the player's skill and engages seriously.",
+          "dialogue": "There it is. Your father's instinct. He could find me too. Eventually.",
+          "effect": {
+            "evasionBonus": 10,
+            "atkMod": 0.0
+          }
+        },
+        {
+          "phase": 3,
+          "name": "Full Disclosure",
+          "trigger": "own_hp_below_40",
+          "desc": "Null drops all pretense. Full combat power. This is the real test.",
+          "dialogue": "Enough testing. Show me everything. Show me you deserve what he left behind.",
+          "effect": {
+            "evasionBonus": 0,
+            "atkMod": 0.4,
+            "stanceOverride": "offensive",
+            "applyTokens": {
+              "ERROR": 2
+            }
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_aimed_shot",
+        "mnvr_mark_target",
+        "mnvr_exploit_weakness",
+        "mnvr_coolant_flush"
+      ],
+      "narrative": {
+        "intro": [
+          "The Phantom Wraith materializes from nothing. One moment empty air. The next — a frame.",
+          "A modulated voice. Patient. Knowing.",
+          "'Finally.'",
+          "'We've been watching since you restored the Mk.I. Every fight. Every upgrade. Every question you asked.'",
+          "'Your father was one of us. Not a member — a partner. He came to us because every official channel had been compromised.'",
+          "'He was building something extraordinary. He ran out of time.'",
+          "'I need to know if you're ready to carry what he left behind. So... show me.'"
+        ],
+        "defeat": [
+          "Null's frame powers down. Not destroyed — surrendered. The cockpit opens.",
+          "A figure in a dark flight suit. Face obscured. Voice still modulated.",
+          "'Good. You're ready.'",
+          "'Your father designed the Hayabusa Mk.II with our technology. A Light frame with the specs of a Heavy. Proof that independent engineering could rival corporate military power.'",
+          "'The blueprints are under the scrapyard workshop. He told me the lock is keyed to family DNA.'",
+          "'Find it. Finish it.'",
+          "'And be careful — if we found you, Taeyang will too. They already destroyed one Hayashi. Don't let them finish the set.'"
+        ],
+        "player_defeat": [
+          "Your frame is disabled. Null stands over you. The Wraith's hand rests on your cockpit — not threatening. Testing.",
+          "'Not yet. But close.'",
+          "'Your father had years of experience before he was ready. You have weeks. The talent is there. The technique needs work.'",
+          "'Come back stronger. The Mk.II needs a pilot worthy of it.'",
+          "The Wraith vanishes. You're alone in the dark."
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "So you're Kazuo's kid. You have his eyes. And his stubbornness."
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "Those evasion patterns... Kazuo taught you, didn't he? Or did you learn them from the frame itself?"
+          },
+          {
+            "trigger": "phase_change_2",
+            "text": "Full power. No holding back. Your father wouldn't have wanted me to go easy on you. He respected strength."
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 25,
+        "cred": 40,
+        "scrap": 5
+      },
+      "uniqueDrop": {
+        "id": "item_dads_lab_key",
+        "name": "Dad's Lab Key",
+        "desc": "A biometric cipher keyed to your DNA. It unlocks whatever Dad built beneath the scrapyard.",
+        "effect": "Unlocks Dad's Secret mission and the Secret Lab structure"
+      },
+      "equipDrop": 0.1,
+      "linkedMission": "msn_phantom_signal",
+      "require": "g.msn_restricted_access>0&&g.skill_combat>=6",
+      "sortOrder": 5,
+      "notes": "Phase 5 final combat boss. The hardest fight in the game. REF 9 + FOC 8 + NEU 8 = the best pilot stats of any enemy. Phase 1 evasion 20% means 1 in 5 attacks just MISS. The player needs accuracy stacking (Tactician build, SenseGrid, Aimed Shot) or overwhelming volume (Striker build with Relentless Assault). Phantom Wraith with Quantum Edge + Nullbeam is the ultimate glass cannon. Phase 3 ERROR tokens represent Phantom's electronic warfare mastery. The narrative mirrors the Phantom Signal story mission dialogue exactly."
+    },
+    {
+      "id": "boss_kingpin",
+      "name": "Kingpin",
+      "title": "Arena Champion — Undefeated",
+      "desc": "Nobody knows his real name. Forty-seven consecutive arena victories. Corporate-sponsored frame, custom loadout, and twenty thousand fans who worship the ground his frame walks on.",
+      "flavor": "The crowd chants his name so loud the arena floor shakes. Your name? They don't know it. Yet.",
+      "faction": null,
+      "origin": "mixed",
+      "phase": 5,
+      "difficulty": 9,
+      "loadout": {
+        "frame": "frame_phantom_leviathan",
+        "parts": {
+          "torso": "torso_colossus_core",
+          "left_arm": "arm_at_220",
+          "right_arm": "arm_kz_reinforced",
+          "legs": "legs_at_guardian"
+        },
+        "weapons": {
+          "right_hand": "wpn_ty_supernova",
+          "left_hand": "wpn_sb_sa1200",
+          "right_shoulder": "wpn_kr_type12"
+        },
+        "backpack": "backpack_overclock_module"
+      },
+      "pilotStats": {
+        "muscle": 7,
+        "reflex": 6,
+        "focus": 4,
+        "grit": 6,
+        "neuro": 3,
+        "charisma": 8
+      },
+      "stance": "offensive",
+      "targetingBias": "adaptive",
+      "bossPhases": [
+        {
+          "phase": 1,
+          "name": "Showmanship",
+          "trigger": "combat_start",
+          "desc": "Kingpin fights for the crowd. Flashy attacks, deliberate openings. He's performing.",
+          "effect": {
+            "atkMod": 0.1,
+            "defMod": -0.1,
+            "gloryBonus": 5
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Serious",
+          "trigger": "own_hp_below_70",
+          "desc": "The showmanship stops. Kingpin fights to win.",
+          "dialogue": "Alright kid, you've got the crowd's attention. Now you've got mine.",
+          "effect": {
+            "atkMod": 0.2,
+            "defMod": 0.0,
+            "targetOverride": "player_weakest_overall"
+          }
+        },
+        {
+          "phase": 3,
+          "name": "All or Nothing",
+          "trigger": "torso_hp_below_30",
+          "desc": "Facing his first real loss, Kingpin goes all-in. The crowd is on their feet.",
+          "dialogue": "Forty-seven wins. FORTY-SEVEN. You are NOT going to be number one!",
+          "effect": {
+            "atkMod": 0.5,
+            "defMod": -0.2,
+            "heatIgnore": true
+          }
+        }
+      ],
+      "maneuvers": [
+        "mnvr_power_strike",
+        "mnvr_relentless",
+        "mnvr_berserker",
+        "mnvr_overclock"
+      ],
+      "narrative": {
+        "intro": [
+          "The Leviathan fills the arena. Massive. Gleaming. The crowd is on its feet.",
+          "The Kingpin's voice booms through the speakers. Showman to the core.",
+          "'Ladies and gentlemen! Tonight's challenger — the kid from the scrapyard!'",
+          "A shift in tone. Quieter. Just for you.",
+          "'I heard about your grandfather, kid. Tough break. The whole district's been talking about it.'",
+          "'But this is the arena. No pity. No mercy. Just metal and fire.'",
+          "'You want to be champion? You gotta EARN it. Starting now.'"
+        ],
+        "defeat": [
+          "The Leviathan crashes. The crowd is deafening.",
+          "The Kingpin climbs out. Bruised. Grinning.",
+          "'Well damn. The kid did it.'",
+          "He raises your arm. The arena shakes.",
+          "'New champion! Remember this name — HAYASHI!'",
+          "The lights are blinding. The noise is overwhelming.",
+          "But you're looking at the back row. The seat where Grandpa used to sit.",
+          "It's empty.",
+          "The Kingpin leans in. His voice cuts through the roar.",
+          "'He came to every one of your fights. Back row. Never cheered. Just watched.'",
+          "'He would have been proud. He IS proud.'"
+        ],
+        "player_defeat": [
+          "Your frame hits the arena floor. The crowd groans.",
+          "The Kingpin helps you up. Not mocking — respectful.",
+          "'Not bad, kid. Not bad at all. You've got heart. Just need more firepower.'",
+          "'Come back when you're ready. The title isn't going anywhere.'",
+          "'And kid? Your grandfather sat in the back row tonight. He didn't leave when you went down. He left when you got back up.'",
+          "'Think about that.'"
+        ],
+        "dialogue": [
+          {
+            "trigger": "combat_start",
+            "text": "The crowd loves an underdog story! Scrapyard orphan takes on the champion! You can't BUY this kind of drama!"
+          },
+          {
+            "trigger": "phase_change_1",
+            "text": "Okay. You're real. Dropping the show. Let's fight for real."
+          },
+          {
+            "trigger": "phase_change_2",
+            "text": "All or nothing. This is what championship fights are made of. Give me EVERYTHING."
+          }
+        ]
+      },
+      "rewards": {
+        "glory": 30,
+        "cred": 100,
+        "scrap": 0
+      },
+      "uniqueDrop": {
+        "id": "item_champion_belt",
+        "name": "Arena Champion Belt",
+        "desc": "The belt that says you're the best in New Tokyo. +10% glory from all future fights. Also, free drinks at the Neon Bazaar.",
+        "effect": "Permanent +10% glory modifier. All arena vendors give 15% discount."
+      },
+      "equipDrop": 0.0,
+      "linkedMission": "msn_arena_championship",
+      "require": "g.msn_phantom_signal>0",
+      "sortOrder": 6,
+      "notes": "Arena capstone boss. Phantom Leviathan (ATK 8!) with Supernova heat blade (12 dmg, T5) and Hailstorm (10 dmg, T5) — the highest raw damage output of any enemy. Charisma 8 is unique — Kingpin is a PERFORMER. COR 4 + CHA 8 means his morale is actually his weakness (high COR from stats but stress from the crowd). RC Overclock Module means he's running hot from the start. Phase 3 heatIgnore represents his 'beyond limits' desperation. No scrap (arena rules). No equipDrop (arena rules). The reward is glory, money, and THE BELT. Grandpa smiling in the defeat text mirrors the mission debriefing."
+    }
+  ]
+}

@@ -1,16 +1,17 @@
 /**
- * BipolarStat — Morality axis for Mecha Scrapyard.
+ * BipolarStat — Three-Way Morality axis for Mecha Scrapyard.
  *
  * Range: [-100, +100]
- * Positive = Idealist (altruistic, constructive)
- * Negative = Pragmatic (opportunistic, survivalist)
- * Neutral  = Flexible, no extreme benefits
+ * Positive = Paragon (altruistic, constructive)
+ * Negative = Shadow (opportunistic, survivalist)
+ * Neutral  = Pragmatist (flexible — exclusive content, not penalty)
  *
  * Thresholds:
- *   >=+30  → Idealist perks available
- *   <=-30  → Pragmatic perks available
- *   >=+70  → Deep Idealist (unique content)
- *   <=-70  → Deep Pragmatic (unique content)
+ *   >=+40  → Paragon (alignment classification)
+ *   >=+80  → Paragon (Devoted) — deep content
+ *   <=-40  → Shadow (alignment classification)
+ *   <=-80  → Shadow (Entrenched) — deep content
+ *   |v|<40 → Pragmatist — neutral-specific content
  */
 export default class BipolarStat {
 
@@ -26,26 +27,33 @@ export default class BipolarStat {
         this._val = Math.max(this._min, Math.min(this._max, v));
     }
 
-    /** Shift morality. Positive = towards Idealist, negative = towards Pragmatic. */
+    /** Shift morality. Positive = towards Paragon, negative = towards Shadow. */
     shift(amount) {
         this.value = this._val + amount;
     }
 
     get alignment() {
-        if (this._val >= 70) return 'deep_idealist';
-        if (this._val >= 30) return 'idealist';
-        if (this._val <= -70) return 'deep_pragmatic';
-        if (this._val <= -30) return 'pragmatic';
-        return 'neutral';
+        if (this._val >= 80) return 'paragon_devoted';
+        if (this._val >= 40) return 'paragon';
+        if (this._val <= -80) return 'shadow_entrenched';
+        if (this._val <= -40) return 'shadow';
+        return 'pragmatist';
+    }
+
+    /** Simple alignment bucket (paragon/shadow/pragmatist). */
+    get alignmentBase() {
+        if (this._val >= 40) return 'paragon';
+        if (this._val <= -40) return 'shadow';
+        return 'pragmatist';
     }
 
     get label() {
         const labels = {
-            deep_idealist: 'Paragon',
-            idealist: 'Idealist',
-            neutral: 'Neutral',
-            pragmatic: 'Pragmatic',
-            deep_pragmatic: 'Ruthless',
+            paragon_devoted: 'Paragon (Devoted)',
+            paragon: 'Paragon',
+            pragmatist: 'Pragmatist',
+            shadow: 'Shadow',
+            shadow_entrenched: 'Shadow (Entrenched)',
         };
         return labels[this.alignment];
     }

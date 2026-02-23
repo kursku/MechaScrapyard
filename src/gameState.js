@@ -1,5 +1,7 @@
 import { reactive } from 'vue';
 import { clamp } from '@/util/format';
+import BipolarStat from '@/values/BipolarStat';
+import { getCanonicalAliases, resolveItemId } from '@/schema/idAliases';
 
 /**
  * GameState — central reactive state for all game data.
@@ -18,16 +20,51 @@ export default class GameState {
         /** Game-wide counters exposed to require expressions as `g.xxx` */
         this.g = reactive({});
 
+        /** @type {BipolarStat} Morality axis: Paragon (+) ↔ Shadow (-), Pragmatist (neutral) */
+        this.morality = new BipolarStat(0);
+
+        /** Pragmatist timer — seconds spent with |morale| < 40 */
+        this.pragmatistTimer = 0;
+
+        // Expose morality value to require expressions as g.morality
+        Object.defineProperty(this.g, 'morality', {
+            get: () => this.morality.value,
+            configurable: true,
+        });
+        Object.defineProperty(this.g, 'moral_alignment', {
+            get: () => this.morality.alignmentBase,
+            configurable: true,
+        });
+        Object.defineProperty(this.g, 'pragmatist_time', {
+            get: () => this.pragmatistTimer,
+            configurable: true,
+        });
+
+        const starterPartsInventory = [];
         this.player = reactive({
-            name: 'Pilot',
-            titles: [],
-            // Combat Design §2.2 & §3.1
+            name: 'Pilot_01', // Updated default name
+            titles: ['Scrapper'], // Updated default titles
+            // Combat Design §2.2 & §3.1 + GDD 3.4.1
             frame: {
+                chassisId: 'frame_hayabusa_mk1', // Updated default chassis
+                installedParts: {
+                    torso: 'torso_hayabusa_mk1',
+                    left_arm: 'arm_hayabusa_mk1_l',
+                    right_arm: 'arm_hayabusa_mk1_r',
+                    legs: 'legs_hayabusa_mk1'
+                },
+                installedEquip: {
+                    left_hand: null,
+                    right_hand: 'mech_fist',
+                    backpack: null,
+                    left_shoulder: null,
+                    right_shoulder: null
+                },
                 parts: {
-                    torso: { id: 'torso', name: 'Torso', integrity: 3, hp: 100, maxHp: 100, status: 'operational' },
-                    left_arm: { id: 'left_arm', name: 'Left Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational' },
-                    right_arm: { id: 'right_arm', name: 'Right Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational' },
-                    legs: { id: 'legs', name: 'Legs', integrity: 2, hp: 60, maxHp: 60, status: 'operational' }
+                    torso: { id: 'torso', name: 'Torso', integrity: 3, hp: 100, maxHp: 100, status: 'operational', condition: 1.0 },
+                    left_arm: { id: 'left_arm', name: 'Left Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational', condition: 1.0 },
+                    right_arm: { id: 'right_arm', name: 'Right Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational', condition: 1.0 },
+                    legs: { id: 'legs', name: 'Legs', integrity: 2, hp: 60, maxHp: 60, status: 'operational', condition: 1.0 }
                 },
                 attributes: {
                     atk: 10,
@@ -38,9 +75,17 @@ export default class GameState {
                 heat: 0,
                 stress: 0,
                 maneuvers: [],
-                tokens: {}
-            }
+                tokens: []
+            },
+            inventory: {
+                frames: ['frame_hayabusa_mk1'],
+                parts: starterPartsInventory,
+                weapons: ['mech_fist']
+            },
+            // Legacy alias used by existing UI/components.
+            partsInventory: starterPartsInventory
         });
+        this.g.inventory = this.player.inventory;
 
         this.activeCombat = reactive({
             active: false,
@@ -48,6 +93,43 @@ export default class GameState {
             turn: 0,
             phase: 'idle', // 'idle', 'player_turn', 'enemy_turn', 'win', 'lose'
             log: []
+        });
+
+        this.android = reactive({
+            active: false,
+            name: 'K.I.T.A.',
+            level: 1,
+            xp: 0,
+            xpToNext: 100,
+            energy: 50,
+            maxEnergy: 50,
+            energyRate: 0.2,
+            assignment: null,       // Current task ID
+            efficiency: 1.0,        // Output multiplier
+            modules: [],            // Installed upgrade IDs
+            personality: 0,         // Evolves with usage
+        });
+
+        Object.defineProperty(this.g, 'android_active', {
+            get: () => this.android.active ? 1 : 0,
+            configurable: true,
+        });
+        Object.defineProperty(this.g, 'android_level', {
+            get: () => this.android.level,
+            configurable: true,
+        });
+
+        /** Prestige system — persists across resets (GDD §2+§3+§6) */
+        this.prestige = reactive({
+            gloryPool: 0,
+            glorySpent: 0,
+            lifetimeGlory: 0,
+            storyLayer: 1,
+            cycleCount: 0,
+            gateCompleted: false,
+            alignmentHistory: [],
+            knownBlueprints: [],
+            seenBriefings: [],
         });
 
         this.loaded = false;
@@ -61,17 +143,27 @@ export default class GameState {
         this.items[item.id] = item;
 
         // Expose to g. namespace for require expressions
-        if (item.val !== undefined) {
-            Object.defineProperty(this.g, item.id, {
-                get: () => item,
+        // Priority: completed (missions) > owned (upgrades) > val (resources/skills)
+        const bindGetter = (id, getter) => {
+            Object.defineProperty(this.g, id, {
+                get: getter,
                 configurable: true,
             });
+        };
+        const canonicalAliases = getCanonicalAliases(item.id);
+
+        if (item.completed !== undefined) {
+            // Missions: g.msn_xxx returns completed count
+            bindGetter(item.id, () => item.completed || 0);
+            canonicalAliases.forEach(alias => bindGetter(alias, () => item.completed || 0));
         } else if (item.owned !== undefined) {
-            // For upgrades, expose owned count
-            Object.defineProperty(this.g, item.id, {
-                get: () => item.owned || 0,
-                configurable: true,
-            });
+            // Upgrades/furniture: g.xxx returns owned count
+            bindGetter(item.id, () => item.owned || 0);
+            canonicalAliases.forEach(alias => bindGetter(alias, () => item.owned || 0));
+        } else if (item.val !== undefined) {
+            // Resources/skills: g.xxx returns current value
+            bindGetter(item.id, () => item.val || 0);
+            canonicalAliases.forEach(alias => bindGetter(alias, () => item.val || 0));
         }
     }
 
@@ -79,7 +171,7 @@ export default class GameState {
      * Get an item by id.
      */
     get(id) {
-        return this.items[id];
+        return this.items[resolveItemId(id)];
     }
 
     /**
@@ -106,7 +198,7 @@ export default class GameState {
         if (!mod) return;
         for (const [path, val] of Object.entries(mod)) {
             const [id, prop] = path.split('.');
-            const item = this.items[id];
+            const item = this.items[resolveItemId(id)];
             if (item && prop && typeof val === 'number') {
                 item[prop] = (item[prop] || 0) + val;
             }
@@ -120,7 +212,7 @@ export default class GameState {
     canAfford(costs) {
         if (!costs) return true;
         return Object.entries(costs).every(([k, v]) => {
-            const res = this.items[k];
+            const res = this.items[resolveItemId(k)];
             return res && res.val >= v;
         });
     }
@@ -133,8 +225,11 @@ export default class GameState {
     payCost(costs) {
         if (!this.canAfford(costs)) return false;
         for (const [k, v] of Object.entries(costs)) {
-            const res = this.items[k];
-            if (res) res.val = clamp(res.val - v, 0, res.max);
+            const res = this.items[resolveItemId(k)];
+            if (res) {
+                const min = res.min ?? 0;
+                res.val = clamp(res.val - v, min, res.max);
+            }
         }
         return true;
     }
@@ -146,11 +241,91 @@ export default class GameState {
     award(rewards) {
         if (!rewards) return;
         for (const [k, v] of Object.entries(rewards)) {
-            const res = this.items[k];
-            if (res && !res.locked) {
-                res.val = clamp(res.val + v, 0, res.max);
+            const actualId = resolveItemId(k);
+            const res = this.items[actualId];
+            if (res) {
+                // Automatically unlock reputation resources on first gain
+                if (res.locked && actualId.startsWith('rep_') && v > 0) {
+                    res.locked = false;
+                }
+
+                if (!res.locked) {
+                    const min = res.min ?? 0;
+                    res.val = clamp(res.val + v, min, res.max);
+                }
             }
         }
+    }
+
+    /**
+     * Recalculate effective frame stats based on category, parts, and pilot attributes.
+     * GDD §3.4.7
+     */
+    recalculateFrameStats() {
+        const frame = this.player.frame;
+        const chassis = this.items[frame.chassisId];
+        if (!chassis) return;
+
+        // 1. Base Attributes from Chassis
+        const base = chassis.baseStats;
+        const attributes = {
+            atk: base.base_atk || 0,
+            def: base.base_def || 0,
+            enr: base.base_enr || 0,
+            cor: base.base_cor || 0
+        };
+
+        // 2. Add Pilot Contributions (§3.4.7)
+        const mus = this.items['muscle']?.val || 1;
+        const ref = this.items['reflex']?.val || 1;
+        const grt = this.items['grit']?.val || 1;
+        const foc = this.items['focus']?.val || 1;
+        const neu = this.items['neuro']?.val || 1;
+        const cha = this.items['charisma']?.val || 1;
+
+        attributes.atk += (mus * 0.3) + (ref * 0.2);
+        attributes.def += (grt * 0.4) + (mus * 0.1);
+        attributes.enr += (foc * 0.3) + (neu * 0.2);
+        attributes.cor += (grt * 0.2) + (cha * 0.3);
+
+        // 3. Update Part Live State & Armor
+        let totalArmor = 0;
+        for (const [slot, partId] of Object.entries(frame.installedParts)) {
+            const partTemplate = this.items[partId];
+            if (!partTemplate) continue;
+
+            if (!frame.parts[slot]) {
+                frame.parts[slot] = {
+                    id: slot,
+                    name: partTemplate.name,
+                    hp: partTemplate.hp,
+                    maxHp: partTemplate.maxHp,
+                    integrity: partTemplate.integrity,
+                    status: 'operational',
+                    condition: 1.0
+                };
+            } else {
+                // Update templates (keeping current HP/integrity/status/condition)
+                frame.parts[slot].name = partTemplate.name;
+                frame.parts[slot].maxHp = partTemplate.hp;
+                if (frame.parts[slot].condition === undefined) {
+                    frame.parts[slot].condition = 1.0;
+                }
+            }
+
+            // Armor contributes based on condition
+            const condition = frame.parts[slot].condition || 1.0;
+            totalArmor += (partTemplate.armor || 0) * condition;
+        }
+
+        attributes.def += totalArmor;
+
+        // Round all attributes for display
+        for (const k in attributes) {
+            attributes[k] = Math.round(attributes[k] * 10) / 10;
+        }
+
+        frame.attributes = attributes;
     }
 
     /**
@@ -163,11 +338,66 @@ export default class GameState {
             if (item.val !== undefined) saved.val = item.val;
             if (item.owned !== undefined) saved.owned = item.owned;
             if (item.locked !== undefined) saved.locked = item.locked;
+            if (item.completed !== undefined) saved.completed = item.completed;
+            if (item._lastKnownTier !== undefined) saved._lastKnownTier = item._lastKnownTier;
+            // Job-specific fields
+            if (item.type === 'job') {
+                saved.enrolled = item.enrolled;
+                saved.currentTier = item.currentTier;
+                saved.currentPath = item.currentPath;
+            }
+            // Zone-specific fields
+            if (item.type === 'zone') {
+                saved.discovered = item.discovered;
+                saved.explored = item.explored;
+            }
             data[id] = saved;
         }
         return {
             items: data,
-            player: { ...this.player },
+            player: {
+                name: this.player.name,
+                titles: this.player.titles,
+                frame: {
+                    chassisId: this.player.frame.chassisId,
+                    installedParts: this.player.frame.installedParts,
+                    installedEquip: this.player.frame.installedEquip,
+                    parts: this.player.frame.parts,
+                    heat: this.player.frame.heat,
+                    stress: this.player.frame.stress
+                },
+                inventory: {
+                    frames: [...(this.player.inventory?.frames || [])],
+                    parts: this.player.inventory?.parts || this.player.partsInventory,
+                    weapons: [...(this.player.inventory?.weapons || [])]
+                },
+                partsInventory: this.player.partsInventory
+            },
+            android: {
+                active: this.android.active,
+                level: this.android.level,
+                xp: this.android.xp,
+                xpToNext: this.android.xpToNext,
+                energy: this.android.energy,
+                maxEnergy: this.android.maxEnergy,
+                energyRate: this.android.energyRate,
+                assignment: this.android.assignment,
+                efficiency: this.android.efficiency,
+                modules: this.android.modules,
+                personality: this.android.personality
+            },
+            pragmatistTimer: this.pragmatistTimer,
+            prestige: {
+                gloryPool: this.prestige.gloryPool,
+                glorySpent: this.prestige.glorySpent,
+                lifetimeGlory: this.prestige.lifetimeGlory,
+                storyLayer: this.prestige.storyLayer,
+                cycleCount: this.prestige.cycleCount,
+                gateCompleted: this.prestige.gateCompleted,
+                alignmentHistory: [...this.prestige.alignmentHistory],
+                knownBlueprints: [...this.prestige.knownBlueprints],
+                seenBriefings: [...this.prestige.seenBriefings],
+            }
         };
     }
 
@@ -178,22 +408,95 @@ export default class GameState {
         if (!json?.items) return;
         for (const [id, saved] of Object.entries(json.items)) {
             const item = this.items[id];
-            if (!item) continue;
+            if (!item) {
+                // Restore flags that were dynamically created (like grandpa_dead)
+                if (saved.type === 'flag' || (saved.val !== undefined && !saved.owned && !saved.completed)) {
+                    this.items[id] = { id, val: saved.val || 0, type: saved.type || 'flag', locked: saved.locked };
+                }
+                continue;
+            }
             if (saved.val !== undefined) item.val = saved.val;
             if (saved.owned !== undefined) item.owned = saved.owned;
             if (saved.locked !== undefined) item.locked = saved.locked;
+            if (saved.completed !== undefined) item.completed = saved.completed;
+            if (saved._lastKnownTier !== undefined) item._lastKnownTier = saved._lastKnownTier;
+            // Job-specific fields
+            if (item.type === 'job' && saved.enrolled !== undefined) {
+                item.enrolled = saved.enrolled;
+                item.currentTier = saved.currentTier || 0;
+                item.currentPath = saved.currentPath || null;
+            }
+            // Zone-specific fields
+            if (item.type === 'zone' && saved.discovered !== undefined) {
+                item.discovered = saved.discovered;
+                item.explored = saved.explored || 0;
+            }
         }
         if (json.player) {
             this.player.name = json.player.name || this.player.name;
+            if (json.player.titles) this.player.titles = json.player.titles;
+            if (!this.player.inventory) {
+                this.player.inventory = { frames: [], parts: [], weapons: [] };
+            }
+
+            if (json.player.inventory) {
+                this.player.inventory.frames = Array.isArray(json.player.inventory.frames) ? json.player.inventory.frames : [];
+                this.player.inventory.parts = Array.isArray(json.player.inventory.parts) ? json.player.inventory.parts : [];
+                this.player.inventory.weapons = Array.isArray(json.player.inventory.weapons) ? json.player.inventory.weapons : [];
+            } else if (json.player.partsInventory) {
+                // Backward compatibility with saves created before inventory.* existed.
+                this.player.inventory.parts = json.player.partsInventory;
+            }
+
+            // Legacy alias remains bound for current UI usage.
+            this.player.partsInventory = this.player.inventory.parts;
+            this.g.inventory = this.player.inventory;
+
             if (json.player.frame) {
-                // Keep the reactive object, just update properties
-                Object.assign(this.player.frame.attributes, json.player.frame.attributes);
-                Object.assign(this.player.frame.parts, json.player.frame.parts);
+                let loadedChassis = json.player.frame.chassisId || this.player.frame.chassisId;
+                if (loadedChassis === 'frame_hayabusa_light') {
+                    loadedChassis = 'frame_hayabusa_mk1';
+                }
+                this.player.frame.chassisId = loadedChassis;
+                if (json.player.frame.installedParts) Object.assign(this.player.frame.installedParts, json.player.frame.installedParts);
+                if (json.player.frame.installedEquip) Object.assign(this.player.frame.installedEquip, json.player.frame.installedEquip);
+                if (json.player.frame.equip) Object.assign(this.player.frame.installedEquip, json.player.frame.equip);
+                if (json.player.frame.parts) Object.assign(this.player.frame.parts, json.player.frame.parts);
                 this.player.frame.heat = json.player.frame.heat || 0;
                 this.player.frame.stress = json.player.frame.stress || 0;
-                // Maneuvers and tokens usually reset or handle themselves in combat, 
-                // but we keep them empty in save for now to avoid bulky save files.
             }
+
+            if (!this.player.inventory.frames.includes(this.player.frame.chassisId)) {
+                this.player.inventory.frames.push(this.player.frame.chassisId);
+            }
+        }
+
+        if (json.android) {
+            Object.assign(this.android, json.android);
+        }
+
+        // Restore morality from saved morality resource value
+        const savedMoral = this.get('morality');
+        if (savedMoral && savedMoral.val !== undefined) {
+            this.morality = new BipolarStat(savedMoral.val);
+            // Re-bind g. properties to new instance
+            Object.defineProperty(this.g, 'morality', {
+                get: () => this.morality.value,
+                configurable: true,
+            });
+            Object.defineProperty(this.g, 'moral_alignment', {
+                get: () => this.morality.alignmentBase,
+                configurable: true,
+            });
+        }
+
+        // Restore pragmatist timer
+        if (json.pragmatistTimer !== undefined) {
+            this.pragmatistTimer = json.pragmatistTimer;
+        }
+
+        if (json.prestige) {
+            Object.assign(this.prestige, json.prestige);
         }
     }
 }

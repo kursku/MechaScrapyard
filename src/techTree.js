@@ -1,5 +1,7 @@
+﻿import { toCanonicalId } from '@/schema/idAliases';
+
 /**
- * TechTree — Cascading unlock system.
+ * TechTree - Cascading unlock system.
  *
  * Evaluates `require` strings as expressions against the game state.
  * When a condition is met, the item is unlocked (locked = false).
@@ -7,7 +9,6 @@
  * Follows Arcanum's pattern: require strings reference `g.xxx`
  * where g is the game state's g namespace.
  */
-
 export default class TechTree {
 
     constructor(state) {
@@ -49,7 +50,7 @@ export default class TechTree {
                     return false; // remove from gated list
                 }
             } catch (e) {
-                // Expression failed — keep watching
+                // Expression failed - keep watching
                 console.warn(`TechTree eval error for ${item.id}: ${e.message}`);
             }
 
@@ -66,14 +67,51 @@ export default class TechTree {
      * @returns {boolean}
      */
     _evaluate(expr, g) {
+        // Normalize legacy gate ids to canonical English ids before evaluating.
+        const normalizedExpr = this._normalizeExpr(expr);
+
         // Simple expression evaluator using Function constructor
         // g.xxx returns the item's value or owned count
         try {
-            const fn = new Function('g', `return (${expr})`);
+            const fn = new Function('g', `return (${normalizedExpr})`);
             return !!fn(g);
         } catch {
             return false;
         }
+    }
+
+    /**
+     * Normalize legacy require/hideWhen expressions to canonical English ids.
+     * This keeps older content compatible with pre-English naming.
+     * @param {string} expr
+     * @returns {string}
+     */
+    _normalizeExpr(expr) {
+        if (!expr || typeof expr !== 'string') return expr;
+
+        const aliasId = (id) => toCanonicalId(id);
+        let normalized = expr.trim();
+
+        // Handle bare identifiers like "energy" from legacy content.
+        // In require context, these are intended as g.energy.
+        if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(normalized)) {
+            normalized = `g.${aliasId(normalized)}`;
+        }
+
+        // Replace explicit g.<id> references.
+        normalized = normalized.replace(/\bg\.([A-Za-z_][A-Za-z0-9_]*)\b/g, (_, id) => {
+            return `g.${aliasId(id)}`;
+        });
+
+        return normalized;
+    }
+
+    /**
+     * Public evaluate method for external use.
+     */
+    evaluate(expr) {
+        if (!expr) return true;
+        return this._evaluate(expr, this.state.g);
     }
 
     /**

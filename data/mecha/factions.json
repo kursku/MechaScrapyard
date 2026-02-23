@@ -1,0 +1,672 @@
+[
+  {
+    "id": "faction_ntpd",
+    "name": "NTPD — New Tokyo Police Department",
+    "shortName": "NTPD",
+    "desc": "New Tokyo's overstretched law enforcement. Underfunded, outgunned, but they keep the streets from total collapse. They value reliability over flash.",
+    "flavor": "The badge doesn't mean much anymore. But the people who wear it still do.",
+    "repId": "rep_police",
+    "icon": "🛡️",
+    "color": "#68f",
+    "alignment": "lawful",
+    "manufacturers": [
+      "aegis_tac"
+    ],
+    "origin": "corporate",
+    "introMission": "msn_corporate_warning",
+    "introPhase": 3,
+    "repTiers": {
+      "0": {
+        "name": "Unknown",
+        "desc": "They don't know you exist."
+      },
+      "10": {
+        "name": "Acquaintance",
+        "desc": "You've been flagged in the system. Not a threat — yet.",
+        "unlocks": [
+          "Aegis basic parts vendor",
+          "NTPD patrol missions"
+        ]
+      },
+      "25": {
+        "name": "Trusted",
+        "desc": "You've done favors. They look the other way when you pass.",
+        "unlocks": [
+          "Aegis full vendor catalog",
+          "NTPD contracts",
+          "bp_at_shield_coating"
+        ]
+      },
+      "50": {
+        "name": "Allied",
+        "desc": "An unofficial asset. They call you before they call backup.",
+        "unlocks": [
+          "Exclusive Aegis blueprints",
+          "NTPD restricted missions",
+          "bp_at_neural_regulator",
+          "bp_at_hardened_armor"
+        ]
+      },
+      "75": {
+        "name": "Honored",
+        "desc": "The Commissioner knows your name. That means something.",
+        "unlocks": [
+          "Aegis prototype access",
+          "NTPD special operations",
+          "bp_at_sentinel_custom"
+        ]
+      },
+      "100": {
+        "name": "Legend",
+        "desc": "You ARE the law. At least, the part that works.",
+        "unlocks": [
+          "NTPD honorary badge",
+          "All Aegis blueprints"
+        ]
+      }
+    },
+    "repSources": [
+      {
+        "source": "Complete NTPD patrol contracts",
+        "amount": "+3-5 per mission"
+      },
+      {
+        "source": "Defeat enemies in corporate zones",
+        "amount": "+1 per encounter"
+      },
+      {
+        "source": "Return stolen corporate property",
+        "amount": "+5 per item"
+      },
+      {
+        "source": "Attack NTPD patrols",
+        "amount": "-10 per incident"
+      },
+      {
+        "source": "Buy from Exile vendors",
+        "amount": "-1 per transaction"
+      }
+    ],
+    "vendorCatalog": {
+      "10": {
+        "parts": [
+          "torso_at_shield",
+          "arm_at_220",
+          "legs_at_guardian"
+        ],
+        "weapons": [
+          "wpn_sb_mg440",
+          "wpn_sb_mg770"
+        ],
+        "backpacks": [
+          "backpack_sensor_array"
+        ]
+      },
+      "25": {
+        "parts": [
+          "torso_at_shield",
+          "arm_at_220",
+          "legs_at_guardian"
+        ],
+        "weapons": [
+          "wpn_sb_mg440",
+          "wpn_sb_mg770",
+          "wpn_sb_hurricane"
+        ],
+        "backpacks": [
+          "backpack_sensor_array",
+          "backpack_dampener_advanced",
+          "backpack_salvage_scanner"
+        ]
+      },
+      "50": {
+        "blueprints": [
+          "bp_at_shield_coating",
+          "bp_at_neural_regulator",
+          "bp_at_hardened_armor"
+        ]
+      },
+      "75": {
+        "blueprints": [
+          "bp_at_sentinel_custom"
+        ]
+      }
+    },
+    "notes": "The 'safe' faction. Moderate gear, good blueprints for defense. Buying Exile gear costs NTPD rep — forces a choice. Aegis-Tac is their equipment supplier. Shibata Arms weapons available through their vendor (police use ballistics).",
+    "relationToFather": "former_employer",
+    "fatherContext": "Kazuo Hayashi was a decorated NTPD officer specializing in mecha-related crime. He was charged with corruption — accepting bribes to ignore illegal weapons shipments. The department is divided: some officers believe the charges, others think he was framed. His case file is sealed by Internal Affairs.",
+    "playerImpact": "The Hayashi name opens doors with sympathetic officers and closes them with administrators who want the case buried. At Allied rep, an officer quietly provides Kazuo's sealed case file — the first concrete evidence the charges were fabricated."
+  },
+  {
+    "id": "faction_kuroda_command",
+    "name": "Kuroda Military Command",
+    "shortName": "Kuroda",
+    "desc": "Kuroda Heavy Industries' private military arm. They protect corporate assets, run the restricted zones, and possess the heaviest firepower in New Tokyo. They respect strength, not words.",
+    "flavor": "They don't ask twice. They don't need to.",
+    "repId": "rep_military",
+    "icon": "⚔️",
+    "color": "#f44",
+    "alignment": "authoritarian",
+    "manufacturers": [
+      "kuroda_heavy"
+    ],
+    "origin": "military",
+    "introMission": "msn_beyond_perimeter",
+    "introPhase": 4,
+    "repTiers": {
+      "0": {
+        "name": "Hostile",
+        "desc": "You are a trespasser. Engage on sight."
+      },
+      "10": {
+        "name": "Tolerated",
+        "desc": "You've proven useful. They won't shoot first.",
+        "unlocks": [
+          "Kuroda surplus vendor",
+          "Military zone patrol access"
+        ]
+      },
+      "25": {
+        "name": "Contractor",
+        "desc": "Unofficial contract work. Deniable. Profitable.",
+        "unlocks": [
+          "Kuroda full vendor catalog",
+          "Military contracts",
+          "bp_kr_reinforced_plating"
+        ]
+      },
+      "50": {
+        "name": "Operative",
+        "desc": "You have a handler. You have clearance. You have a leash.",
+        "unlocks": [
+          "Exclusive Kuroda blueprints",
+          "Restricted zone deep access",
+          "bp_kr_siege_system",
+          "bp_kr_heavy_weapon_mod"
+        ]
+      },
+      "75": {
+        "name": "Commander",
+        "desc": "Field command authority. Steele considers you an equal.",
+        "unlocks": [
+          "Kuroda prototype access",
+          "Military operations command",
+          "bp_kr_type90_custom"
+        ]
+      },
+      "100": {
+        "name": "Legend",
+        "desc": "Kuroda's ghost. The soldier who doesn't exist.",
+        "unlocks": [
+          "All Kuroda blueprints",
+          "Heaven's Gate blueprint"
+        ]
+      }
+    },
+    "repSources": [
+      {
+        "source": "Complete military contracts",
+        "amount": "+4-6 per mission"
+      },
+      {
+        "source": "Defeat enemies in restricted zones",
+        "amount": "+2 per encounter"
+      },
+      {
+        "source": "Defeat boss: Commander Steele",
+        "amount": "+15 (one-time, respect earned)"
+      },
+      {
+        "source": "Attack military patrols",
+        "amount": "-15 per incident"
+      },
+      {
+        "source": "Complete Exile missions",
+        "amount": "-2 per mission"
+      }
+    ],
+    "vendorCatalog": {
+      "10": {
+        "parts": [
+          "arm_type44_combat",
+          "legs_kuroda_type66"
+        ],
+        "weapons": [
+          "wpn_kr_type12"
+        ]
+      },
+      "25": {
+        "parts": [
+          "torso_type88",
+          "arm_type44_combat",
+          "legs_kuroda_type66"
+        ],
+        "weapons": [
+          "wpn_kr_type12",
+          "wpn_sb_mg770"
+        ],
+        "backpacks": [
+          "backpack_ammo_advanced"
+        ]
+      },
+      "50": {
+        "blueprints": [
+          "bp_kr_reinforced_plating",
+          "bp_kr_siege_system",
+          "bp_kr_heavy_weapon_mod"
+        ]
+      },
+      "75": {
+        "blueprints": [
+          "bp_kr_type90_custom"
+        ]
+      }
+    },
+    "notes": "The 'heavy' faction. Best armor, best weapons, highest stat requirements. Anti-Exile (completing Exile missions costs military rep). Defeating Steele gives +15 rep in one shot — earning respect through combat, not politics. Type 90 custom blueprint at 75 is the endgame Heavy frame goal.",
+    "relationToFather": "conspiracy_adjacent",
+    "fatherContext": "Kazuo's investigation touched Kuroda's weapons contracts. Commander Steele specifically remembers him — his report crossed her desk before it was classified. Whether Kuroda actively participated in his downfall or was used as a shield is ambiguous.",
+    "playerImpact": "Steele recognizes the player during combat ('Was his name—'). At high rep, she privately shares: 'Your father's report was legitimate. I verified it. Then it disappeared from the system.'"
+  },
+  {
+    "id": "faction_underground",
+    "name": "The Underground",
+    "shortName": "Underground",
+    "desc": "The black market network under the Neon Bazaar. Scrapyard mechanics, smugglers, fixers, and everyone who fell through New Tokyo's cracks. They trade in favors and stolen goods.",
+    "flavor": "Down here, everyone's got a past. Nobody asks about it.",
+    "repId": "rep_underground",
+    "icon": "🔧",
+    "color": "#ca6",
+    "alignment": "neutral",
+    "manufacturers": [
+      "red_creek",
+      "sora_motor",
+      "kz_industrial"
+    ],
+    "origin": "scrapyard",
+    "introMission": "msn_dockyard_dispute",
+    "introPhase": 3,
+    "repTiers": {
+      "0": {
+        "name": "Outsider",
+        "desc": "They see you but don't talk to you."
+      },
+      "10": {
+        "name": "Regular",
+        "desc": "They nod when you walk in. That's currency here.",
+        "unlocks": [
+          "Bazaar vendors (Sora, KZ, Red Creek)",
+          "Underground odd jobs"
+        ]
+      },
+      "25": {
+        "name": "Connected",
+        "desc": "You know people who know people. Doors open.",
+        "unlocks": [
+          "Full Bazaar catalog",
+          "Smuggler contacts",
+          "bp_rc_overclock_custom",
+          "bp_scrapyard_special"
+        ]
+      },
+      "50": {
+        "name": "Fixer",
+        "desc": "You're the one people call when things need to get done quietly.",
+        "unlocks": [
+          "Exclusive Underground blueprints",
+          "Black market specials",
+          "bp_sora_efficiency_mod",
+          "bp_kz_labor_conversion"
+        ]
+      },
+      "75": {
+        "name": "Kingmaker",
+        "desc": "You don't just live in the Underground. You shape it.",
+        "unlocks": [
+          "Underground prototype access",
+          "Faction leadership quests",
+          "bp_hayabusa_restoration"
+        ]
+      },
+      "100": {
+        "name": "Legend",
+        "desc": "The Underground IS you. Every deal, every favor, every secret — it all connects back.",
+        "unlocks": [
+          "All Underground blueprints",
+          "Grandpa's legacy blueprints"
+        ]
+      }
+    },
+    "repSources": [
+      {
+        "source": "Complete Underground odd jobs",
+        "amount": "+2-4 per job"
+      },
+      {
+        "source": "Sell parts at Bazaar vendors",
+        "amount": "+1 per sale"
+      },
+      {
+        "source": "Complete Dockyard/Bazaar patrols",
+        "amount": "+1 per patrol"
+      },
+      {
+        "source": "Defeat boss: Iron Volk",
+        "amount": "+10 (Underground respects strength)"
+      },
+      {
+        "source": "Help NTPD arrest Underground contacts",
+        "amount": "-10 per incident"
+      }
+    ],
+    "vendorCatalog": {
+      "10": {
+        "parts": [
+          "torso_sora_c100",
+          "arm_sora_utility",
+          "legs_sora_c100",
+          "arm_kz_crane_mk1",
+          "legs_kz_heavy_duty"
+        ],
+        "weapons": [
+          "wpn_rc_pipe_maul",
+          "wpn_rc_grinder",
+          "wpn_sb_scatter_9"
+        ]
+      },
+      "25": {
+        "parts": [
+          "torso_kz_mk2",
+          "arm_kz_reinforced",
+          "torso_rc_patchwork"
+        ],
+        "weapons": [
+          "wpn_rc_pipe_maul",
+          "wpn_rc_grinder",
+          "wpn_sb_scatter_9",
+          "wpn_sb_mg440"
+        ],
+        "backpacks": [
+          "backpack_coolant_tank",
+          "backpack_ammo_crate",
+          "backpack_repair_kit",
+          "backpack_overclock_module"
+        ]
+      },
+      "50": {
+        "blueprints": [
+          "bp_rc_overclock_custom",
+          "bp_scrapyard_special",
+          "bp_sora_efficiency_mod",
+          "bp_kz_labor_conversion"
+        ]
+      },
+      "75": {
+        "blueprints": [
+          "bp_hayabusa_restoration"
+        ]
+      }
+    },
+    "notes": "The 'starter' faction — first contact, cheapest gear, widest variety. Three manufacturers (Red Creek, Sora, KZ) give breadth. The Hayabusa Restoration blueprint at 75 is the mid-endgame goal for the narrative-focused player. Anti-NTPD on specific actions but not by default — you CAN be friends with both.",
+    "relationToFather": "allied_through_grandfather",
+    "fatherContext": "Ichiro Hayashi has been part of Underground trading networks for decades. Kazuo used the scrapyard to modify mechas off the books — some for police use, some for Underground contacts. He was respected for his engineering, not his badge.",
+    "playerImpact": "The player is treated as family. Older fixers remember 'Ichiro's kid' and extend goodwill. Iron Volk targeted the scrapyard because word on the street says something important is hidden there."
+  },
+  {
+    "id": "faction_taeyang_syndicate",
+    "name": "Taeyang Syndicate",
+    "shortName": "Taeyang",
+    "desc": "Taeyang Forge's shadow operations in New Tokyo. Thermal weapons, illegal shipments, and a reputation for burning anyone who crosses them. Their loyalty is bought with fire.",
+    "flavor": "They don't shake hands. Too hot.",
+    "repId": "rep_corporate",
+    "icon": "🔥",
+    "color": "#f86",
+    "alignment": "corporate",
+    "manufacturers": [
+      "taeyang_forge"
+    ],
+    "origin": "military",
+    "introMission": "msn_taeyang_contract",
+    "introPhase": 4,
+    "repTiers": {
+      "0": {
+        "name": "Unknown",
+        "desc": "Taeyang doesn't know you. That's healthy."
+      },
+      "10": {
+        "name": "Customer",
+        "desc": "You buy their weapons. They tolerate your existence.",
+        "unlocks": [
+          "Taeyang basic weapon vendor",
+          "Thermal component vendor"
+        ]
+      },
+      "25": {
+        "name": "Associate",
+        "desc": "You've done a job for them. They send work your way.",
+        "unlocks": [
+          "Taeyang full vendor catalog",
+          "Syndicate contracts",
+          "bp_ty_thermal_coating"
+        ]
+      },
+      "50": {
+        "name": "Enforcer",
+        "desc": "You carry their weapons. You carry their reputation.",
+        "unlocks": [
+          "Exclusive Taeyang blueprints",
+          "Syndicate operations",
+          "bp_ty_plasma_core",
+          "bp_ty_heat_weapon_forge"
+        ]
+      },
+      "75": {
+        "name": "Inner Circle",
+        "desc": "You know where the real shipments go. You know the real prices.",
+        "unlocks": [
+          "Taeyang prototype access",
+          "Syndicate leadership",
+          "bp_ty_supernova_custom"
+        ]
+      },
+      "100": {
+        "name": "Legend",
+        "desc": "The flame that doesn't go out. Taeyang's will made metal.",
+        "unlocks": [
+          "All Taeyang blueprints"
+        ]
+      }
+    },
+    "repSources": [
+      {
+        "source": "Complete Taeyang contracts",
+        "amount": "+3-5 per mission"
+      },
+      {
+        "source": "Use Taeyang weapons in arena victories",
+        "amount": "+1 per win"
+      },
+      {
+        "source": "Defeat boss: Crimson Nail",
+        "amount": "+12 (impressed, not angry)"
+      },
+      {
+        "source": "Intercept Taeyang shipments (for others)",
+        "amount": "-8 per shipment"
+      }
+    ],
+    "vendorCatalog": {
+      "10": {
+        "weapons": [
+          "wpn_ty_ember_fist",
+          "wpn_ty_flare_pistol"
+        ],
+        "backpacks": [
+          "backpack_coolant_tank"
+        ]
+      },
+      "25": {
+        "parts": [
+          "torso_ty_suncore",
+          "arm_ty_thermal_mk1"
+        ],
+        "weapons": [
+          "wpn_ty_ember_fist",
+          "wpn_ty_flare_pistol",
+          "wpn_ty_corona",
+          "wpn_ty_sunbreak"
+        ],
+        "backpacks": [
+          "backpack_coolant_advanced"
+        ]
+      },
+      "50": {
+        "blueprints": [
+          "bp_ty_thermal_coating",
+          "bp_ty_plasma_core",
+          "bp_ty_heat_weapon_forge"
+        ]
+      },
+      "75": {
+        "blueprints": [
+          "bp_ty_supernova_custom"
+        ]
+      }
+    },
+    "notes": "The 'fire' faction. Thermal specialization — all blueprints revolve around heat management and thermal damage. Defeating Crimson Nail gives +12 rep (Taeyang respects those who defeat their best). The Supernova Custom blueprint at 75 is the endgame energy weapon.",
+    "relationToFather": "primary_antagonist",
+    "fatherContext": "Kazuo was investigating Taeyang's illegal thermal weapons shipments. When the investigation threatened to expose the protection network, Taeyang's corporate arm activated the response: fabricated charges, sealed files, a convenient disappearance.",
+    "playerImpact": "Taeyang leadership knows the Hayashi name. The player's growing reputation makes them nervous. At high rep, an insider leaks a partial document: the original order to 'resolve the Hayashi situation.'"
+  },
+  {
+    "id": "faction_phantom_collective",
+    "name": "Phantom Collective",
+    "shortName": "Phantom",
+    "desc": "What remains of Phantom Works after the corporate crackdown. Scattered, hidden, brilliant. They build technology that shouldn't exist and fight a war no one else knows about. They knew Dad.",
+    "flavor": "They don't exist. That's their greatest weapon.",
+    "repId": "rep_exile",
+    "icon": "👁️",
+    "color": "#c8f",
+    "alignment": "revolutionary",
+    "manufacturers": [
+      "phantom_works",
+      "daewon_dynamics"
+    ],
+    "origin": "exile",
+    "introMission": "msn_dads_last_route",
+    "introPhase": 4,
+    "repTiers": {
+      "0": {
+        "name": "Unaware",
+        "desc": "You don't even know they exist."
+      },
+      "10": {
+        "name": "Contact",
+        "desc": "Someone reached out. A dead drop. An encrypted message.",
+        "unlocks": [
+          "Daewon vendor access",
+          "Phantom intel missions"
+        ]
+      },
+      "25": {
+        "name": "Asset",
+        "desc": "They trust you with small things. Deliveries. Messages. Surveillance.",
+        "unlocks": [
+          "Phantom parts vendor (limited)",
+          "Exile contracts",
+          "bp_pw_stealth_coating"
+        ]
+      },
+      "50": {
+        "name": "Operative",
+        "desc": "You're part of something bigger. Dad's network. His legacy.",
+        "unlocks": [
+          "Full Phantom vendor catalog",
+          "Phantom operations",
+          "bp_pw_quantum_mod",
+          "bp_dw_sensor_suite"
+        ]
+      },
+      "75": {
+        "name": "Inner Cell",
+        "desc": "You know the plan. You know what Dad was building. You know why.",
+        "unlocks": [
+          "Phantom prototype access",
+          "Dad's research notes",
+          "bp_pw_wraith_custom",
+          "bp_hayabusa_mk2"
+        ]
+      },
+      "100": {
+        "name": "Legend",
+        "desc": "You finished what he started. The Phantom Collective's purpose is fulfilled.",
+        "unlocks": [
+          "All Phantom blueprints",
+          "Dad's final blueprint"
+        ]
+      }
+    },
+    "repSources": [
+      {
+        "source": "Complete Phantom intel/ops missions",
+        "amount": "+4-6 per mission"
+      },
+      {
+        "source": "Defeat boss: Null (earn respect)",
+        "amount": "+20 (one-time)"
+      },
+      {
+        "source": "Find Dad's clues during Investigation",
+        "amount": "+3 per clue"
+      },
+      {
+        "source": "Share Phantom intel with NTPD",
+        "amount": "-15 per betrayal"
+      },
+      {
+        "source": "Share Phantom intel with Kuroda",
+        "amount": "-20 per betrayal"
+      }
+    ],
+    "vendorCatalog": {
+      "10": {
+        "parts": [
+          "arm_dw_interface",
+          "legs_dw_hover"
+        ],
+        "weapons": [],
+        "backpacks": [
+          "backpack_sensor_array",
+          "backpack_ecm_suite"
+        ]
+      },
+      "25": {
+        "parts": [
+          "torso_dw_x5",
+          "arm_phantom_glitch",
+          "legs_ghost_step"
+        ],
+        "weapons": [
+          "wpn_pw_quantum_edge",
+          "wpn_pw_nullbeam"
+        ]
+      },
+      "50": {
+        "blueprints": [
+          "bp_pw_stealth_coating",
+          "bp_pw_quantum_mod",
+          "bp_dw_sensor_suite"
+        ]
+      },
+      "75": {
+        "blueprints": [
+          "bp_pw_wraith_custom",
+          "bp_hayabusa_mk2"
+        ]
+      }
+    },
+    "notes": "The 'story' faction. Everything ties to Dad. Highest rep penalties for betrayal (-15 to -20). Daewon Dynamics is their 'legit' front. Phantom Works is the real tech. Hayabusa Mk.II blueprint at 75 is THE narrative reward — Dad's unfinished frame. Defeating Null gives +20 rep in one shot. Anti-Kuroda and anti-NTPD on betrayal, but neutral by default.",
+    "relationToFather": "partners",
+    "fatherContext": "Kazuo came to Phantom because he had nowhere else to go. They shared intelligence, resources, and a vision. The Hayabusa Mk.II was their joint project — Kazuo's engineering combined with Phantom's bleeding-edge technology.",
+    "playerImpact": "Null tests the player out of necessity — Kazuo's child must be strong enough. The Phantom Collective has been waiting for someone to continue Kazuo's work. They are patient, but desperate."
+  }
+]

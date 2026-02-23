@@ -1,0 +1,379 @@
+[
+  {
+    "id": "triagem",
+    "name": "Sorting Station",
+    "desc": "Build a station to sort and categorize incoming scrap.",
+    "flavor": "Order from chaos. Grandpa would approve.",
+    "tags": "t_structure",
+    "locked": false,
+    "max": 1,
+    "cost": {
+      "scrap": 30,
+      "creds": 15
+    },
+    "mod": {
+      "scrap.max": 50,
+      "scrap.rate": 0.1
+    },
+    "log": {
+      "name": "Sorting Station Built",
+      "desc": "Scrap collection is now more efficient. New tasks available."
+    }
+  },
+  {
+    "id": "oficina_nivel2",
+    "name": "Upgrade Workshop",
+    "desc": "Restore grandpa's workshop to full working condition.",
+    "flavor": "The old man built mechas here. Time to follow in his footsteps.",
+    "tags": "t_structure",
+    "require": "g.triagem>0",
+    "max": 1,
+    "cost": {
+      "scrap": 60,
+      "creds": 40
+    },
+    "mod": {
+      "energy.max": 20,
+      "energy.rate": 0.1,
+      "creds.max": 100
+    },
+    "log": {
+      "name": "Workshop Restored",
+      "desc": "The workshop hums with renewed power. Your grandfather would be proud."
+    }
+  },
+  {
+    "id": "refinaria",
+    "name": "Build Refinery",
+    "desc": "Repair the old processing bench to refine raw scrap into advanced materials.",
+    "flavor": "Turn junk into the future.",
+    "tags": "t_structure",
+    "require": "g.oficina_nivel2>0",
+    "max": 1,
+    "cost": {
+      "scrap": 100,
+      "creds": 60
+    },
+    "mod": {},
+    "log": {
+      "name": "Refinery Online",
+      "desc": "The refinery is online. You can now process raw scrap into advanced materials."
+    }
+  },
+  {
+    "id": "garagem",
+    "name": "Restore Garage",
+    "desc": "Clear out the old locked garage. Something from the past awaits inside.",
+    "flavor": "Dad's tools are still here. So is something else...",
+    "tags": "t_structure",
+    "require": "g.oficina_nivel2>0",
+    "max": 1,
+    "cost": {
+      "scrap": 80,
+      "creds": 50
+    },
+    "mod": {
+      "scrap.max": 100
+    },
+    "log": {
+      "name": "The Garage",
+      "desc": "Inside the garage you find it — your father's first mecha. Rusted, broken... but repairable."
+    }
+  },
+  {
+    "id": "mesa_pesquisa",
+    "name": "Build Research Bench",
+    "desc": "Set up a workstation for studying schematics and fragments.",
+    "flavor": "Knowledge is the one thing they can't take from you.",
+    "tags": "t_structure",
+    "require": "g.refinaria>0",
+    "max": 1,
+    "cost": {
+      "scrap": 120,
+      "creds": 30,
+      "nano_infra": 5
+    },
+    "mod": {
+      "data_chips.max": 50
+    },
+    "log": {
+      "name": "Research Bench",
+      "desc": "A proper research station. You can now analyze data chips and study advanced schematics."
+    }
+  },
+  {
+    "id": "scrap_compressor",
+    "name": "Scrap Compressor",
+    "desc": "Hydraulic compressor to store scrap in denser bricks.",
+    "flavor": "Same metal, smaller package.",
+    "tags": "t_structure,t_repeatable",
+    "require": "g.triagem>0",
+    "max": 3,
+    "cost": {
+      "scrap": 50,
+      "creds": 30
+    },
+    "costScale": 1.5,
+    "mod": {
+      "scrap.max": 40
+    }
+  },
+  {
+    "id": "energy_capacitor",
+    "name": "Energy Capacitor",
+    "desc": "Install additional power storage banks.",
+    "flavor": "More juice. More work. More progress.",
+    "tags": "t_structure,t_repeatable",
+    "require": "g.triagem>0",
+    "max": 5,
+    "cost": {
+      "scrap": 40,
+      "creds": 20
+    },
+    "costScale": 1.4,
+    "mod": {
+      "energy.max": 10
+    }
+  },
+  {
+    "id": "bp_nano_infra",
+    "name": "BP: Nano Infra Process",
+    "desc": "Basic nano-material synthesis schematics. The foundation of advanced crafting.",
+    "tags": "t_blueprint",
+    "require": "g.refinaria>0",
+    "max": 1,
+    "cost": {
+      "creds": 30
+    },
+    "mod": {},
+    "log": {
+      "name": "Schematic Acquired",
+      "desc": "Schematics reveal how to synthesize Nano Infra from raw scrap."
+    }
+  },
+  {
+    "id": "bp_ceramite",
+    "name": "BP: Plating Molds",
+    "desc": "Industrial armor plating fabrication schematics. Requires Nano Infra as base.",
+    "tags": "t_blueprint",
+    "require": "g.refinaria>0",
+    "max": 1,
+    "cost": {
+      "creds": 75
+    },
+    "mod": {},
+    "log": {
+      "name": "Schematic Acquired",
+      "desc": "Schematics include data for producing Armor Plating."
+    }
+  },
+  {
+    "id": "bp_nanofiber",
+    "name": "BP: Nanofiber Loom",
+    "desc": "Rare fabric weaving schematics from the Neon Bazaar underground.",
+    "tags": "t_blueprint",
+    "require": "g.refinaria>0",
+    "max": 1,
+    "cost": {},
+    "mod": {},
+    "log": {
+      "name": "Rare Schematic Found!",
+      "desc": "Nanofiber Loom schematics found! A new material is available for refinement."
+    }
+  },
+  {
+    "id": "hangar_basic",
+    "name": "Restore Hangar",
+    "desc": "Clear the collapsed hangar and reinforce the structure. Storage for multiple frames and large-scale projects.",
+    "flavor": "The ceiling still creaks. But it holds.",
+    "tags": "t_structure",
+    "require": "g.garagem>0&&g.refinaria>0",
+    "max": 1,
+    "cost": {
+      "scrap": 200,
+      "creds": 120,
+      "ferrous_scrap": 15,
+      "nano_infra": 5
+    },
+    "mod": {
+      "space.max": 10,
+      "parts.max": 20
+    },
+    "log": {
+      "name": "Hangar Restored",
+      "desc": "The hangar stands again. Room for bigger projects — and bigger ambitions."
+    }
+  },
+  {
+    "id": "hangar_operational",
+    "name": "Operational Hangar",
+    "desc": "Full power, reinforced walls, automated crane system. A real mecha workshop.",
+    "flavor": "Faction contacts start showing up at the gate. Word travels fast.",
+    "tags": "t_structure",
+    "require": "g.hangar_basic>0&&g.mesa_pesquisa>0",
+    "max": 1,
+    "cost": {
+      "scrap": 350,
+      "creds": 200,
+      "ferrous_scrap": 25,
+      "ceramite": 5,
+      "nano_infra": 8
+    },
+    "mod": {
+      "space.max": 15,
+      "parts.max": 30,
+      "scrap.rate": 0.1
+    },
+    "log": {
+      "name": "Hangar Operational",
+      "desc": "The hangar is fully operational. Medium and Heavy frames can be assembled here. People are starting to talk."
+    }
+  },
+  {
+    "id": "hangar_massive",
+    "name": "Massive Hangar",
+    "desc": "Expanded to house multiple full-size frames. AI-assisted diagnostics. The scrapyard's crown jewel.",
+    "flavor": "Your grandfather stares at it. 'I dreamed of this,' he says. 'Forty years ago, I dreamed of exactly this.'",
+    "tags": "t_structure",
+    "require": "g.hangar_operational>0",
+    "max": 1,
+    "cost": {
+      "scrap": 500,
+      "creds": 400,
+      "ferrous_scrap": 40,
+      "ceramite": 10,
+      "nanofiber": 10,
+      "nano_infra": 10,
+      "data_chips": 5
+    },
+    "mod": {
+      "space.max": 20,
+      "parts.max": 50,
+      "scrap.rate": 0.15,
+      "creds.rate": 0.1
+    },
+    "log": {
+      "name": "Massive Hangar Complete",
+      "desc": "The scrapyard has become something else entirely. A fortress. A factory. A legacy."
+    }
+  },
+  {
+    "id": "cybernetic_bench",
+    "name": "Cybernetic Workbench",
+    "desc": "Advanced augmentation station for pilot enhancements and neural interface calibration.",
+    "flavor": "The line between pilot and machine gets thinner every day.",
+    "tags": "t_structure",
+    "require": "g.mesa_pesquisa>0&&g.hangar_basic>0",
+    "max": 1,
+    "cost": {
+      "creds": 150,
+      "electronic_scrap": 20,
+      "nano_infra": 8,
+      "data_chips": 3
+    },
+    "mod": {},
+    "log": {
+      "name": "Cybernetic Bench Online",
+      "desc": "Neural interface calibration available. Pilot augmentations can now be researched and installed."
+    }
+  },
+  {
+    "id": "security_perimeter",
+    "name": "Security Perimeter",
+    "desc": "Automated turrets, sensor grid, and reinforced fencing. The scrapyard is no longer an easy target.",
+    "flavor": "Iron Volk's scouts won't like this.",
+    "tags": "t_structure",
+    "require": "g.hangar_basic>0",
+    "max": 1,
+    "cost": {
+      "scrap": 250,
+      "creds": 100,
+      "ferrous_scrap": 20,
+      "electronic_scrap": 10
+    },
+    "mod": {
+      "scrap.rate": 0.05
+    },
+    "log": {
+      "name": "Perimeter Secured",
+      "desc": "The scrapyard has teeth now. Raiders think twice before approaching."
+    }
+  },
+  {
+    "id": "secret_lab",
+    "name": "Dad's Secret Lab",
+    "desc": "The hidden laboratory beneath the workshop. Biometric lock keyed to your DNA.",
+    "flavor": "He built this for you. He just didn't know when you'd find it.",
+    "tags": "t_structure",
+    "require": "g.msn_dads_secret>0",
+    "max": 1,
+    "cost": {},
+    "mod": {
+      "data_chips.max": 30
+    },
+    "log": {
+      "name": "Dad's Secret Lab",
+      "desc": "The floor opens. A staircase descends into pristine white light. His voice echoes from a speaker: 'If you're hearing this...'"
+    }
+  },
+  {
+    "id": "android_battery",
+    "name": "K.I.T.A. Battery Pack",
+    "desc": "Extended battery. +30 max energy, +0.1 regen.",
+    "flavor": "It runs longer. Seems happier too.",
+    "tags": "t_android",
+    "locked": true,
+    "require": "g.android_active>0",
+    "max": 3,
+    "cost": {
+      "electronic_scrap": 15,
+      "nano_infra": 5,
+      "creds": 30
+    },
+    "mod": {},
+    "log": {
+      "name": "Battery Installed",
+      "desc": "K.I.T.A. energy capacity increased."
+    }
+  },
+  {
+    "id": "android_sorting_arm",
+    "name": "K.I.T.A. Precision Arm",
+    "desc": "Upgraded manipulator. +15% task efficiency.",
+    "flavor": "Faster hands. Fewer dropped circuits.",
+    "tags": "t_android",
+    "locked": true,
+    "require": "g.android_active>0&&g.oficina_nivel2>0",
+    "max": 1,
+    "cost": {
+      "ferrous_scrap": 20,
+      "polymer_scrap": 10,
+      "nano_infra": 8
+    },
+    "mod": {},
+    "log": {
+      "name": "Arm Installed",
+      "desc": "Scrapyard efficiency improved."
+    }
+  },
+  {
+    "id": "android_neural_chip",
+    "name": "K.I.T.A. Neural Processor",
+    "desc": "Adaptive learning. +20% efficiency. Unlocks multi-task.",
+    "flavor": "It's thinking. Actually thinking.",
+    "tags": "t_android",
+    "locked": true,
+    "require": "g.android_active>0&&g.mesa_pesquisa>0&&g.android_level>=5",
+    "max": 1,
+    "cost": {
+      "quantum_circuits": 3,
+      "data_chips": 10,
+      "nano_infra": 15
+    },
+    "mod": {},
+    "log": {
+      "name": "Neural Chip Installed",
+      "desc": "K.I.T.A. can now learn from experience."
+    }
+  }
+]

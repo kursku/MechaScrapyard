@@ -1,0 +1,26 @@
+{
+  "core": [
+    "tags",
+    "resources",
+    "upgrades",
+    "tasks",
+    "homes",
+    "furniture",
+    "skills",
+    "player",
+    "events",
+    "sections",
+    "equipslots",
+    "enemies",
+    "missions",
+    "maneuvers",
+    "weapons",
+    "frames",
+    "parts",
+    "manufacturers",
+    "factions",
+    "blueprints",
+    "combat_config"
+  ],
+  "modules": []
+}

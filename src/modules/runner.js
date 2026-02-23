@@ -62,6 +62,24 @@ export default class Runner {
     }
 
     /**
+     * Gets the speed multiplier for a task.
+     * Future-proofing for action-speed upgrades.
+     */
+    getTaskSpeed(task) {
+        let speed = 1.0;
+        if (task.tags) {
+            const tagArray = Array.isArray(task.tags) ? task.tags : [task.tags];
+            tagArray.forEach(tag => {
+                const statName = tag.replace('t_', '') + '_speed';
+                if (this.state.items[statName]) {
+                    speed += this.state.items[statName].val || 0;
+                }
+            });
+        }
+        return Math.max(0.1, speed);
+    }
+
+    /**
      * Update runner for one tick.
      * @param {number} dt - Delta time in seconds
      * @returns {{ taskCompleted: boolean, recipeCompleted: boolean, lootDrops: string[] }}
@@ -102,7 +120,8 @@ export default class Runner {
 
             // Progress timed tasks
             if (!task.perpetual && task.length) {
-                this.taskProgress += dt;
+                const speed = this.getTaskSpeed(task);
+                this.taskProgress += dt * speed;
                 if (this.taskProgress >= task.length) {
                     // If it has choices and NO choice has been made yet, we PAUSE completion?
                     // For simplified mecha, let's assume choices are made UPFRONT or it's a "Wait for choice" state.

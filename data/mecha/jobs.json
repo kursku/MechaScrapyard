@@ -1,0 +1,442 @@
+[
+    {
+        "id": "job_police",
+        "name": "Join the Force",
+        "desc": "The NTPD is understaffed and desperate. They'll take anyone who can pilot a Frame.",
+        "flavor": "The badge is tarnished. But someone has to wear it.",
+        "icon": "🛡️",
+        "require": "g.garage>0&&g.msn_rogue_drone_patrol>0",
+        "locked": true,
+        "group": "career",
+        "category": "law",
+        "relatedSkill": "skill_investigation",
+        "relatedFaction": "faction_ntpd",
+        "tiers": [
+            {
+                "tier": 1,
+                "high": {
+                    "title": "Rookie Officer",
+                    "desc": "Walking a beat. Learning the system from inside.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.3
+                    },
+                    "moralityMin": 0,
+                    "unlocks": [
+                        "msn_job_police_patrol_1"
+                    ],
+                    "flavor": "First day. Clean uniform. Dirty streets."
+                },
+                "low": {
+                    "title": "Badge for Hire",
+                    "desc": "You wear the uniform, but you answer to whoever pays.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.5
+                    },
+                    "moralityMax": -1,
+                    "unlocks": [
+                        "msn_job_police_shakedown_1"
+                    ],
+                    "flavor": "The badge opens doors. What you do inside is your business."
+                }
+            },
+            {
+                "tier": 2,
+                "high": {
+                    "title": "Detective",
+                    "desc": "Your father's old desk is gathering dust in the precinct. Now it's yours.",
+                    "require": "g.skill_investigation>=3&&g.rep_police>=10",
+                    "passiveIncome": {
+                        "creds": 0.8,
+                        "data_chips": 0.05
+                    },
+                    "moralityMin": 20,
+                    "unlocks": [
+                        "msn_job_police_coldcase",
+                        "msn_job_police_investigation"
+                    ],
+                    "flavor": "Case files pile up. One of them has your father's name on it."
+                },
+                "low": {
+                    "title": "Internal Affairs Fixer",
+                    "desc": "You know where the bodies are buried. Figuratively. Mostly.",
+                    "require": "g.skill_investigation>=3&&g.rep_police>=10",
+                    "passiveIncome": {
+                        "creds": 1.2
+                    },
+                    "moralityMax": -20,
+                    "unlocks": [
+                        "msn_job_police_coverup",
+                        "msn_job_police_blackmail"
+                    ],
+                    "flavor": "Everyone has secrets. You have a filing cabinet."
+                }
+            },
+            {
+                "tier": 3,
+                "high": {
+                    "title": "Captain",
+                    "desc": "The precinct listens. The city notices. Change starts here.",
+                    "require": "g.skill_investigation>=6&&g.rep_police>=40&&g.morality>=50",
+                    "passiveIncome": {
+                        "creds": 1.5,
+                        "data_chips": 0.1,
+                        "rep_police": 0.02
+                    },
+                    "moralityMin": 50,
+                    "unlocks": [
+                        "msn_job_police_reform",
+                        "msn_job_police_conspiracy"
+                    ],
+                    "flavor": "Your father never made Captain. You will."
+                },
+                "low": {
+                    "title": "Ghost Operative",
+                    "desc": "Officially, you don't exist. Unofficially, you run Internal Affairs.",
+                    "require": "g.skill_investigation>=6&&g.rep_police>=25&&g.morality<=-50",
+                    "passiveIncome": {
+                        "creds": 2.0,
+                        "data_chips": 0.15
+                    },
+                    "moralityMax": -50,
+                    "unlocks": [
+                        "msn_job_police_purge"
+                    ],
+                    "flavor": "No badge. No name. All power."
+                }
+            }
+        ]
+    },
+    {
+        "id": "job_trader",
+        "name": "Scrapyard Tradesman",
+        "desc": "Turn the scrapyard into a business. Buy low, refine, sell high.",
+        "flavor": "Grandpa sees potential. In the scrap — and in you.",
+        "icon": "⚖️",
+        "require": "g.sorting_station>0&&g.refinery>0",
+        "locked": true,
+        "group": "career",
+        "category": "trade",
+        "relatedSkill": "skill_crafting",
+        "relatedFaction": null,
+        "tiers": [
+            {
+                "tier": 1,
+                "high": {
+                    "title": "Apprentice",
+                    "desc": "Learning the trade honestly. Fair prices, repeat customers.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.4,
+                        "scrap": 0.2
+                    },
+                    "moralityMin": 0,
+                    "unlocks": [
+                        "msn_job_trader_supply_run"
+                    ],
+                    "flavor": "Honest work for honest creds."
+                },
+                "low": {
+                    "title": "Fence",
+                    "desc": "You don't ask where it came from. They don't ask where it goes.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.6
+                    },
+                    "moralityMax": -1,
+                    "unlocks": [
+                        "msn_job_trader_hot_goods"
+                    ],
+                    "flavor": "Everything has a buyer. Everything."
+                }
+            },
+            {
+                "tier": 2,
+                "high": {
+                    "title": "Shop Owner",
+                    "desc": "A legitimate storefront. People come to YOU now.",
+                    "require": "g.skill_crafting>=3&&g.creds>=200",
+                    "passiveIncome": {
+                        "creds": 1.0,
+                        "scrap": 0.3,
+                        "nano_infra": 0.05
+                    },
+                    "moralityMin": 15,
+                    "unlocks": [
+                        "msn_job_trader_expansion"
+                    ],
+                    "flavor": "Open for business. The sign has your name on it."
+                },
+                "low": {
+                    "title": "Black Market Dealer",
+                    "desc": "Your warehouse has no address. Clients know the knock.",
+                    "require": "g.skill_crafting>=3&&g.creds>=150",
+                    "passiveIncome": {
+                        "creds": 1.5,
+                        "rep_underground": 0.02
+                    },
+                    "moralityMax": -15,
+                    "unlocks": [
+                        "msn_job_trader_smuggling"
+                    ],
+                    "flavor": "No receipts. No records. No refunds."
+                }
+            },
+            {
+                "tier": 3,
+                "high": {
+                    "title": "Industrial Magnate",
+                    "desc": "Your supply chain stretches across districts. Fair trade, real impact.",
+                    "require": "g.skill_crafting>=6&&g.creds>=500&&g.morality>=40",
+                    "passiveIncome": {
+                        "creds": 2.0,
+                        "nano_infra": 0.1,
+                        "ceramite": 0.03
+                    },
+                    "moralityMin": 40,
+                    "unlocks": [
+                        "msn_job_trader_district_contract"
+                    ],
+                    "flavor": "You built this. Brick by brick. Clean."
+                },
+                "low": {
+                    "title": "Cartel Boss",
+                    "desc": "You control the flow. Materials, weapons, information. All of it.",
+                    "require": "g.skill_crafting>=5&&g.creds>=400&&g.morality<=-40",
+                    "passiveIncome": {
+                        "creds": 3.0,
+                        "rep_underground": 0.05
+                    },
+                    "moralityMax": -40,
+                    "unlocks": [
+                        "msn_job_trader_hostile_takeover"
+                    ],
+                    "flavor": "They call you boss. They mean it."
+                }
+            }
+        ]
+    },
+    {
+        "id": "job_netrunner",
+        "name": "Netrunner",
+        "desc": "The digital underworld pays well for those who can navigate it.",
+        "flavor": "Every system has a backdoor. You just need to find it.",
+        "icon": "⌨️",
+        "require": "g.research_bench>0&&g.skill_hacking>=1",
+        "locked": true,
+        "group": "career",
+        "category": "tech",
+        "relatedSkill": "skill_hacking",
+        "relatedFaction": null,
+        "tiers": [
+            {
+                "tier": 1,
+                "high": {
+                    "title": "White Hat Script Kiddie",
+                    "desc": "Testing security systems. Finding vulnerabilities before the bad guys do.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.3,
+                        "data_chips": 0.08
+                    },
+                    "moralityMin": 0,
+                    "unlocks": [
+                        "msn_job_net_security_audit"
+                    ],
+                    "flavor": "Ethical hacking. The oxymoron that pays bills."
+                },
+                "low": {
+                    "title": "Script Kiddie",
+                    "desc": "Running other people's exploits. Small scores, low risk.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.5,
+                        "data_chips": 0.05
+                    },
+                    "moralityMax": -1,
+                    "unlocks": [
+                        "msn_job_net_data_theft"
+                    ],
+                    "flavor": "Copy, paste, profit."
+                }
+            },
+            {
+                "tier": 2,
+                "high": {
+                    "title": "Data Analyst",
+                    "desc": "Corporate security consultant. Legal access to illegal-grade tools.",
+                    "require": "g.skill_hacking>=4&&g.data_chips>=20",
+                    "passiveIncome": {
+                        "creds": 1.0,
+                        "data_chips": 0.15,
+                        "rep_corporate": 0.02
+                    },
+                    "moralityMin": 20,
+                    "unlocks": [
+                        "msn_job_net_corporate_breach"
+                    ],
+                    "flavor": "They pay you to think like a criminal. Without being one."
+                },
+                "low": {
+                    "title": "Data Broker",
+                    "desc": "Information is currency. You're the exchange.",
+                    "require": "g.skill_hacking>=3&&g.data_chips>=15",
+                    "passiveIncome": {
+                        "creds": 1.5,
+                        "data_chips": 0.1
+                    },
+                    "moralityMax": -20,
+                    "unlocks": [
+                        "msn_job_net_identity_theft"
+                    ],
+                    "flavor": "Names, records, secrets. Everything has a price."
+                }
+            },
+            {
+                "tier": 3,
+                "high": {
+                    "title": "Digital Guardian",
+                    "desc": "You protect the city's infrastructure from digital collapse.",
+                    "require": "g.skill_hacking>=7&&g.morality>=50",
+                    "passiveIncome": {
+                        "creds": 2.0,
+                        "data_chips": 0.2,
+                        "quantum_circuits": 0.02
+                    },
+                    "moralityMin": 50,
+                    "unlocks": [
+                        "msn_job_net_ghost_protocol"
+                    ],
+                    "flavor": "The net has a guardian. They don't know your name. That's the point."
+                },
+                "low": {
+                    "title": "Digital Ghost",
+                    "desc": "You don't exist in any system. But your code runs in all of them.",
+                    "require": "g.skill_hacking>=6&&g.morality<=-50",
+                    "passiveIncome": {
+                        "creds": 3.5,
+                        "data_chips": 0.25
+                    },
+                    "moralityMax": -50,
+                    "unlocks": [
+                        "msn_job_net_total_control"
+                    ],
+                    "flavor": "Ghost in the machine. The machine doesn't mind."
+                }
+            }
+        ]
+    },
+    {
+        "id": "job_arena",
+        "name": "Arena Fighter",
+        "desc": "The Underground Arena pays in glory and blood. Sometimes both.",
+        "flavor": "The crowd doesn't care about your story. Just your fists.",
+        "icon": "⚔️",
+        "require": "g.garage>0&&g.skill_combat>=2",
+        "locked": true,
+        "group": "career",
+        "category": "combat",
+        "relatedSkill": "skill_combat",
+        "relatedFaction": null,
+        "tiers": [
+            {
+                "tier": 1,
+                "high": {
+                    "title": "Exhibition Fighter",
+                    "desc": "Clean fights. No killing. The crowd loves a hero.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.3,
+                        "glory": 0.1
+                    },
+                    "moralityMin": 0,
+                    "unlocks": [
+                        "msn_job_arena_debut"
+                    ],
+                    "flavor": "You fight fair. The crowd respects it."
+                },
+                "low": {
+                    "title": "Pit Fighter",
+                    "desc": "No rules. No ref. Winner takes everything.",
+                    "require": "",
+                    "passiveIncome": {
+                        "creds": 0.5,
+                        "glory": 0.05
+                    },
+                    "moralityMax": -1,
+                    "unlocks": [
+                        "msn_job_arena_pit_fight"
+                    ],
+                    "flavor": "The pit doesn't have rules. That's why it pays."
+                }
+            },
+            {
+                "tier": 2,
+                "high": {
+                    "title": "Ranked Challenger",
+                    "desc": "Your name is on the board. People buy tickets to see you.",
+                    "require": "g.skill_combat>=4&&g.glory>=50",
+                    "passiveIncome": {
+                        "creds": 1.0,
+                        "glory": 0.2
+                    },
+                    "moralityMin": 15,
+                    "unlocks": [
+                        "msn_job_arena_ranked_1",
+                        "msn_job_arena_rival"
+                    ],
+                    "flavor": "Ranked. Feared. Respected."
+                },
+                "low": {
+                    "title": "Blood Sport Champion",
+                    "desc": "The underground circuit. Higher stakes. No mercy.",
+                    "require": "g.skill_combat>=4&&g.glory>=30",
+                    "passiveIncome": {
+                        "creds": 1.5,
+                        "glory": 0.1,
+                        "parts": 0.05
+                    },
+                    "moralityMax": -15,
+                    "unlocks": [
+                        "msn_job_arena_underground",
+                        "msn_job_arena_betting"
+                    ],
+                    "flavor": "They bet on you. You bet on yourself."
+                }
+            },
+            {
+                "tier": 3,
+                "high": {
+                    "title": "Champion of New Tokyo",
+                    "desc": "The city's hero. Every kid has your poster. Every corp wants your name.",
+                    "require": "g.skill_combat>=7&&g.glory>=150&&g.morality>=40",
+                    "passiveIncome": {
+                        "creds": 2.5,
+                        "glory": 0.4,
+                        "rep_police": 0.01
+                    },
+                    "moralityMin": 40,
+                    "unlocks": [
+                        "msn_job_arena_championship"
+                    ],
+                    "flavor": "They chant your name. All of them."
+                },
+                "low": {
+                    "title": "Arena Warlord",
+                    "desc": "You own the pit. Fighters answer to you. The arena IS you.",
+                    "require": "g.skill_combat>=6&&g.glory>=100&&g.morality<=-40",
+                    "passiveIncome": {
+                        "creds": 3.5,
+                        "glory": 0.15
+                    },
+                    "moralityMax": -40,
+                    "unlocks": [
+                        "msn_job_arena_hostile_takeover"
+                    ],
+                    "flavor": "The arena doesn't need a champion. It needs a king."
+                }
+            }
+        ]
+    }
+]

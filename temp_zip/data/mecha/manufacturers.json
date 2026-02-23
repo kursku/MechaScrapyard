@@ -1,0 +1,384 @@
+[
+  {
+    "id": "kz_industrial",
+    "name": "KZ Industrial",
+    "nameLoc": "坤重工業",
+    "nameRomanized": "Kūnzhòng Gōngyè",
+    "nation": "chinese",
+    "type": "structural",
+    "specialty": "Heavy-duty labor frames, structural parts, industrial tools",
+    "origins": [
+      "labor"
+    ],
+    "categories": [
+      "medium",
+      "heavy"
+    ],
+    "tierRange": [
+      1,
+      3
+    ],
+    "color": "#d4a017",
+    "colorAlt": "#8b6914",
+    "icon": "⚙",
+    "slogan": "Built for the job. Any job.",
+    "desc": "Chinese industrial conglomerate dominating the Asian heavy labor mecha market. Docks, mining, construction — if it's heavy and needs to take punishment, it's KZ. Massively common in scrapyards because when a KZ breaks, nobody bothers fixing it. They just buy another one.",
+    "flavor": "The paint's always peeling. The welds are always ugly. And the damn thing always works.",
+    "availability": "common",
+    "vendorLocation": "Scrapyard salvage, Neon Bazaar bulk dealers",
+    "statBias": {
+      "hp": 1.15,
+      "armor": 1.0,
+      "weight": 1.2,
+      "heatMod": 0.0,
+      "condition_decay": 1.0
+    },
+    "loreUnlock": "Discover your first KZ part in the scrapyard.",
+    "notes": "Also produces improvised fight weapons (d4-d6): industrial cutters, hydraulic rams, plasma torches repurposed from dockyard tools."
+  },
+  {
+    "id": "sora_motor",
+    "name": "Sora Motor Corp",
+    "nameLoc": "ソラモーター",
+    "nameRomanized": "Sora Mōtā",
+    "nation": "japanese",
+    "type": "structural",
+    "specialty": "Mass-produced civilian frames and parts for transport and commuting",
+    "origins": [
+      "civilian"
+    ],
+    "categories": [
+      "light",
+      "medium"
+    ],
+    "tierRange": [
+      1,
+      2
+    ],
+    "color": "#4a9eda",
+    "colorAlt": "#2d6a9f",
+    "icon": "◇",
+    "slogan": "Moving New Tokyo Forward™",
+    "desc": "The Toyota of mechas. Mass production, acceptable quality, affordable price. Everyone in New Tokyo has piloted a Sora — for delivery, commuting, short-haul transport. The Neon Bazaar is stacked with used Sora stock. They're what you buy when you need something now and can't wait for better loot.",
+    "flavor": "Holographic Sora ads are everywhere. Smiling pilot, clean cockpit, zero scratches. Nobody's Sora actually looks like that.",
+    "availability": "common",
+    "vendorLocation": "Neon Bazaar (always in stock), general market",
+    "statBias": {
+      "hp": 0.9,
+      "armor": 0.85,
+      "weight": 0.85,
+      "heatMod": 0.0,
+      "condition_decay": 1.15
+    },
+    "loreUnlock": "Purchase or salvage your first Sora part.",
+    "notes": "Condition degrades faster than average (mass production = lower durability). Cheapest parts on the market. Ideal early-game filler."
+  },
+  {
+    "id": "aegis_tac",
+    "name": "Aegis-Tac Solutions",
+    "nameLoc": null,
+    "nameRomanized": null,
+    "nation": "international",
+    "type": "structural",
+    "specialty": "Law enforcement and corporate security frames, standardized patrol-grade equipment",
+    "origins": [
+      "police"
+    ],
+    "categories": [
+      "medium"
+    ],
+    "tierRange": [
+      2,
+      4
+    ],
+    "color": "#3366aa",
+    "colorAlt": "#1a3d6e",
+    "icon": "⬡",
+    "slogan": "Standard. Secure. Sufficient.",
+    "desc": "Multinational security contractor headquartered in Singapore. Supplies frames and equipment to New Tokyo police, corporate security, and private peacekeeping forces. Aegis-Tac isn't creative — it's consistent. Every part meets spec. Few surprises, fewer failures.",
+    "flavor": "That 'Sufficient' in the slogan tells you everything about their engineering philosophy.",
+    "availability": "uncommon",
+    "vendorLocation": "Police Surplus (requires police reputation), combat loot from Corporate Security enemies",
+    "statBias": {
+      "hp": 1.0,
+      "armor": 1.1,
+      "weight": 1.05,
+      "heatMod": 0.0,
+      "condition_decay": 0.85
+    },
+    "loreUnlock": "Defeat your first Corporate Security Unit or reach Police rep 1.",
+    "notes": "Condition degrades slower than average (mil-spec QA standards applied to police gear). The reliable B+ across the board. Also produces standardized short-category sidearms (tier 2-3)."
+  },
+  {
+    "id": "kuroda_heavy",
+    "name": "Kuroda Heavy Industries",
+    "nameLoc": "黒田重工",
+    "nameRomanized": "Kuroda Jūkō",
+    "nation": "japanese",
+    "type": "structural",
+    "specialty": "Military-grade frames, armor systems, heavy ordnance",
+    "origins": [
+      "military"
+    ],
+    "categories": [
+      "heavy"
+    ],
+    "tierRange": [
+      3,
+      5
+    ],
+    "color": "#2a2a2a",
+    "colorAlt": "#8b0000",
+    "icon": "◆",
+    "slogan": "Kuroda doesn't build mechas. Kuroda builds victories.",
+    "desc": "The zaibatsu. Military-industrial titan with defense contracts across allied governments. Kuroda parts are what the player desires but can't afford until late-game. Everything is overengineered — stronger, heavier, more expensive. Maintenance costs reflect the premium.",
+    "flavor": "The slogan appears on recruitment posters. It also appears on anti-war protest signs, dripping in red paint.",
+    "availability": "rare",
+    "vendorLocation": "Corporate Suppliers (requires military reputation), late-game mission loot",
+    "statBias": {
+      "hp": 1.2,
+      "armor": 1.25,
+      "weight": 1.3,
+      "heatMod": 0.05,
+      "condition_decay": 0.9
+    },
+    "loreUnlock": "Salvage your first military-origin part from a defeated enemy.",
+    "notes": "Also produces tier 4-5 long-category weapons (competes with Valletta at the top end). Repair costs are ~30% higher than average due to proprietary components."
+  },
+  {
+    "id": "phantom_works",
+    "name": "Phantom Works",
+    "nameLoc": "ファントム",
+    "nameRomanized": "Fantomu",
+    "nation": "stateless",
+    "type": "structural",
+    "specialty": "Experimental tech, prototype systems, one-off custom builds",
+    "origins": [
+      "exile"
+    ],
+    "categories": [
+      "light",
+      "medium",
+      "heavy"
+    ],
+    "tierRange": [
+      2,
+      5
+    ],
+    "color": "#9b59b6",
+    "colorAlt": "#4a1a6b",
+    "icon": "◌",
+    "slogan": null,
+    "desc": "Not a company. A network. Ex-corporate engineers who left (or were expelled from) the system. They operate from clandestine workshops and trade designs over encrypted mesh networks. Every Phantom piece is handmade — which means two 'identical' parts can have very different stats.",
+    "flavor": "No logo. No manual. No warranty. Just a weld mark that looks like a ghost, if you know where to look.",
+    "availability": "rare",
+    "vendorLocation": "Exile Traders (requires Exile reputation), special events, unique mission rewards",
+    "statBias": {
+      "hp": "variance",
+      "armor": "variance",
+      "weight": "variance",
+      "heatMod": "variance",
+      "condition_decay": 1.0
+    },
+    "loreUnlock": "Make first contact with the Exile faction.",
+    "notes": "statBias 'variance' means Phantom parts don't follow predictable stat curves. Each part is hand-designed with deliberate tradeoffs — e.g., a torso with 1 HP/turn regen but 0 armor, or legs with -30% weight but half normal integrity levels. The 'broken but brilliant' manufacturer."
+  },
+  {
+    "id": "hayabusa_eng",
+    "name": "Hayabusa Engineering",
+    "nameLoc": "隼エンジニアリング",
+    "nameRomanized": "Hayabusa Enjiniaringu",
+    "nation": "japanese",
+    "type": "structural",
+    "specialty": "Custom lightweight frames, precision-tuned parts, artisan craftsmanship",
+    "origins": [
+      "custom"
+    ],
+    "categories": [
+      "light",
+      "medium"
+    ],
+    "tierRange": [
+      1,
+      5
+    ],
+    "color": "#e8e8e8",
+    "colorAlt": "#c0392b",
+    "icon": "隼",
+    "slogan": "Three generations. One legacy.",
+    "desc": "The protagonist's family workshop. Founded by Grandpa as a micro-operation building custom lightweight frames for racing pilots and freelance scouts. Never big. Never corporate. Grandpa was an artisan, not a businessman. The company died with him — but the blueprints, tools, and philosophy survived in the workshop. When the player crafts parts, they are literally refounding Hayabusa Engineering.",
+    "flavor": "Every part stamped 'Hayabusa' carries the weight of three generations.",
+    "availability": "crafted",
+    "vendorLocation": "Player workshop only (crafting system)",
+    "statBias": {
+      "hp": "player_defined",
+      "armor": "player_defined",
+      "weight": "player_defined",
+      "heatMod": "player_defined",
+      "condition_decay": 0.9
+    },
+    "loreUnlock": "Restore the Garage and discover Dad's Hayabusa Mk.I frame.",
+    "notes": "All player-crafted parts and frames carry mfr: 'hayabusa_eng'. Stats are defined during crafting but inherit a slight condition_decay bonus (family quality). The starting frame (Hayabusa Mk.I) is the only non-crafted Hayabusa item — it's Dad's original build."
+  },
+  {
+    "id": "daewon_dynamics",
+    "name": "Daewon Dynamics",
+    "nameLoc": "대원 다이나믹스",
+    "nameRomanized": "Daewon Dainaemikseu",
+    "nation": "korean",
+    "type": "structural",
+    "specialty": "Electronics, sensors, neural interfaces, thermal management systems, backpack utilities",
+    "origins": [
+      "civilian"
+    ],
+    "categories": [
+      "light",
+      "medium"
+    ],
+    "tierRange": [
+      2,
+      4
+    ],
+    "color": "#00d4aa",
+    "colorAlt": "#008866",
+    "icon": "◈",
+    "slogan": "Interface with Tomorrow.",
+    "desc": "The ambitious newcomer. Where Sora is yesterday's reliable Toyota, Daewon is tomorrow's Tesla-meets-Samsung. Specialized in electronics, sensors, neural interfaces, and cooling systems. They don't make full frames (yet), but their tech parts and backpack utilities are best-in-class. A Daewon torso runs cooler than anything else on the market.",
+    "flavor": "Daewon's New Tokyo showroom is all white surfaces and blue LEDs. The contrast with the scrapyard outside is almost offensive.",
+    "availability": "uncommon",
+    "vendorLocation": "Neon Bazaar (premium section), market tech vendors",
+    "statBias": {
+      "hp": 0.85,
+      "armor": 0.9,
+      "weight": 0.8,
+      "heatMod": -0.1,
+      "condition_decay": 1.0
+    },
+    "loreUnlock": "Visit the Neon Bazaar premium tech district.",
+    "notes": "Best heatMod in the game (negative = better cooling). Low HP and armor as tradeoff. Primary source of high-quality backpack utilities (Sensor Array, Stress Dampener, advanced cooling). Favors ENR/NEU-focused builds."
+  },
+  {
+    "id": "shibata_arms",
+    "name": "Shibata Arms",
+    "nameLoc": "柴田武器工業",
+    "nameRomanized": "Shibata Buki Kōgyō",
+    "nation": "japanese",
+    "type": "weapons",
+    "specialty": "Firearms — machine guns, shotguns, SMGs, autocannons (short category)",
+    "origins": [],
+    "categories": [],
+    "tierRange": [
+      1,
+      4
+    ],
+    "color": "#cc3333",
+    "colorAlt": "#8b1a1a",
+    "icon": "▪",
+    "slogan": "When it absolutely needs to die.",
+    "desc": "The most recognized name in mecha firearms. Machine guns, shotguns, SMGs, autocannons — if it fires a projectile, it's probably Shibata. Reliable, available everywhere, scaling from cheap d4 peashooters to premium d10 heavy autocannons. The 'default' arms dealer of New Tokyo.",
+    "flavor": "That slogan is graffiti on half the walls in the scrapyard district. Shibata's marketing department claims they didn't start it. Nobody believes them.",
+    "availability": "progressive",
+    "vendorLocation": "General market (tier 1-2), Police Surplus (tier 2-3), specialized dealers (tier 4)",
+    "statBias": {
+      "accuracyMod": 1.1,
+      "heatGen": 1.0,
+      "supplyCost": 1.0,
+      "baseDamage": 1.0
+    },
+    "loreUnlock": "Acquire your first firearm.",
+    "notes": "Weapons only — no structural parts or frames. Covers short category primarily. Above-average accuracy, baseline everything else. The gun that works every time. Existing weapons.json items: MG-206 'Rattler', Scatterblast SG-4."
+  },
+  {
+    "id": "taeyang_forge",
+    "name": "Taeyang Forge",
+    "nameLoc": "태양단조",
+    "nameRomanized": "Taeyang Danjo",
+    "nation": "korean",
+    "type": "weapons",
+    "specialty": "Melee weapons — heat blades, pile bunkers, chain swords, vibro-lances (fight category)",
+    "origins": [],
+    "categories": [],
+    "tierRange": [
+      1,
+      4
+    ],
+    "color": "#ff6b1a",
+    "colorAlt": "#cc4400",
+    "icon": "△",
+    "slogan": "Forged in Seoul. Tempered in New Tokyo.",
+    "desc": "Korean metallurgy meets cyberpunk energy engineering. Heat blades, pile bunkers, chain swords, vibro-lances — everything that cuts, pierces, or crushes up close. Taeyang weapons run hot. Very hot. High heat generation, but devastating damage output. The risk-reward melee specialist.",
+    "flavor": "Every blade comes with a solar brand seared into the metal. Pilots say it glows faintly when the weapon overheats. Taeyang says that's a feature, not a defect.",
+    "availability": "progressive",
+    "vendorLocation": "Neon Bazaar melee specialists (tier 1-2), Underground Contacts (tier 3-4)",
+    "statBias": {
+      "accuracyMod": 0.9,
+      "heatGen": 1.25,
+      "supplyCost": 0.85,
+      "baseDamage": 1.15
+    },
+    "loreUnlock": "Acquire your first melee weapon beyond the Mech Fist.",
+    "notes": "Weapons only — fight category. High baseDamage, high heatGen, low accuracy. Natural synergy with Light frames (fast heat dissipation offsets Taeyang's heat generation). Existing weapons.json items: ThermoEdge Mk.I, AP Lance 'Puncture'."
+  },
+  {
+    "id": "valletta_precision",
+    "name": "Valletta Precision",
+    "nameLoc": "Valletta Präzision AG",
+    "nameRomanized": null,
+    "nation": "european",
+    "type": "weapons",
+    "specialty": "Artillery — missile pods, rail cannons, mortars, sniper systems (long category)",
+    "origins": [],
+    "categories": [],
+    "tierRange": [
+      2,
+      5
+    ],
+    "color": "#f0f0f0",
+    "colorAlt": "#4a6fa5",
+    "icon": "◯",
+    "slogan": "Distance is safety. Precision is mercy.",
+    "desc": "Swiss-Maltese precision engineering applied to long-range destruction. Missile pods, rail cannons, mortars, sniper systems. Valletta is expensive, rare, and surgically efficient. Highest accuracy in the game, low heat generation, but supply costs are steep — precision ammunition doesn't come cheap.",
+    "flavor": "Valletta workshops in New Tokyo are clinical white spaces that smell of clean metal. The staff wear lab coats, not coveralls. It feels more like a hospital than an armory.",
+    "availability": "progressive",
+    "vendorLocation": "Corporate Suppliers (tier 2-3), specialized military dealers (tier 4-5)",
+    "statBias": {
+      "accuracyMod": 1.25,
+      "heatGen": 0.8,
+      "supplyCost": 1.2,
+      "baseDamage": 1.1
+    },
+    "loreUnlock": "Unlock shoulder weapon slots (Medium or Heavy frame).",
+    "notes": "Weapons only — long category. Opposite philosophy to Taeyang: cold, calculated, efficient. Natural synergy with Heavy frames (shoulder mounts + burst damage before heat accumulates). Existing weapons.json items: Valkyr Mk.I Salvo. Not available at tier 1 — minimum entry is tier 2."
+  },
+  {
+    "id": "red_creek",
+    "name": "Red Creek Arsenal",
+    "nameLoc": "紅渓兵工",
+    "nameRomanized": "Hóngxī Bīnggōng",
+    "nation": "chinese",
+    "type": "weapons",
+    "specialty": "Cross-category weapons — copies, knockoffs, and occasional originals across all weapon types",
+    "origins": [],
+    "categories": [],
+    "tierRange": [
+      1,
+      3
+    ],
+    "color": "#aa4444",
+    "colorAlt": "#661a1a",
+    "icon": "✕",
+    "slogan": null,
+    "desc": "Not a factory. A network of workshops producing everything: Shibata copies, budget Taeyang knockoffs, discount Valletta imitations, and occasionally something completely original that nobody expected. Quality is inconsistent. Price is unbeatable. Always found in the Neon Bazaar.",
+    "flavor": "No brand. No warranty. No questions. Every Red Creek workshop stamps its own mark — none of them match.",
+    "availability": "common",
+    "vendorLocation": "Neon Bazaar black market (always in stock), Underground Contacts",
+    "statBias": {
+      "accuracyMod": 0.88,
+      "heatGen": 1.05,
+      "supplyCost": 0.8,
+      "baseDamage": 0.9
+    },
+    "loreUnlock": "Browse the Neon Bazaar weapons stalls.",
+    "notes": "Weapons across all categories (fight/short/long). Stats typically 10-15% below branded equivalents, BUT significantly cheaper and occasionally features a unique property (rare token effect, unusual stat combo). The 'let's see what happens' manufacturer. Max tier 3 — Red Creek can't replicate top-tier military tech."
+  }
+]

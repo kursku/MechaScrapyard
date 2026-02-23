@@ -1,0 +1,263 @@
+[
+  {
+    "id": "skill_combat",
+    "name": "Combat",
+    "desc": "Piloting skill, weapon handling, and battlefield awareness. The core combat proficiency — everything else is specialization.",
+    "school": "combat",
+    "require": "g.garagem>0",
+    "max": 10,
+    "primaryStats": [
+      "muscle",
+      "reflex"
+    ],
+    "secondaryStats": [
+      "grit"
+    ],
+    "growthSource": "combat_missions",
+    "effects": {
+      "maneuverSlots": {
+        "formula": "1 + floor(skill_combat / 3)",
+        "desc": "Maneuver slots: 1 at level 1, 2 at level 3, 3 at level 6, 4 at level 9"
+      },
+      "combatAccuracy": {
+        "formula": "skill_combat * 1",
+        "desc": "+1 flat accuracy per level"
+      },
+      "gloryBonus": {
+        "formula": "skill_combat * 0.05",
+        "desc": "+5% glory earned per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock 2nd maneuver slot + access to Tier 2 maneuvers",
+      "5": "Unlock Stance selection (before this: locked to Balanced)",
+      "6": "Unlock 3rd maneuver slot + access to Tier 3 maneuvers",
+      "8": "Unlock Targeting mode selection (before this: locked to Balanced targeting)",
+      "9": "Unlock 4th maneuver slot",
+      "10": "Master Combat: all maneuver positions available, +10% crit chance"
+    },
+    "notes": "THE combat gate. Maneuver slots are the most impactful unlock. Level 5 unlocking stances and level 8 unlocking targeting creates a progression where the player gradually gains control over pre-combat configuration."
+  },
+  {
+    "id": "skill_gathering",
+    "name": "Resource Gathering",
+    "desc": "Efficiency in collecting, sorting, and identifying raw materials from the scrapyard.",
+    "school": "gathering",
+    "require": "g.sorting_station>0",
+    "max": 10,
+    "primaryStats": [
+      "muscle",
+      "grit"
+    ],
+    "secondaryStats": [
+      "focus"
+    ],
+    "growthSource": "gathering_tasks",
+    "effects": {
+      "gatherRate": {
+        "formula": "1 + (skill_gathering * 0.08)",
+        "desc": "+8% gathering speed per level"
+      },
+      "rareFind": {
+        "formula": "skill_gathering * 0.02",
+        "desc": "+2% chance of rare material per level"
+      },
+      "sortQuality": {
+        "formula": "skill_gathering * 0.05",
+        "desc": "+5% classified scrap yield per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock auto-sort (scrap automatically classified)",
+      "5": "Unlock deep scavenging (access to buried materials)",
+      "7": "Unlock material sensing (preview scrap type before collecting)",
+      "10": "Master Gatherer: double rare material chance, passive scrap generation"
+    },
+    "notes": "The first skill the player levels. Gathering is available from Phase 2 (sorting station). Muscle and grit make sense — it's physical labor."
+  },
+  {
+    "id": "skill_mecha_tech",
+    "name": "Mecha Tech",
+    "desc": "Knowledge of frame assembly, part maintenance, and field modifications. The mechanic's art.",
+    "school": "mecha",
+    "require": "g.garagem>0",
+    "max": 10,
+    "primaryStats": [
+      "neuro",
+      "focus"
+    ],
+    "secondaryStats": [
+      "muscle"
+    ],
+    "growthSource": "repair_install_dismantle",
+    "effects": {
+      "repairEfficiency": {
+        "formula": "1 + (skill_mecha_tech * 0.10)",
+        "desc": "+10% repair condition restored per level"
+      },
+      "installSpeed": {
+        "formula": "1 - (skill_mecha_tech * 0.05)",
+        "desc": "-5% install/swap time per level"
+      },
+      "conditionDecay": {
+        "formula": "1 - (skill_mecha_tech * 0.02)",
+        "desc": "-2% condition decay rate per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock part condition preview (see exact % before installing)",
+      "5": "Unlock field repair during combat (new maneuver-like action)",
+      "7": "Unlock overhaul (restore part to 100% condition for materials)",
+      "10": "Master Mechanic: parts decay 20% slower, unlock Hayabusa Mk.II blueprint"
+    },
+    "notes": "Directly affects the parts lifecycle. Level 10 milestone unlocks the Hayabusa Mk.II blueprint — narrative payoff for mastering Dad's craft."
+  },
+  {
+    "id": "skill_crafting",
+    "name": "Crafting & Research",
+    "desc": "Fabrication techniques, blueprint analysis, and material science. Turning scrap into precision components.",
+    "school": "crafting",
+    "require": "g.refinery>0",
+    "max": 10,
+    "primaryStats": [
+      "focus",
+      "neuro"
+    ],
+    "secondaryStats": [
+      "grit"
+    ],
+    "growthSource": "crafting_research_tasks",
+    "effects": {
+      "craftSpeed": {
+        "formula": "1 - (skill_crafting * 0.06)",
+        "desc": "-6% crafting time per level"
+      },
+      "craftQuality": {
+        "formula": "skill_crafting * 0.03",
+        "desc": "+3% chance of quality bonus on crafted items per level"
+      },
+      "researchSpeed": {
+        "formula": "1 - (skill_crafting * 0.05)",
+        "desc": "-5% research time per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock batch crafting (queue multiple items)",
+      "5": "Unlock reverse engineering (study enemy parts for blueprints)",
+      "7": "Unlock experimental crafting (chance of special property on crafted parts)",
+      "10": "Master Crafter: all Hayabusa blueprints available, crafted parts get +1 tier"
+    },
+    "notes": "Gates the crafting endgame. Level 10 unlocking all Hayabusa blueprints + tier bonus is the capstone of the player-as-artisan fantasy."
+  },
+  {
+    "id": "skill_hacking",
+    "name": "Hacking & Cybernetics",
+    "desc": "Netrunning, system exploitation, and neural interface optimization. The digital edge.",
+    "school": "hacking",
+    "require": "g.mesa_pesquisa>0",
+    "max": 10,
+    "primaryStats": [
+      "neuro"
+    ],
+    "secondaryStats": [
+      "focus",
+      "reflex"
+    ],
+    "growthSource": "hacking_tasks",
+    "effects": {
+      "hackSuccess": {
+        "formula": "skill_hacking * 0.05",
+        "desc": "+5% hack success rate per level"
+      },
+      "errorTokenChance": {
+        "formula": "skill_hacking * 0.02",
+        "desc": "+2% chance to apply ERROR token in combat per level"
+      },
+      "neuralEfficiency": {
+        "formula": "skill_hacking * 0.03",
+        "desc": "+3% idle task efficiency per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock network scan (reveal enemy loadout before combat)",
+      "5": "Unlock system intrusion (disable one enemy weapon for 2 turns)",
+      "7": "Unlock neural overclock (temporary +2 to all stats for one combat)",
+      "10": "Master Hacker: guaranteed ERROR token on first attack, unlock Cybernetic Bench augments"
+    },
+    "notes": "The 'tech combat' skill. Hacking milestones provide combat utility without being about damage — scanning, disabling, debuffing. Level 10 gatekeeps cybernetic augments (stats beyond the 10 cap)."
+  },
+  {
+    "id": "skill_investigation",
+    "name": "Investigation",
+    "desc": "Analyzing clues, deduction, and uncovering hidden information. The detective's eye.",
+    "school": "investigation",
+    "require": "g.workshop_lv2>0",
+    "max": 10,
+    "primaryStats": [
+      "focus",
+      "neuro"
+    ],
+    "secondaryStats": [
+      "charisma"
+    ],
+    "growthSource": "exploration_events",
+    "effects": {
+      "clueDetection": {
+        "formula": "skill_investigation * 0.05",
+        "desc": "+5% chance to find hidden events per level"
+      },
+      "lootScan": {
+        "formula": "skill_investigation * 0.03",
+        "desc": "+3% bonus loot from missions per level"
+      },
+      "eventQuality": {
+        "formula": "skill_investigation * 0.05",
+        "desc": "+5% better outcomes from random events per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock zone scouting (preview encounter pool before entering)",
+      "5": "Unlock intelligence gathering (reveal boss loadouts)",
+      "7": "Unlock hidden zones (access to secret areas in each Phase)",
+      "10": "Master Investigator: all zone secrets revealed, unlock Dad's encrypted journal"
+    },
+    "notes": "The narrative skill. Investigation milestones are about information — knowing what you'll face before facing it. Level 10 unlocks Dad's journal, a key narrative artifact."
+  },
+  {
+    "id": "skill_social",
+    "name": "Social Influence",
+    "desc": "Diplomacy, intimidation, and commercial negotiation. Words as weapons.",
+    "school": "social",
+    "require": "g.workshop_lv2>0",
+    "max": 10,
+    "primaryStats": [
+      "charisma"
+    ],
+    "secondaryStats": [
+      "grit",
+      "focus"
+    ],
+    "growthSource": "social_trading_events",
+    "effects": {
+      "priceMod": {
+        "formula": "1 - (skill_social * 0.03)",
+        "desc": "-3% all buy prices per level"
+      },
+      "repGain": {
+        "formula": "1 + (skill_social * 0.08)",
+        "desc": "+8% reputation gain per level"
+      },
+      "npcTaskSpeed": {
+        "formula": "1 - (skill_social * 0.04)",
+        "desc": "-4% NPC task time per level"
+      }
+    },
+    "milestones": {
+      "3": "Unlock faction negotiation (better faction mission rewards)",
+      "5": "Unlock black market access (Exile vendors without rep requirement)",
+      "7": "Unlock corporate contacts (buy Aegis/Kuroda gear at reduced rep threshold)",
+      "10": "Master Diplomat: all faction vendors available, NPC mechanic works for free"
+    },
+    "notes": "The economy skill. Level 5 bypassing Exile rep for vendor access is a powerful shortcut. Level 7 reducing rep thresholds for premium gear accelerates endgame. Level 10 making the NPC mechanic free removes a major recurring cost."
+  }
+]

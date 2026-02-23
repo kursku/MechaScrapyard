@@ -1,0 +1,611 @@
+[
+  {
+    "id": "bp_at_shield_coating",
+    "name": "Aegis Shield Coating",
+    "desc": "Apply Aegis-grade ablative coating to any torso part. Increases armor by 2.",
+    "type": "part_mod",
+    "targetSlot": "torso",
+    "faction": "faction_ntpd",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 3
+    },
+    "materials": {
+      "ceramite": 3,
+      "ferrous_scrap": 10,
+      "creds": 30
+    },
+    "craftTime": 120,
+    "result": {
+      "armorBonus": 2
+    },
+    "notes": "Entry-level NTPD blueprint. +2 armor on any torso is significant early game."
+  },
+  {
+    "id": "bp_at_neural_regulator",
+    "name": "Neural Regulator Assembly",
+    "desc": "Craft an AT-NR Neural Regulator from scratch. Cheaper than buying, better than finding.",
+    "type": "craft_item",
+    "craftedItem": "backpack_dampener_advanced",
+    "faction": "faction_ntpd",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 5,
+      "skill_mecha_tech": 3
+    },
+    "materials": {
+      "nanofiber": 5,
+      "electronic_scrap": 8,
+      "data_chips": 2,
+      "creds": 50
+    },
+    "craftTime": 300,
+    "result": {
+      "item": "backpack_dampener_advanced"
+    },
+    "notes": "Craft the tier 3 stress dampener. Cheaper than buying at 100 cred vendor price."
+  },
+  {
+    "id": "bp_at_hardened_armor",
+    "name": "Hardened Armor Plating",
+    "desc": "Reinforce any arm or leg part with Aegis composite plating. +1 armor, +10 max HP.",
+    "type": "part_mod",
+    "targetSlot": [
+      "left_arm",
+      "right_arm",
+      "legs"
+    ],
+    "faction": "faction_ntpd",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 5
+    },
+    "materials": {
+      "ceramite": 5,
+      "ferrous_scrap": 15,
+      "nano_infra": 3,
+      "creds": 60
+    },
+    "craftTime": 180,
+    "result": {
+      "armorBonus": 1,
+      "hpBonus": 10
+    },
+    "notes": "Defensive mod for limbs. +10 HP is almost another integrity bar on light parts."
+  },
+  {
+    "id": "bp_at_sentinel_custom",
+    "name": "Custom Aegis Sentinel Frame",
+    "desc": "Build a personalized Sentinel frame with enhanced DEF and COR. The frame the police wish they had.",
+    "type": "craft_frame",
+    "craftedItem": "frame_aegis_sentinel_custom",
+    "faction": "faction_ntpd",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 7,
+      "skill_mecha_tech": 5
+    },
+    "materials": {
+      "ceramite": 15,
+      "nanofiber": 10,
+      "ferrous_scrap": 30,
+      "data_chips": 5,
+      "creds": 200
+    },
+    "craftTime": 600,
+    "result": {
+      "frame": "frame_aegis_sentinel_custom",
+      "statMods": {
+        "base_def": 2,
+        "base_cor": 1
+      }
+    },
+    "notes": "Endgame NTPD reward. Custom Sentinel with +2 DEF, +1 COR over base. The definitive Medium defensive frame."
+  },
+  {
+    "id": "bp_kr_reinforced_plating",
+    "name": "Kuroda Reinforced Plating",
+    "desc": "Apply military-grade reinforcement to any part. +2 armor, +1 integrity bar.",
+    "type": "part_mod",
+    "targetSlot": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "legs"
+    ],
+    "faction": "faction_kuroda_command",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 4,
+      "skill_mecha_tech": 3
+    },
+    "materials": {
+      "ceramite": 8,
+      "ferrous_scrap": 20,
+      "creds": 80
+    },
+    "craftTime": 240,
+    "result": {
+      "armorBonus": 2,
+      "integrityBonus": 1
+    },
+    "notes": "+1 integrity bar is MASSIVE. Turns a 2-bar arm into a 3-bar arm. The premier defensive blueprint."
+  },
+  {
+    "id": "bp_kr_siege_system",
+    "name": "Siege Weapon System",
+    "desc": "Modify any shoulder-mounted weapon to deal +20% damage. Kuroda siege doctrine: more firepower, always.",
+    "type": "weapon_mod",
+    "targetSlot": [
+      "left_shoulder",
+      "right_shoulder"
+    ],
+    "faction": "faction_kuroda_command",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 5
+    },
+    "materials": {
+      "ferrous_scrap": 15,
+      "electronic_scrap": 5,
+      "data_chips": 3,
+      "creds": 100
+    },
+    "craftTime": 180,
+    "result": {
+      "damageMod": 1.2
+    },
+    "notes": "+20% damage on shoulder weapons. On a Type 12 Judgment (9 base damage), that's +1.8 damage per hit."
+  },
+  {
+    "id": "bp_kr_heavy_weapon_mod",
+    "name": "Heavy Weapon Stabilizer",
+    "desc": "Reduce heat generation on any weapon by 3. Kuroda cooling infrastructure adapted for field use.",
+    "type": "weapon_mod",
+    "targetSlot": [
+      "left_hand",
+      "right_hand",
+      "left_shoulder",
+      "right_shoulder"
+    ],
+    "faction": "faction_kuroda_command",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 4,
+      "skill_mecha_tech": 4
+    },
+    "materials": {
+      "nanofiber": 4,
+      "electronic_scrap": 10,
+      "creds": 75
+    },
+    "craftTime": 150,
+    "result": {
+      "heatGenReduce": 3
+    },
+    "notes": "-3 heat gen on ANY weapon. Turns hot weapons into manageable ones."
+  },
+  {
+    "id": "bp_kr_type90_custom",
+    "name": "Custom Type 90 Fortress Frame",
+    "desc": "Build a personalized Type 90 with enhanced firepower. Steele's own modifications, shared as a sign of respect.",
+    "type": "craft_frame",
+    "craftedItem": "frame_kuroda_type90_custom",
+    "faction": "faction_kuroda_command",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 8,
+      "skill_mecha_tech": 6
+    },
+    "materials": {
+      "ceramite": 25,
+      "ferrous_scrap": 40,
+      "nanofiber": 10,
+      "data_chips": 8,
+      "creds": 350
+    },
+    "craftTime": 900,
+    "result": {
+      "frame": "frame_kuroda_type90_custom",
+      "statMods": {
+        "base_atk": 1,
+        "base_def": 1
+      }
+    },
+    "notes": "Endgame Kuroda reward. Custom Type 90 with +1 ATK, +1 DEF. The heaviest, deadliest frame in the game."
+  },
+  {
+    "id": "bp_rc_overclock_custom",
+    "name": "Custom Overclock Module",
+    "desc": "Build an improved RC Overclock Module. +2 ATK instead of +1, same drawbacks. More risk, more reward.",
+    "type": "craft_item",
+    "craftedItem": "backpack_overclock_custom",
+    "faction": "faction_underground",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 3
+    },
+    "materials": {
+      "electronic_scrap": 5,
+      "ferrous_scrap": 8,
+      "creds": 20
+    },
+    "craftTime": 90,
+    "result": {
+      "item": "backpack_overclock_custom",
+      "effect": {
+        "atkBonus": 2,
+        "defBonus": -1,
+        "heatPerTurn": 4,
+        "stressPerTurnMod": 0.15
+      }
+    },
+    "notes": "Red Creek philosophy: more power, more problems. The cheap aggression option."
+  },
+  {
+    "id": "bp_scrapyard_special",
+    "name": "Scrapyard Frankenstein",
+    "desc": "Combine 3 damaged parts into 1 functional part of random type. The Underground's recycling philosophy.",
+    "type": "recycle",
+    "faction": "faction_underground",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 3,
+      "skill_gathering": 3
+    },
+    "materials": {
+      "ferrous_scrap": 5,
+      "parts": 3
+    },
+    "craftTime": 60,
+    "result": {
+      "randomPart": true,
+      "tierRange": [
+        1,
+        3
+      ],
+      "conditionRange": [
+        0.6,
+        0.9
+      ]
+    },
+    "notes": "The 'recycle' blueprint. Turn trash into treasure. Random output keeps it interesting. The scrapyard philosophy made mechanical."
+  },
+  {
+    "id": "bp_sora_efficiency_mod",
+    "name": "Sora Efficiency Overhaul",
+    "desc": "Modify any Light frame to reduce heat generation by 10% and supply consumption by 10%.",
+    "type": "frame_mod",
+    "targetCategory": "light",
+    "faction": "faction_underground",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_mecha_tech": 5,
+      "skill_crafting": 4
+    },
+    "materials": {
+      "polymer_scrap": 10,
+      "electronic_scrap": 8,
+      "nanofiber": 3,
+      "creds": 60
+    },
+    "craftTime": 240,
+    "result": {
+      "heatGenMod": 0.9,
+      "supplyEfficiencyMod": 1.1
+    },
+    "notes": "Light frame specialization. -10% heat + +10% supply = dramatically extended mission endurance."
+  },
+  {
+    "id": "bp_kz_labor_conversion",
+    "name": "KZ Labor-to-Combat Conversion",
+    "desc": "Convert any KZ labor part to combat spec. +1 ATK contribution, +5 HP, but +1 weight.",
+    "type": "part_mod",
+    "targetMfr": "kz_industrial",
+    "faction": "faction_underground",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_mecha_tech": 5
+    },
+    "materials": {
+      "ferrous_scrap": 12,
+      "ceramite": 2,
+      "creds": 40
+    },
+    "craftTime": 120,
+    "result": {
+      "atkContribBonus": 1,
+      "hpBonus": 5,
+      "weightIncrease": 1
+    },
+    "notes": "Turns cheap KZ parts into combat-viable gear. The Underground converts everything."
+  },
+  {
+    "id": "bp_hayabusa_restoration",
+    "name": "Hayabusa Mk.I Full Restoration",
+    "desc": "Restore Dad's original Hayabusa to factory-new condition. All stats improved to design spec.",
+    "type": "frame_mod",
+    "targetFrame": "frame_hayabusa_mk1",
+    "faction": "faction_underground",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 7,
+      "skill_mecha_tech": 6
+    },
+    "materials": {
+      "ferrous_scrap": 20,
+      "polymer_scrap": 15,
+      "nanofiber": 8,
+      "electronic_scrap": 10,
+      "creds": 150
+    },
+    "craftTime": 600,
+    "result": {
+      "statMods": {
+        "base_atk": 1,
+        "base_def": 1,
+        "base_enr": 1
+      },
+      "heatCapBonus": 10
+    },
+    "notes": "Narrative reward. Restore the Hayabusa to what Dad intended. +1 to three base stats + 10 heatCap makes it competitive with Medium frames. The sentimental choice vs buying a new frame."
+  },
+  {
+    "id": "bp_ty_thermal_coating",
+    "name": "Taeyang Thermal Coating",
+    "desc": "Apply Taeyang thermal insulation to any part. Reduces heatMod by 3.",
+    "type": "part_mod",
+    "targetSlot": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "legs"
+    ],
+    "faction": "faction_taeyang_syndicate",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 3
+    },
+    "materials": {
+      "polymer_scrap": 8,
+      "nanofiber": 3,
+      "creds": 40
+    },
+    "craftTime": 90,
+    "result": {
+      "heatMod": -3
+    },
+    "notes": "Also drops from Crimson Nail. -3 heatMod per part. Apply to 4 parts = -12 total heat profile."
+  },
+  {
+    "id": "bp_ty_plasma_core",
+    "name": "Taeyang Plasma Core",
+    "desc": "Craft a TY-X Plasma Capacitor backpack. Converts 10% of heat generated into bonus energy damage.",
+    "type": "craft_item",
+    "craftedItem": "backpack_plasma_core",
+    "faction": "faction_taeyang_syndicate",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 6,
+      "skill_mecha_tech": 4
+    },
+    "materials": {
+      "nanofiber": 8,
+      "electronic_scrap": 10,
+      "data_chips": 3,
+      "creds": 80
+    },
+    "craftTime": 300,
+    "result": {
+      "item": "backpack_plasma_core",
+      "effect": {
+        "heatToDamagePct": 0.1,
+        "enrBonus": 1
+      }
+    },
+    "notes": "Heat-to-damage conversion at equipment level. Stacks with Neural Override maneuver."
+  },
+  {
+    "id": "bp_ty_heat_weapon_forge",
+    "name": "Thermal Weapon Forge",
+    "desc": "Modify any fight-category weapon to deal bonus thermal damage. +15% damage, +3 heat per hit.",
+    "type": "weapon_mod",
+    "targetCategory": "fight",
+    "faction": "faction_taeyang_syndicate",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_crafting": 5
+    },
+    "materials": {
+      "ferrous_scrap": 10,
+      "polymer_scrap": 5,
+      "nanofiber": 4,
+      "creds": 60
+    },
+    "craftTime": 150,
+    "result": {
+      "damageMod": 1.15,
+      "heatPerHitIncrease": 3
+    },
+    "notes": "Turn ANY melee weapon into a thermal weapon. +15% damage at +3 heat/hit cost."
+  },
+  {
+    "id": "bp_ty_supernova_custom",
+    "name": "Custom Supernova Mk.II",
+    "desc": "Forge a personalized Supernova heat blade. The hottest weapon in New Tokyo, tuned to your fighting style.",
+    "type": "craft_weapon",
+    "craftedItem": "wpn_ty_supernova_custom",
+    "faction": "faction_taeyang_syndicate",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 8,
+      "skill_combat": 5
+    },
+    "materials": {
+      "nanofiber": 15,
+      "ferrous_scrap": 20,
+      "polymer_scrap": 10,
+      "data_chips": 5,
+      "creds": 250
+    },
+    "craftTime": 600,
+    "result": {
+      "weapon": "wpn_ty_supernova_custom",
+      "damage": 14,
+      "accuracy": 5,
+      "heatGen": 12,
+      "tier": 5
+    },
+    "notes": "The endgame melee weapon. 14 damage (vs 12 base Supernova) + 5 accuracy. Costs a fortune in materials."
+  },
+  {
+    "id": "bp_pw_stealth_coating",
+    "name": "Phantom Stealth Coating",
+    "desc": "Apply sensor-absorbing material to any part. -5% enemy accuracy against this frame.",
+    "type": "part_mod",
+    "targetSlot": [
+      "torso",
+      "left_arm",
+      "right_arm",
+      "legs"
+    ],
+    "faction": "faction_phantom_collective",
+    "repRequired": 25,
+    "skillRequired": {
+      "skill_crafting": 4,
+      "skill_hacking": 2
+    },
+    "materials": {
+      "polymer_scrap": 5,
+      "electronic_scrap": 8,
+      "creds": 50,
+      "quantum_circuits": 1
+    },
+    "craftTime": 180,
+    "result": {
+      "enemyAccuracyMod": -5
+    },
+    "notes": "Per-part evasion. Apply to all 4 parts = -20% enemy accuracy. Stacks with ECM Suite."
+  },
+  {
+    "id": "bp_pw_quantum_mod",
+    "name": "Quantum Processor Upgrade",
+    "desc": "Install a Phantom quantum processor in any arm. +3 accuracy, +5% ERROR token chance on attacks.",
+    "type": "part_mod",
+    "targetSlot": [
+      "left_arm",
+      "right_arm"
+    ],
+    "faction": "faction_phantom_collective",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_hacking": 4,
+      "skill_crafting": 5
+    },
+    "materials": {
+      "electronic_scrap": 12,
+      "data_chips": 4,
+      "creds": 100,
+      "quantum_circuits": 3
+    },
+    "craftTime": 300,
+    "result": {
+      "accuracyBonus": 3,
+      "errorTokenChance": 0.05
+    },
+    "notes": "+3 accuracy AND ERROR token generation. Phantom's electronic warfare on your arms."
+  },
+  {
+    "id": "bp_dw_sensor_suite",
+    "name": "Daewon Advanced Sensor Integration",
+    "desc": "Upgrade a frame's sensor system. +8 accuracy, reveals enemy part HP. Requires Daewon parts installed.",
+    "type": "frame_mod",
+    "targetRequirement": "has_daewon_part",
+    "faction": "faction_phantom_collective",
+    "repRequired": 50,
+    "skillRequired": {
+      "skill_hacking": 3,
+      "skill_mecha_tech": 4
+    },
+    "materials": {
+      "electronic_scrap": 15,
+      "data_chips": 5,
+      "nanofiber": 3,
+      "creds": 80
+    },
+    "craftTime": 240,
+    "result": {
+      "accuracyBonus": 8,
+      "revealEnemyParts": true
+    },
+    "notes": "Requires at least 1 Daewon part installed on the frame. The Tactician's ultimate sensor package."
+  },
+  {
+    "id": "bp_pw_wraith_custom",
+    "name": "Custom Phantom Wraith Frame",
+    "desc": "Build a personalized Wraith with enhanced stealth systems. The ghost that haunts New Tokyo.",
+    "type": "craft_frame",
+    "craftedItem": "frame_phantom_wraith_custom",
+    "faction": "faction_phantom_collective",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 8,
+      "skill_hacking": 5
+    },
+    "materials": {
+      "nanofiber": 15,
+      "electronic_scrap": 20,
+      "polymer_scrap": 10,
+      "data_chips": 6,
+      "creds": 300,
+      "quantum_circuits": 8
+    },
+    "craftTime": 900,
+    "result": {
+      "frame": "frame_phantom_wraith_custom",
+      "statMods": {
+        "base_atk": 1,
+        "base_enr": 2
+      },
+      "evasionBonus": 5
+    },
+    "notes": "Endgame Phantom reward. Custom Wraith with +1 ATK, +2 ENR, +5% evasion. The ultimate Light glass cannon."
+  },
+  {
+    "id": "bp_hayabusa_mk2",
+    "name": "Hayabusa Mk.II",
+    "desc": "Dad's unfinished masterwork. Complete the frame he was designing for Phantom Works. A Light frame that rivals Heavy frames.",
+    "type": "craft_frame",
+    "craftedItem": "frame_hayabusa_mk2",
+    "faction": "faction_phantom_collective",
+    "repRequired": 75,
+    "skillRequired": {
+      "skill_crafting": 9,
+      "skill_mecha_tech": 7,
+      "skill_combat": 6
+    },
+    "materials": {
+      "ceramite": 10,
+      "nanofiber": 20,
+      "ferrous_scrap": 30,
+      "polymer_scrap": 15,
+      "electronic_scrap": 15,
+      "data_chips": 8,
+      "creds": 500,
+      "quantum_circuits": 10
+    },
+    "craftTime": 1200,
+    "result": {
+      "frame": "frame_hayabusa_mk2",
+      "category": "light",
+      "baseStats": {
+        "base_atk": 5,
+        "base_def": 4,
+        "base_enr": 8,
+        "base_cor": 6
+      },
+      "heatCap": 95
+    },
+    "notes": "THE endgame goal. Dad's dream — a Light frame with stats approaching Heavy. ATK 5 (vs Heavy's 5-8), DEF 4 (vs Heavy's 5-7), ENR 8 (best in game), COR 6 (matches Type 90). heatCap 95 is unprecedented for Light. Requires the most materials and the highest skills of any blueprint. Three skill gates (crafting 9, mecha_tech 7, combat 6) ensure the player has mastered all aspects of the game. The narrative payoff for finishing what Dad started."
+  }
+]
