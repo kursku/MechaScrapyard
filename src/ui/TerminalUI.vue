@@ -148,12 +148,14 @@ export default {
             return this.formatName(k).toUpperCase();
         },
         getValidWeapons(slotId) {
+            this.renderTick;
             const chassis = this.state.get(this.frame.chassisId);
             if (!chassis || !chassis.equipSlots || !chassis.equipSlots[slotId]) return [];
             const accepts = chassis.equipSlots[slotId].accepts;
             return Object.values(this.state.items).filter(i => {
                 if (!i.owned) return false;
                 if (accepts === 'backpack') return i.type === 'backpack';
+                if (accepts === 'utility') return i.type === 'module' || i.slot === 'utility';
                 return i.type === 'weapon' && i.slot === accepts;
             });
         },
@@ -447,10 +449,10 @@ export default {
             this.renderTick;
             return this.blueprints.filter(bp => {
                 if (this.selectedWorkshopTab === 'all') return true;
-                if (this.selectedWorkshopTab === 'frames') return bp.type === 'frame';
-                if (this.selectedWorkshopTab === 'parts') return bp.type === 'part' || bp.type === 'frame_part';
-                if (this.selectedWorkshopTab === 'weapons') return bp.type === 'weapon';
-                if (this.selectedWorkshopTab === 'recycle') return bp.type === 'recycle';
+                if (this.selectedWorkshopTab === 'frames') return bp.bpType === 'craft_frame';
+                if (this.selectedWorkshopTab === 'parts') return bp.bpType === 'craft_item' || bp.bpType === 'part_mod' || bp.bpType === 'frame_part';
+                if (this.selectedWorkshopTab === 'weapons') return bp.bpType === 'craft_weapon' || bp.bpType === 'weapon_mod';
+                if (this.selectedWorkshopTab === 'recycle') return bp.bpType === 'recycle';
                 return true;
             });
         },

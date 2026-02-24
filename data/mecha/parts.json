@@ -1304,5 +1304,25 @@
     "require": "g.skill_hacking>=5&&g.skill_combat>=5",
     "value": 175,
     "notes": "+10% all stats AND +5 accuracy. But +0.3 stress/turn AND 1.5Ã— damage-to-stress conversion. The pilot feels everything the frame feels â€” amplified. Extremely powerful with Iron Will + Neural Dampener to manage the stress. The endgame 'glass brain' utility: maximum performance, maximum psychological cost."
+  },
+  {
+    "id": "module_leg_stabilizer",
+    "name": "Gyro-Stabilizer Boots",
+    "desc": "Calibrated weights and sensors that improve stance stability.",
+    "type": "module",
+    "slot": "utility",
+    "tier": 1,
+    "value": 25,
+    "notes": "+2 accuracy, -1 recoil."
+  },
+  {
+    "id": "module_heavy_platter",
+    "name": "Armored Skirts",
+    "desc": "Extra plating attached to the lower chassis to protect the joint systems.",
+    "type": "module",
+    "slot": "utility",
+    "tier": 2,
+    "value": 50,
+    "notes": "+1 DEF, +2 Armor."
   }
 ]

@@ -2353,7 +2353,11 @@ const Game = {
 
     _loadParts(data) {
         for (const item of data) {
-            item.type = 'frame_part';
+            item.partType = item.type;
+            // Preserve special types like backpack, otherwise categorize as frame_part
+            if (item.type !== 'backpack') {
+                item.type = 'frame_part';
+            }
             const rItem = reactive(item);
             this.state.register(rItem);
         }
@@ -2380,6 +2384,7 @@ const Game = {
 
     _loadBlueprints(data) {
         for (const item of data) {
+            item.bpType = item.type;
             item.type = 'blueprint';
             item.group = 'blueprint';
             item.locked = item.locked ?? true;
@@ -2599,9 +2604,43 @@ const Game = {
         this.state.android.efficiency = 2.0;
 
         // 4. Give all Blueprints & parts
-        items.filter(i => i.type === 'blueprint' || i.type === 'part' || i.type === 'weapon').forEach(i => {
+        items.filter(i => i.type === 'blueprint' || i.type === 'part' || i.type === 'frame_part' || i.type === 'weapon' || i.type === 'backpack' || i.type === 'module').forEach(i => {
             if (i.max !== undefined && i.owned !== undefined) i.owned = i.max;
-            else if (i.owned !== undefined) i.owned = 10;
+            else i.owned = 10;
+
+            // Add to player inventory lists if not already there
+            if (i.type === 'weapon' && !this.state.player.inventory.weapons.includes(i.id)) {
+                this.state.player.inventory.weapons.push(i.id);
+            }
+            if ((i.type === 'backpack' || i.type === 'module') && !this.state.player.inventory.weapons.includes(i.id)) {
+                if (!this.state.player.inventory.weapons.includes(i.id)) this.state.player.inventory.weapons.push(i.id);
+            }
+
+            // Create some real part instances for parts inventory
+            if (i.type === 'frame_part' && i.partType !== 'torso' && i.partType !== 'arm' && i.partType !== 'legs') {
+                // Skip basic structural parts if desired, but here we add all for testing
+            }
+
+            if (i.type === 'frame_part' && !this.state.player.partsInventory.some(p => p.id === i.id)) {
+                // Add a few samples of parts
+                if (i.tier >= 1 || i.id.includes('hayabusa')) {
+                    this.state.player.partsInventory.push({
+                        ...JSON.parse(JSON.stringify(i)),
+                        uid: Math.random().toString(36).substr(2, 9),
+                        condition: 1.0,
+                        hp: i.maxHp || 100,
+                        maxHp: i.maxHp || 100
+                    });
+                }
+            }
+        });
+
+        // Add Mecha frames to inventory
+        items.filter(i => i.type === 'frame').forEach(f => {
+            f.owned = 1;
+            if (!this.state.player.inventory.frames.includes(f.id)) {
+                this.state.player.inventory.frames.push(f.id);
+            }
         });
 
         // 5. Max all skills
@@ -2609,16 +2648,12 @@ const Game = {
             i.val = i.max || 10;
         });
 
-        // 6. Max all faction reputation (set on underlying items, not g. proxy)
-        const repKeys = ['rep_scavengers', 'rep_corporation', 'rep_underground', 'rep_military', 'rep_exile', 'rep_corporate'];
+        // 6. Max all faction reputation
+        const repKeys = ['rep_police', 'rep_military', 'rep_underground', 'rep_corporate', 'rep_exile'];
         for (const key of repKeys) {
             const res = this.state.items[key];
-            if (res) { res.val = 1000; if (res.max !== undefined) res.max = 9999; }
+            if (res) { res.val = 100; if (res.max !== undefined) res.max = 100; }
         }
-
-        // Add Mecha frames
-        if (this.state.items.chassis_light) this.state.items.chassis_light.owned = 1;
-        if (this.state.items.frame_light_r1) this.state.items.frame_light_r1.owned = 1;
 
         // Apply tech tree again just in case
         this.techTree.recheck(items);
