@@ -8,6 +8,7 @@
         "locked": false,
         "max": 100,
         "sortOrder": 10,
+        "color": "#94a3b8",
         "abbr": "S"
     },
     {
@@ -19,6 +20,7 @@
         "locked": false,
         "max": 200,
         "sortOrder": 20,
+        "color": "#f5c542",
         "abbr": "\u00a2"
     },
     {
@@ -31,6 +33,7 @@
         "val": 50,
         "max": 50,
         "rate": 0.3,
+        "color": "#0fa",
         "sortOrder": 1,
         "abbr": "E"
     },
@@ -92,6 +95,7 @@
         "require": "g.mesa_pesquisa>0",
         "max": 50,
         "sortOrder": 25,
+        "color": "#4cf",
         "abbr": "Dc"
     },
     {
@@ -103,6 +107,7 @@
         "val": 0,
         "max": 0,
         "locked": false,
+        "color": "#ca6",
         "sortOrder": 0,
         "abbr": "?"
     },
@@ -132,5 +137,55 @@
         "sortOrder": 220,
         "require": "g.garagem>0",
         "abbr": "Sp"
+    },
+    {
+        "id": "rep_police",
+        "name": "NTPD Reputation",
+        "desc": "Reputation with the New Tokyo Police Department.",
+        "group": "reputation",
+        "color": "#68f",
+        "max": 100,
+        "abbr": "RP",
+        "locked": false
+    },
+    {
+        "id": "rep_military",
+        "name": "Kuroda Reputation",
+        "desc": "Reputation with the Kuroda Military Command.",
+        "group": "reputation",
+        "color": "#f44",
+        "max": 100,
+        "abbr": "RM",
+        "locked": false
+    },
+    {
+        "id": "rep_underground",
+        "name": "Underground Reputation",
+        "desc": "Reputation with the Underground network.",
+        "group": "reputation",
+        "color": "#ca6",
+        "max": 100,
+        "abbr": "RU",
+        "locked": false
+    },
+    {
+        "id": "rep_corporate",
+        "name": "Syndicate Reputation",
+        "desc": "Reputation with the Taeyang Syndicate.",
+        "group": "reputation",
+        "color": "#f86",
+        "max": 100,
+        "abbr": "RC",
+        "locked": false
+    },
+    {
+        "id": "rep_exile",
+        "name": "Phantom Reputation",
+        "desc": "Reputation with the Phantom Collective.",
+        "group": "reputation",
+        "color": "#c8f",
+        "max": 100,
+        "abbr": "RE",
+        "locked": false
     }
 ]

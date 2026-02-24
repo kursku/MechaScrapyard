@@ -18,6 +18,7 @@ export default {
             _selectedZoneId: null,
             _prestigeBreakdown: null,
             selectedInventoryTab: 'parts',
+            selectedWorkshopTab: 'all',
         };
     },
     methods: {
@@ -158,6 +159,11 @@ export default {
         },
         equipItem(slotId, event) {
             Game.equipItem(slotId, event.target.value);
+        },
+        getLinkedEquipSlot(partSlotId) {
+            const chassis = this.state.get(this.frame.chassisId);
+            if (!chassis || !chassis.equipSlots) return null;
+            return Object.keys(chassis.equipSlots).find(k => chassis.equipSlots[k].linkedPart === partSlotId);
         },
         equipFrame(frameId) {
             Game.equipFrame(frameId);
@@ -436,6 +442,17 @@ export default {
                 !i.locked && 
                 (i.repeatable || i.type === 'recycle' || (i.owned || 0) < (i.max || 1))
             );
+        },
+        filteredBlueprints() {
+            this.renderTick;
+            return this.blueprints.filter(bp => {
+                if (this.selectedWorkshopTab === 'all') return true;
+                if (this.selectedWorkshopTab === 'frames') return bp.type === 'frame';
+                if (this.selectedWorkshopTab === 'parts') return bp.type === 'part' || bp.type === 'frame_part';
+                if (this.selectedWorkshopTab === 'weapons') return bp.type === 'weapon';
+                if (this.selectedWorkshopTab === 'recycle') return bp.type === 'recycle';
+                return true;
+            });
         },
         morality() {
             this.renderTick;
@@ -737,7 +754,10 @@ export default {
                             
                             <div v-for="(p, slotId) in frame.parts" :key="slotId" class="equip-row">
                                 <!-- Mount Point -->
-                                <div class="col-mount">> {{ slotId.replace('_', ' ').toUpperCase() }}</div>
+                                <div class="col-mount">
+                                    > {{ slotId.replace('_', ' ').toUpperCase() }}
+                                    <div style="font-size: 9px; opacity: 0.6; margin-left: 10px;">{{ p.name }}</div>
+                                </div>
                                 
                                 <!-- Diagnostics -->
                                 <div class="col-status">
@@ -754,16 +774,22 @@ export default {
                                 
                                 <!-- Equipment Dropdown -->
                                 <div class="col-equip">
-                                    <select class="hud-select" 
-                                            :value="frame.installedEquip && frame.installedEquip[slotId] ? frame.installedEquip[slotId] : ''" 
-                                            @change="equipItem && equipItem(slotId, $event)">
-                                        <option value="">[ EMPTY_SLOT ]</option>
-                                        <template v-if="getValidWeapons">
-                                            <option v-for="w in getValidWeapons(slotId)" :key="w.id" :value="w.id">
-                                                {{ w.name ? w.name.toUpperCase() : w.id }}
-                                            </option>
-                                        </template>
-                                    </select>
+                                    <template v-if="getLinkedEquipSlot(slotId)">
+                                        <div style="font-size: 9px; color: var(--text-dim); margin-bottom: 3px;">
+                                            MOUNT: {{ getLinkedEquipSlot(slotId).replace('_', ' ').toUpperCase() }}
+                                        </div>
+                                        <select class="hud-select" 
+                                                :value="frame.installedEquip && frame.installedEquip[getLinkedEquipSlot(slotId)] ? frame.installedEquip[getLinkedEquipSlot(slotId)] : ''" 
+                                                @change="equipItem && equipItem(getLinkedEquipSlot(slotId), $event)">
+                                            <option value="">[ EMPTY_SLOT ]</option>
+                                            <template v-if="getValidWeapons">
+                                                <option v-for="w in getValidWeapons(getLinkedEquipSlot(slotId))" :key="w.id" :value="w.id">
+                                                    {{ w.name ? w.name.toUpperCase() : w.id }}
+                                                </option>
+                                            </template>
+                                        </select>
+                                    </template>
+                                    <span v-else class="text-dim" style="font-size: 10px;">-- NO MOUNT --</span>
                                 </div>
                             </div>
                         </div>
@@ -868,22 +894,26 @@ export default {
                                     </div>
                                 </div>
 
-                                <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length">
-                                    <div class="faction-perks-title" :style="{ color: fac.color }">VENDOR:</div>
-                                    <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key">
-                                        <div class="vendor-category-title">{{ cat.label }}</div>
-                                        <div v-for="itemId in cat.items" :key="itemId" class="vendor-item-row">
-                                            <div class="vendor-item-meta">
-                                                <span class="vendor-item-name">{{ getVendorItem(itemId)?.name || itemId }}</span>
-                                                <span class="vendor-item-cost">{{ getVendorItemCost(itemId) }} C</span>
+                                <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+                                    <details>
+                                        <summary class="faction-perks-title" :style="{ color: fac.color, cursor: 'pointer' }">
+                                            &#x25BC; ACCESS VOR-X VENDOR (UNLOCKED)
+                                        </summary>
+                                        <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key" style="margin-top: 10px;">
+                                            <div class="vendor-category-title" style="background: rgba(255,255,255,0.05); padding: 2px 5px; font-size: 10px;">{{ cat.label }}</div>
+                                            <div v-for="itemId in cat.items" :key="itemId" class="vendor-item-row" style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                                <div class="vendor-item-meta" style="flex: 1;">
+                                                    <span class="vendor-item-name" style="font-size: 12px;">{{ getVendorItem(itemId)?.name || itemId }}</span>
+                                                    <span class="vendor-item-cost" style="color: var(--color-warning);">{{ getVendorItemCost(itemId) }} C</span>
+                                                </div>
+                                                <button class="hud-btn small"
+                                                    :disabled="!canBuyVendorItem(itemId, fac.id)"
+                                                    @click="buyVendorItem(itemId, fac.id)">
+                                                    BUY
+                                                </button>
                                             </div>
-                                            <button class="btn-outline btn-assign vendor-buy-btn"
-                                                :disabled="!canBuyVendorItem(itemId, fac.id)"
-                                                @click="buyVendorItem(itemId, fac.id)">
-                                                BUY
-                                            </button>
                                         </div>
-                                    </div>
+                                    </details>
                                 </div>
                             </div>
                         </div>
@@ -893,20 +923,42 @@ export default {
                 <!-- WORKSHOP AREA -->
                 <section v-else-if="selectedCategory === 'workshop'">
                     <h3 class="hud-section-title">> WORKSHOP & ASSEMBLY</h3>
-                    <div class="hud-task-grid">
-                        <div v-for="bp in blueprints" :key="bp.id" class="hud-task-card workshop-card" 
-                             @click="craftBlueprint(bp)"
-                             @mouseover="itemOver($event, bp)"
-                             @mouseleave="itemOut">
-                            <div class="hud-card-header" style="color: #0fa">
-                                &#x2726; {{ bp.name.toUpperCase() }}
+                    
+                    <div class="workshop-layout">
+                        <!-- Sidebar Filters -->
+                        <aside class="workshop-sidebar">
+                            <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'all' }" @click="selectedWorkshopTab = 'all'">[ ALL_FILES ]</div>
+                            <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'frames' }" @click="selectedWorkshopTab = 'frames'">[ FRAMES ]</div>
+                            <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'parts' }" @click="selectedWorkshopTab = 'parts'">[ COMPONENTS ]</div>
+                            <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'weapons' }" @click="selectedWorkshopTab = 'weapons'">[ ARMAMENT ]</div>
+                            <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'recycle' }" @click="selectedWorkshopTab = 'recycle'">[ RECYCLING ]</div>
+                        </aside>
+
+                        <!-- Blueprint List -->
+                        <div class="workshop-main">
+                            <div v-if="filteredBlueprints.length === 0" class="empty-state">
+                                NO BLUEPRINTS FOUND IN THIS CATEGORY
                             </div>
-                            <div v-if="bp.materials" class="blueprint-materials">
-                                <span v-for="(amount, matId) in bp.materials" :key="matId" 
-                                      class="blueprint-mat"
-                                      :style="{ color: canAfford(matId, amount) ? '#6a8' : '#e44' }">
-                                    {{ formatName(matId).toUpperCase() }}: {{ amount }}
-                                </span>
+                            <div class="blueprint-list">
+                                <div v-for="bp in filteredBlueprints" :key="bp.id" 
+                                     class="blueprint-entry"
+                                     :class="{ affordable: bp.materials && Object.entries(bp.materials).every(([m, a]) => canAfford(m, a)) }"
+                                     @click="craftBlueprint(bp)"
+                                     @mouseover="itemOver($event, bp)"
+                                     @mouseleave="itemOut">
+                                    <div class="bp-info">
+                                        <div class="bp-name">&#x2726; {{ bp.name.toUpperCase() }}</div>
+                                        <div class="bp-type">{{ bp.type.toUpperCase() }}</div>
+                                    </div>
+                                    <div class="bp-mat-preview">
+                                        <span v-for="(amount, matId) in bp.materials" :key="matId" 
+                                              class="mat-tag"
+                                              :style="{ color: canAfford(matId, amount) ? '#6a8' : '#e44' }">
+                                            {{ resourceIcon(matId) }} {{ amount }}
+                                        </span>
+                                    </div>
+                                    <div class="bp-action">[ INITIATE ]</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2151,6 +2203,116 @@ export default {
     color: var(--color-success, #0f0);
     line-height: 1.3;
     margin-bottom: 4px;
+}
+
+/* -- WORKSHOP REDESIGN ---------------------- */
+.workshop-layout {
+    display: flex;
+    gap: 20px;
+    height: 600px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-dim);
+    padding: 10px;
+}
+
+.workshop-sidebar {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-right: 1px solid var(--border-dim);
+    padding-right: 10px;
+}
+
+.hud-tab-vertical {
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+}
+
+.hud-tab-vertical:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+}
+
+.hud-tab-vertical.active {
+    color: var(--primary);
+    background: rgba(255, 176, 0, 0.05);
+    border-left-color: var(--primary);
+}
+
+.workshop-main {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.blueprint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.blueprint-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.blueprint-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary);
+}
+
+.blueprint-entry.affordable {
+    border-left: 3px solid var(--color-success);
+}
+
+.bp-info {
+    flex: 1;
+}
+
+.bp-name {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.bp-type {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.bp-mat-preview {
+    display: flex;
+    gap: 15px;
+    margin: 0 20px;
+}
+
+.mat-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+.bp-action {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text-dim);
+}
+
+.blueprint-entry:hover .bp-action {
+    color: var(--primary);
 }
 .directive-detail {
     font-size: 11px;
