@@ -307,15 +307,30 @@ export default class GameState {
             } else {
                 // Update templates (keeping current HP/integrity/status/condition)
                 frame.parts[slot].name = partTemplate.name;
-                frame.parts[slot].maxHp = partTemplate.hp;
                 if (frame.parts[slot].condition === undefined) {
                     frame.parts[slot].condition = 1.0;
                 }
             }
 
-            // Armor contributes based on condition
+            // Weight mismatch penalty (GDD 3.4.3)
+            let efficiency = 1.0;
+            if (chassis.weightRange && chassis.weightRange[slot]) {
+                const [minW, maxW] = chassis.weightRange[slot];
+                if (partTemplate.weight < minW || partTemplate.weight > maxW) {
+                    efficiency = 0.95;
+                }
+            }
+
             const condition = frame.parts[slot].condition || 1.0;
-            totalArmor += (partTemplate.armor || 0) * condition;
+
+            // Apply condition and weight mismatch efficiency
+            frame.parts[slot].maxHp = Math.floor((partTemplate.maxHp || partTemplate.hp) * condition * efficiency);
+            if (frame.parts[slot].hp > frame.parts[slot].maxHp) {
+                frame.parts[slot].hp = frame.parts[slot].maxHp;
+            }
+
+            // Armor contributes based on condition and efficiency
+            totalArmor += Math.floor((partTemplate.armor || 0) * condition * efficiency);
         }
 
         attributes.def += totalArmor;

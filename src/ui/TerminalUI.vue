@@ -17,6 +17,7 @@ export default {
             _showPrestigeModal: false,
             _selectedZoneId: null,
             _prestigeBreakdown: null,
+            selectedInventoryTab: 'parts',
         };
     },
     methods: {
@@ -154,6 +155,12 @@ export default {
         },
         equipItem(slotId, event) {
             Game.equipItem(slotId, event.target.value);
+        },
+        equipFrame(frameId) {
+            Game.equipFrame(frameId);
+        },
+        equipPart(slotId, partObjId) {
+            Game.equipPart(slotId, partObjId);
         },
         getFactionVendorItems(factionId) {
             if (!Game.getFactionVendor) return { parts: [], weapons: [], blueprints: [], backpacks: [] };
@@ -759,20 +766,62 @@ export default {
                         </div>
                     </div>
 
-                    <div class="inventory-deck" v-if="state.partsInventory && state.partsInventory.length > 0">
-                        <h3 class="hud-section-title">> RECOVERED_PARTS_INVENTORY</h3>
-                        <div class="hud-task-grid mini">
-                            <div v-for="part in state.partsInventory" :key="part.id" 
-                                 class="hud-task-card mini salvage-card"
-                                 @click="dismantlePart(part)"
-                                 @mouseover="itemOver($event, part)"
-                                 @mouseleave="itemOut">
+                    <div class="inventory-deck hud-card-section" style="margin-top: 15px;">
+                        <h3 class="hud-section-title">> RECOVERED_INVENTORY</h3>
+                        <div class="hud-category-tabs" style="margin-bottom: 10px;">
+                            <div class="hud-tab" :class="{ active: selectedInventoryTab === 'frames' }" @click="selectedInventoryTab = 'frames'">FRAMES</div>
+                            <div class="hud-tab" :class="{ active: selectedInventoryTab === 'parts' }" @click="selectedInventoryTab = 'parts'">PARTS</div>
+                            <div class="hud-tab" :class="{ active: selectedInventoryTab === 'weapons' }" @click="selectedInventoryTab = 'weapons'">WEAPONS</div>
+                        </div>
+
+                        <!-- FRAMES TAB -->
+                        <div v-if="selectedInventoryTab === 'frames'" class="inventory-grid">
+                            <div v-if="state.inventory.frames.length === 0" class="empty-state">NO FRAMES IN STORAGE</div>
+                            <div v-for="frameId in state.inventory.frames" :key="frameId" class="hud-task-card salvage-card"
+                                 @mouseover="itemOver($event, state.items[frameId])" @mouseleave="itemOut">
+                                <template v-if="state.items[frameId]">
+                                    <div class="hud-card-header">{{ state.items[frameId].name.toUpperCase() }}</div>
+                                    <div class="salvage-meta">
+                                        <span>[{{ state.items[frameId].category.toUpperCase() }}]</span>
+                                    </div>
+                                    <div class="hud-card-actions" style="margin-top: 8px;">
+                                        <button class="hud-btn small" :disabled="frame.chassisId === frameId" @click="equipFrame(frameId)">
+                                            {{ frame.chassisId === frameId ? 'EQUIPPED' : 'EQUIP CHASSIS' }}
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- PARTS TAB -->
+                        <div v-else-if="selectedInventoryTab === 'parts'" class="inventory-grid">
+                            <div v-if="!state.partsInventory || state.partsInventory.length === 0" class="empty-state">NO PARTS IN STORAGE</div>
+                            <div v-for="part in state.partsInventory" :key="part.id" class="hud-task-card salvage-card"
+                                 @mouseover="itemOver($event, part)" @mouseleave="itemOut">
                                 <div class="hud-card-header">{{ part.name.toUpperCase() }}</div>
-                                <div class="salvage-meta">
+                                <div class="salvage-meta" style="justify-content: space-between;">
                                     <span>[{{ part.slot.toUpperCase() }}]</span>
                                     <span :class="{ worn: part.condition < 0.5 }">{{ Math.round(part.condition * 100) }}% CND</span>
                                 </div>
-                                <div class="salvage-hint">CLICK TO DISMANTLE</div>
+                                <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px;">
+                                    <button class="hud-btn small" @click="equipPart(part.slot, part.id)">EQUIP</button>
+                                    <button class="hud-btn small" @click="dismantlePart(part)">DISMANTLE</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WEAPONS TAB -->
+                        <div v-else-if="selectedInventoryTab === 'weapons'" class="inventory-grid">
+                            <div v-if="state.inventory.weapons.length === 0" class="empty-state">NO WEAPONS IN STORAGE</div>
+                            <div v-for="weaponId in state.inventory.weapons" :key="weaponId" class="hud-task-card salvage-card"
+                                 @mouseover="itemOver($event, state.items[weaponId])" @mouseleave="itemOut">
+                                <template v-if="state.items[weaponId]">
+                                    <div class="hud-card-header">{{ state.items[weaponId].name.toUpperCase() }}</div>
+                                    <div class="salvage-meta">
+                                        <span>[{{ state.items[weaponId].slot.toUpperCase() }}]</span>
+                                    </div>
+                                    <div class="salvage-hint" style="margin-top: 8px;">EQUIP VIA SLOT MENU</div>
+                                </template>
                             </div>
                         </div>
                     </div>

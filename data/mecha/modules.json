@@ -13,7 +13,16 @@
         "equipslots",
         "enemies",
         "missions",
-        "maneuvers"
+        "maneuvers",
+        "factions",
+        "frames",
+        "weapons",
+        "parts",
+        "manufacturers",
+        "jobs",
+        "zones",
+        "blueprints",
+        "combat_config"
     ],
     "modules": []
 }

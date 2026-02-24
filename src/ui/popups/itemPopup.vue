@@ -85,7 +85,7 @@ export default {
             return ICONS[id] || '•';
         };
 
-        return { state, fmtRate, getNetRate, resourceIcon };
+        return { state, fmtRate, getNetRate, resourceIcon, Game };
     }
 }
 </script>
@@ -94,7 +94,20 @@ export default {
     <div v-if="state.visible && state.item" 
          class="hud-popup" 
          :style="{ left: state.x + 'px', top: state.y + 'px' }">
-        <div class="popup-header" :style="{ color: state.item.color || 'var(--primary)' }">
+        
+        <!-- MANUFACTURER BANNER -->
+        <div v-if="state.item.mfr && Game.state.items[state.item.mfr]" 
+             class="popup-mfr-banner"
+             :style="{ 
+                 backgroundColor: Game.state.items[state.item.mfr].color + '22',
+                 borderBottom: '1px solid ' + Game.state.items[state.item.mfr].color,
+                 color: Game.state.items[state.item.mfr].color
+             }">
+            <span class="mfr-icon">{{ Game.state.items[state.item.mfr].icon }}</span>
+            <span class="mfr-name">{{ Game.state.items[state.item.mfr].name.toUpperCase() }}</span>
+        </div>
+
+        <div class="popup-header" :style="{ color: (state.item.mfr && Game.state.items[state.item.mfr]) ? Game.state.items[state.item.mfr].colorAlt : (state.item.color || 'var(--primary)') }">
             {{ state.item.name.toUpperCase() }}
         </div>
         <div class="popup-desc">{{ state.item.desc }}</div>
@@ -150,8 +163,8 @@ export default {
     z-index: 10001;
     background: rgba(8, 10, 12, 0.95);
     border: 1px solid var(--border);
-    padding: 15px;
-    width: 250px;
+    padding: 0;
+    width: 280px;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     pointer-events: auto; /* Re-enabled so we can actually scroll it with the mouse */
@@ -169,20 +182,36 @@ export default {
     background: var(--primary);
 }
 
+.popup-mfr-banner {
+    padding: 6px 15px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.mfr-icon {
+    font-size: 0.9rem;
+}
+
 .popup-header {
-    font-weight: 900;
-    font-size: var(--font-size-lg);
-    letter-spacing: 2px;
-    border-bottom: 1px solid var(--border-dim);
-    margin-bottom: 10px;
-    padding-bottom: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 10px 15px 5px 15px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .popup-desc {
-    font-size: var(--font-size-base);
-    color: var(--text);
-    line-height: 1.5;
-    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0 15px 10px 15px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.4;
 }
 
 .popup-section {
