@@ -33,6 +33,7 @@ export default class Runner {
 
         this.activeTask = task;
         this.taskProgress = 0;
+        this._waitingForChoice = false;
         Log.add(`▶ Started: ${task.name}`, 'action');
         return true;
     }
@@ -46,6 +47,7 @@ export default class Runner {
         }
         this.activeTask = null;
         this.taskProgress = 0;
+        this._waitingForChoice = false;
     }
 
     /**
@@ -129,6 +131,24 @@ export default class Runner {
                     if (task.choices) {
                         // Task stays at 100% until choice is made.
                         this.taskProgress = task.length;
+
+                        // Fire external UI hook to pop the modal
+                        if (!this._waitingForChoice) {
+                            this._waitingForChoice = true;
+                            if (this.state.showChoiceDialogue) {
+                                this.state.showChoiceDialogue(
+                                    'unknown',
+                                    [task.desc],
+                                    task.choices,
+                                    (choice) => {
+                                        this._waitingForChoice = false;
+                                        this.fulfillChoice(task, choice);
+                                    }
+                                );
+                            } else {
+                                Log.add('✗ Missing UI hook for dialogue.', 'error');
+                            }
+                        }
                     } else {
                         this.completeTask(task, result);
                     }

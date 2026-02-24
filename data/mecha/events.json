@@ -3,7 +3,7 @@
         "id": "evt_intro",
         "name": "Prologue",
         "require": "energy",
-        "desc": "You wake up in the scrapyard. Grandpa is tinkering with a broken generator nearby. Another day in the Ferro-Velho District.",
+        "desc": "You wake up in the scrapyard. Grandpa is tinkering with a broken generator nearby. Another day in the Scrapyard District.",
         "result": {
             "title": "Scrapyard Kid"
         }

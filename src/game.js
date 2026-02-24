@@ -1420,15 +1420,15 @@ const Game = {
         _combatState.result = cr.result;
         _combatState.turnNumber = cr.turnNumber;
         _combatState.mission = cr.mission;
-        _combatState.equippedManeuvers = cr.equippedManeuvers;
         _combatState.stance = cr.stance;
         _combatState.targeting = cr.targeting;
-        if (_combatState.combatLog !== cr.combatLog) {
-            _combatState.combatLog = cr.combatLog;
-        }
-        if (_combatState.enemies !== cr.enemies) {
-            _combatState.enemies = cr.enemies;
-        }
+
+        // Force array reference changes so Vue reactivity triggers updates
+        _combatState.equippedManeuvers = [...(cr.equippedManeuvers || [])];
+        _combatState.combatLog = [...(cr.combatLog || [])];
+
+        // Deep clone enemies to ensure nested HP/Integrity bars trigger UI updates
+        _combatState.enemies = JSON.parse(JSON.stringify(cr.enemies || []));
     },
 
     _handleTaskSpecialEffects(task) {

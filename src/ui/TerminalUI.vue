@@ -41,6 +41,9 @@ export default {
         tryItem(it) {
             Game.tryItem(it);
         },
+        enrollJob(id) { Game.enrollJob(id); this.renderTick++; },
+        promoteJob() { Game.promoteJob(); this.renderTick++; },
+        quitJob() { Game.quitJob(); this.renderTick++; },
         makeChoice(task, choice) {
             Game.runner.fulfillChoice(task, choice);
         },
@@ -776,8 +779,8 @@ export default {
 
                         <!-- FRAMES TAB -->
                         <div v-if="selectedInventoryTab === 'frames'" class="inventory-grid">
-                            <div v-if="state.inventory.frames.length === 0" class="empty-state">NO FRAMES IN STORAGE</div>
-                            <div v-for="frameId in state.inventory.frames" :key="frameId" class="hud-task-card salvage-card"
+                            <div v-if="state.player.inventory.frames.length === 0" class="empty-state">NO FRAMES IN STORAGE</div>
+                            <div v-for="frameId in state.player.inventory.frames" :key="frameId" class="hud-task-card salvage-card"
                                  @mouseover="itemOver($event, state.items[frameId])" @mouseleave="itemOut">
                                 <template v-if="state.items[frameId]">
                                     <div class="hud-card-header">{{ state.items[frameId].name.toUpperCase() }}</div>
@@ -795,8 +798,8 @@ export default {
 
                         <!-- PARTS TAB -->
                         <div v-else-if="selectedInventoryTab === 'parts'" class="inventory-grid">
-                            <div v-if="!state.partsInventory || state.partsInventory.length === 0" class="empty-state">NO PARTS IN STORAGE</div>
-                            <div v-for="part in state.partsInventory" :key="part.id" class="hud-task-card salvage-card"
+                            <div v-if="!state.player.partsInventory || state.player.partsInventory.length === 0" class="empty-state">NO PARTS IN STORAGE</div>
+                            <div v-for="part in state.player.partsInventory" :key="part.id" class="hud-task-card salvage-card"
                                  @mouseover="itemOver($event, part)" @mouseleave="itemOut">
                                 <div class="hud-card-header">{{ part.name.toUpperCase() }}</div>
                                 <div class="salvage-meta" style="justify-content: space-between;">
@@ -812,8 +815,8 @@ export default {
 
                         <!-- WEAPONS TAB -->
                         <div v-else-if="selectedInventoryTab === 'weapons'" class="inventory-grid">
-                            <div v-if="state.inventory.weapons.length === 0" class="empty-state">NO WEAPONS IN STORAGE</div>
-                            <div v-for="weaponId in state.inventory.weapons" :key="weaponId" class="hud-task-card salvage-card"
+                            <div v-if="state.player.inventory.weapons.length === 0" class="empty-state">NO WEAPONS IN STORAGE</div>
+                            <div v-for="weaponId in state.player.inventory.weapons" :key="weaponId" class="hud-task-card salvage-card"
                                  @mouseover="itemOver($event, state.items[weaponId])" @mouseleave="itemOut">
                                 <template v-if="state.items[weaponId]">
                                     <div class="hud-card-header">{{ state.items[weaponId].name.toUpperCase() }}</div>
@@ -1171,11 +1174,11 @@ export default {
                                 <div v-if="nextTierInfo && nextTierInfo.require" class="promote-req">
                                     Requirements: {{ nextTierInfo.require }}
                                 </div>
-                                <button class="hud-btn-cta" @click="Game.promoteJob()">&#x25B2; PROMOTE</button>
+                                <button class="hud-btn-cta" @click="promoteJob()">&#x25B2; PROMOTE</button>
                             </div>
                             <div v-else class="job-max-tier">&#x2605; MAXIMUM TIER REACHED</div>
 
-                            <button class="hud-btn-danger" @click="Game.quitJob()">&#x2715; QUIT JOB</button>
+                            <button class="hud-btn-danger" @click="quitJob()">&#x2715; QUIT JOB</button>
                         </div>
                     </div>
 
@@ -1188,7 +1191,7 @@ export default {
                         <div class="job-grid">
                             <div v-for="job in availableJobs" :key="job.id"
                                  class="job-card"
-                                 @click="Game.enrollJob(job.id)"
+                                 @click="enrollJob(job.id)"
                                  @mouseover="itemOver($event, job)"
                                  @mouseleave="itemOut">
                                 <div class="job-header">
@@ -1735,8 +1738,35 @@ export default {
     color: #fff;
 }
 
-/* -- PILOT CONSOLE DECKS ---------------------- */
-.hud-stat-widget { margin-bottom: 10px; }
+/* -- MECHA DECK & HARDWARE ------------------- */
+.hud-category-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-dim);
+    padding-bottom: 5px;
+}
+.hud-category-tabs .hud-tab {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 6px 12px;
+    transition: all 0.2s;
+    user-select: none;
+}
+.hud-category-tabs .hud-tab:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+}
+.hud-category-tabs .hud-tab.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    font-weight: bold;
+}
+
+.mecha-deck { margin-bottom: 20px; }
 .stat-meta { display: flex; justify-content: space-between; font-size: var(--font-size-base); margin-bottom: 6px; }
 .hud-bar-bg { height: 2px; background: #000; }
 .hud-bar-fill { height: 100%; box-shadow: 0 0 5px currentColor; }

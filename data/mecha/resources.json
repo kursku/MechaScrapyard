@@ -41,6 +41,7 @@
         "flavor": "The building blocks of tomorrow.",
         "group": "refined",
         "tags": "t_refined",
+        "color": "#00d1b2",
         "max": 20,
         "sortOrder": 100,
         "abbr": "Ni"
@@ -52,6 +53,7 @@
         "flavor": "When the streets fight back, you'll want this.",
         "group": "refined",
         "tags": "t_refined",
+        "color": "#e0e0e0",
         "max": 20,
         "sortOrder": 110,
         "abbr": "Ce"
@@ -60,9 +62,10 @@
         "id": "nanofiber",
         "name": "Nanofiber Fabric",
         "desc": "Ultra-light woven nanofiber. Used in flexible armor and conduits.",
-        "flavor": "Stronger than steel, lighter than silk.",
+        "flavor": "Stronger than silk, lighter than air.",
         "group": "refined",
         "tags": "t_refined",
+        "color": "#a486d5",
         "max": 20,
         "sortOrder": 120,
         "abbr": "Nf"
@@ -75,6 +78,7 @@
         "group": "base",
         "tags": "t_scrapyard",
         "require": "g.garagem>0",
+        "color": "#a0b0c0",
         "max": 30,
         "sortOrder": 15,
         "abbr": "P"

@@ -61,10 +61,10 @@ export default class GameState {
                     right_shoulder: null
                 },
                 parts: {
-                    torso: { id: 'torso', name: 'Torso', integrity: 3, hp: 100, maxHp: 100, status: 'operational', condition: 1.0 },
-                    left_arm: { id: 'left_arm', name: 'Left Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational', condition: 1.0 },
-                    right_arm: { id: 'right_arm', name: 'Right Arm', integrity: 2, hp: 50, maxHp: 50, status: 'operational', condition: 1.0 },
-                    legs: { id: 'legs', name: 'Legs', integrity: 2, hp: 60, maxHp: 60, status: 'operational', condition: 1.0 }
+                    torso: { id: 'torso_hayabusa_mk1', name: 'Hayabusa Mk.I Torso', integrity: 3, hp: 40, maxHp: 40, status: 'operational', condition: 1.0 },
+                    left_arm: { id: 'arm_hayabusa_mk1_l', name: 'Hayabusa Left Arm', integrity: 2, hp: 20, maxHp: 20, status: 'operational', condition: 1.0 },
+                    right_arm: { id: 'arm_hayabusa_mk1_r', name: 'Hayabusa Right Arm', integrity: 2, hp: 20, maxHp: 20, status: 'operational', condition: 1.0 },
+                    legs: { id: 'legs_hayabusa_mk1', name: 'Hayabusa Legs', integrity: 2, hp: 30, maxHp: 30, status: 'operational', condition: 1.0 }
                 },
                 attributes: {
                     atk: 10,
