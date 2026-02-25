@@ -112,12 +112,13 @@ export default {
         },
         resourceIcon(id) {
             const res = this.state?.items?.[id];
+            if (res && res.icon) return res.icon;
             if (res && res.abbr) return res.abbr;
             const ICONS = {
-                energy: 'E', scrap: 'S', creds: '\u00A2',
-                ferrous_scrap: 'Fe', polymer_scrap: 'Po', electronic_scrap: 'El',
-                nano_infra: 'Ni', nanofiber: 'Nf', ceramite: 'Ce', fusion_cells: 'Fu', quantum_circuits: 'Qc',
-                glory: 'G', parts: 'P', supply: 'Sp', data_chips: 'Dc',
+                energy: '\u26A1', scrap: '\u2699', creds: '\u00A2',
+                ferrous_scrap: '\u26D3', polymer_scrap: 'Po', electronic_scrap: '\u2318',
+                nano_infra: '\u25C8', nanofiber: '\u2248', ceramite: '\u25C6', fusion_cells: '\u25C9', quantum_circuits: '\u25C7',
+                glory: '\u2694', parts: '\u229E', supply: '\u25B8', data_chips: '\u25C7',
                 rep_police: 'RP', rep_military: 'RM', rep_underground: 'RU',
                 rep_corporate: 'RC', rep_exile: 'RE',
                 morality: '\u2696', prestige_points: '\u2605'
@@ -162,10 +163,10 @@ export default {
         equipItem(slotId, event) {
             Game.equipItem(slotId, event.target.value);
         },
-        getLinkedEquipSlot(partSlotId) {
+        getLinkedEquipSlots(partSlotId) {
             const chassis = this.state.get(this.frame.chassisId);
-            if (!chassis || !chassis.equipSlots) return null;
-            return Object.keys(chassis.equipSlots).find(k => chassis.equipSlots[k].linkedPart === partSlotId);
+            if (!chassis || !chassis.equipSlots) return [];
+            return Object.keys(chassis.equipSlots).filter(k => chassis.equipSlots[k].linkedPart === partSlotId);
         },
         equipFrame(frameId) {
             Game.equipFrame(frameId);
@@ -653,7 +654,7 @@ export default {
                         borderColor: (res.color || 'var(--primary)') + '60',
                         background: (res.color || 'var(--primary)') + '12'
                     }">
-                        {{ res.abbr || res.icon || '•' }}
+                        {{ res.icon || res.abbr || '•' }}
                     </span>
                     <span class="res-info">
                         <div class="flex-between">
@@ -758,7 +759,7 @@ export default {
                                 <!-- Mount Point -->
                                 <div class="col-mount">
                                     > {{ slotId.replace('_', ' ').toUpperCase() }}
-                                    <div style="font-size: 9px; opacity: 0.6; margin-left: 10px;">{{ p.name }}</div>
+                                    <div class="mount-part-name">{{ p.name }}</div>
                                 </div>
                                 
                                 <!-- Diagnostics -->
@@ -776,22 +777,26 @@ export default {
                                 
                                 <!-- Equipment Dropdown -->
                                 <div class="col-equip">
-                                    <template v-if="getLinkedEquipSlot(slotId)">
-                                        <div style="font-size: 9px; color: var(--text-dim); margin-bottom: 3px;">
-                                            MOUNT: {{ getLinkedEquipSlot(slotId).replace('_', ' ').toUpperCase() }}
+                                    <template v-if="getLinkedEquipSlots(slotId).length">
+                                        <div class="mount-slot-list">
+                                            <div v-for="equipSlotId in getLinkedEquipSlots(slotId)" :key="equipSlotId" class="mount-slot-item">
+                                                <div class="mount-slot-label">
+                                                    MOUNT: {{ equipSlotId.replace('_', ' ').toUpperCase() }}
+                                                </div>
+                                                <select class="hud-select"
+                                                        :value="frame.installedEquip && frame.installedEquip[equipSlotId] ? frame.installedEquip[equipSlotId] : ''"
+                                                        @change="equipItem && equipItem(equipSlotId, $event)">
+                                                    <option value="">[ EMPTY_SLOT ]</option>
+                                                    <template v-if="getValidWeapons">
+                                                        <option v-for="w in getValidWeapons(equipSlotId)" :key="w.id" :value="w.id">
+                                                            {{ w.name ? w.name.toUpperCase() : w.id }}
+                                                        </option>
+                                                    </template>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <select class="hud-select" 
-                                                :value="frame.installedEquip && frame.installedEquip[getLinkedEquipSlot(slotId)] ? frame.installedEquip[getLinkedEquipSlot(slotId)] : ''" 
-                                                @change="equipItem && equipItem(getLinkedEquipSlot(slotId), $event)">
-                                            <option value="">[ EMPTY_SLOT ]</option>
-                                            <template v-if="getValidWeapons">
-                                                <option v-for="w in getValidWeapons(getLinkedEquipSlot(slotId))" :key="w.id" :value="w.id">
-                                                    {{ w.name ? w.name.toUpperCase() : w.id }}
-                                                </option>
-                                            </template>
-                                        </select>
                                     </template>
-                                    <span v-else class="text-dim" style="font-size: 10px;">-- NO MOUNT --</span>
+                                    <span v-else class="text-dim no-mount-label">-- NO MOUNT --</span>
                                 </div>
                             </div>
                         </div>
@@ -1995,6 +2000,12 @@ export default {
     letter-spacing: 1px;
 }
 
+.mount-part-name {
+    font-size: 9px;
+    opacity: 0.6;
+    margin-left: 10px;
+}
+
 .col-status {
     display: flex;
     flex-direction: column;
@@ -2008,6 +2019,28 @@ export default {
     font-family: var(--font-mono);
     font-size: var(--font-size-sm);
     text-align: center;
+}
+
+.mount-slot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mount-slot-item {
+    padding: 6px;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.mount-slot-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+}
+
+.no-mount-label {
+    font-size: 10px;
 }
 
 .col-equip .hud-select {
@@ -2973,8 +3006,3 @@ export default {
 }
 
 </style>
-
-
-
-
-

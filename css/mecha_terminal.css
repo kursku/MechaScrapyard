@@ -22,8 +22,10 @@
 
     /* Brand / Thematic Colors */
     --primary: #ffb000;
+    --primary-dim: #bf8400;
     --secondary: #c36a2d;
     --cta: #bf360c;
+    --disabled: #6f685c;
 
     /* Semantic Status Colors */
     --color-success: #00ff41;
@@ -40,8 +42,15 @@
 
     /* Typography Colors */
     --text: #e0d8c8;
-    --text-dim: #8c867a;
-    --text-faint: #4a4538;
+    --text-dim: #a8a295;
+    --text-faint: #5c5646;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
 
     /* Geometry Extremism: Brutalist 0px */
     --radius-hud: 0px;
@@ -148,6 +157,11 @@ body {
     line-height: 1.5;
     text-shadow: var(--crt-glow);
     animation: flicker 0.15s infinite alternate;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 /* ── Utility Classes para Layout Novo ────────────────────────── */
@@ -906,4 +920,20 @@ body {
 .spec-val {
     color: var(--primary);
     font-weight: bold;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body {
+        animation: none !important;
+        text-shadow: none !important;
+    }
+
+    .hud-overlay::before {
+        display: none;
+    }
+
+    .hud-overlay::after {
+        box-shadow: none;
+        background: radial-gradient(circle, transparent 55%, rgba(0, 0, 0, 0.35) 100%);
+    }
 }

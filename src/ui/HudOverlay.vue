@@ -62,4 +62,19 @@
 .top-right { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
 .bottom-left { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
 .bottom-right { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    .scanline {
+        animation: none;
+        display: none;
+    }
+
+    .noise {
+        opacity: 0.01;
+    }
+
+    .hud-corner {
+        opacity: 0.15;
+    }
+}
 </style>
