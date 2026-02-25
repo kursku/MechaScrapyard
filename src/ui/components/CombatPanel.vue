@@ -363,7 +363,7 @@ export default {
                 >
                     <div class="frame-header">
                         TARGET: {{ (enemy.name || 'UNKNOWN').toUpperCase() }}
-                        <div v-if="enemy.title" class="enemy-title" style="font-size: 9px; color: var(--text-dim); margin-top: 2px;">{{ enemy.title.toUpperCase() }}</div>
+                        <div v-if="enemy.title" class="enemy-title">{{ enemy.title.toUpperCase() }}</div>
                     </div>
                     
                     <div class="token-bar" v-if="enemy.tokens && enemy.tokens.length > 0">
@@ -466,13 +466,13 @@ export default {
     background: rgba(0, 255, 65, 0.05);
 }
 .mission-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.mission-name { font-weight: bold; color: var(--secondary); font-size: 13px; }
+.mission-name { font-weight: bold; color: var(--secondary); font-size: 14px; }
 .mission-difficulty { color: #f5c542; letter-spacing: 2px; }
-.mission-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.3; }
-.mission-footer { display: flex; gap: 20px; font-size: 10px; font-weight: bold; }
+.mission-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.35; }
+.mission-footer { display: flex; gap: 20px; font-size: 11px; font-weight: bold; }
 .cost { color: var(--error); }
 .rewards { color: var(--primary); }
-.empty-msg { font-size: 11px; color: var(--text-dim); padding: 10px 0; }
+.empty-msg { font-size: 12px; color: var(--text-dim); padding: 10px 0; }
 
 .mission-tags {
     display: flex;
@@ -481,7 +481,7 @@ export default {
     flex-wrap: wrap;
 }
 .zone-tag, .story-tag, .patrol-tag, .completed-tag {
-    font-size: 9px;
+    font-size: 10px;
     padding: 1px 5px;
     border: 1px solid;
     letter-spacing: 1px;
@@ -492,7 +492,7 @@ export default {
 .completed-tag { border-color: var(--primary); color: var(--primary); }
 
 .mission-flavor {
-    font-size: 10px;
+    font-size: 11px;
     color: #6a7a8a;
     font-style: italic;
     margin-bottom: 8px;
@@ -522,7 +522,7 @@ export default {
     margin: 5px 0;
 }
 .reward-item {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--primary);
     padding: 2px 6px;
     border: 1px solid rgba(0, 255, 65, 0.2);
@@ -534,7 +534,7 @@ export default {
 
 .config-label {
     color: var(--primary);
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 2px;
     margin: 6px 0 5px;
     opacity: 0.8;
@@ -550,14 +550,14 @@ export default {
     background: rgba(0, 255, 170, 0.04);
     border: 1px solid rgba(0, 255, 170, 0.2);
     color: var(--primary);
-    padding: 6px 8px;
+    padding: 7px 9px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 11px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 66px;
+    min-width: 74px;
     gap: 2px;
     transition: border-color 0.15s, background 0.15s;
 }
@@ -571,12 +571,12 @@ export default {
     box-shadow: 0 0 8px rgba(0, 255, 170, 0.25);
 }
 .config-icon { font-size: 15px; }
-.config-name { font-weight: bold; font-size: 9px; letter-spacing: 1px; }
-.config-stat { font-size: 9px; color: rgba(0, 255, 170, 0.55); }
+.config-name { font-weight: bold; font-size: 11px; letter-spacing: 1px; }
+.config-stat { font-size: 10px; color: rgba(0, 255, 170, 0.55); }
 .config-stat.atk { color: #f5c542; }
 .config-stat.def { color: #00aaff; }
 .config-stat.heat { color: #ff9900; }
-.config-desc { font-size: 9px; color: rgba(0, 255, 170, 0.45); text-align: center; line-height: 1.2; }
+.config-desc { font-size: 10px; color: rgba(0, 255, 170, 0.45); text-align: center; line-height: 1.25; }
 
 /* ── Loadout & shop ─────────────────────────────────────────────────────── */
 .loadout-section { margin-bottom: 16px; }
@@ -589,7 +589,7 @@ export default {
     margin-bottom: 10px;
 }
 .damage-alert {
-    font-size: 10px;
+    font-size: 11px;
     color: #f66;
     font-weight: bold;
     letter-spacing: 1px;
@@ -605,7 +605,7 @@ export default {
     color: #4a5;
     padding: 4px 6px;
     font-family: inherit;
-    font-size: 9px;
+    font-size: 10px;
     cursor: pointer;
     letter-spacing: 0.5px;
     transition: all 0.15s;
@@ -631,14 +631,14 @@ export default {
     content: "EQUIPPED";
     position: absolute;
     top: 5px; right: 8px;
-    font-size: 8px;
+    font-size: 9px;
     color: var(--primary);
     font-weight: bold;
 }
 .mnvr-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.mnvr-name { font-size: 11px; font-weight: bold; color: var(--text); }
-.mnvr-type { font-size: 9px; color: var(--text-dim); }
-.mnvr-desc { font-size: 10px; color: var(--text-dim); line-height: 1.2; }
+.mnvr-name { font-size: 12px; font-weight: bold; color: var(--text); }
+.mnvr-type { font-size: 10px; color: var(--text-dim); }
+.mnvr-desc { font-size: 11px; color: var(--text-dim); line-height: 1.3; }
 
 .shop-item { border-style: dashed; }
 .btn-buy {
@@ -647,8 +647,8 @@ export default {
     background: transparent;
     border: 1px solid var(--primary);
     color: var(--primary);
-    font-size: 10px;
-    padding: 3px;
+    font-size: 11px;
+    padding: 4px;
     cursor: pointer;
     font-family: inherit;
 }
@@ -670,21 +670,21 @@ export default {
     padding: 5px 10px;
     background: rgba(0, 255, 170, 0.06);
     border: 1px solid rgba(0, 255, 170, 0.2);
-    font-size: 11px;
+    font-size: 12px;
 }
 .config-indicator {
     color: var(--primary);
     font-weight: bold;
     letter-spacing: 1px;
 }
-.config-indicator.sm { font-size: 10px; opacity: 0.7; }
+.config-indicator.sm { font-size: 11px; opacity: 0.7; }
 .config-sep { color: var(--border-dim); }
 .turn-badge {
     margin-left: auto;
     color: var(--secondary);
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 /* Frame grid */
@@ -703,11 +703,17 @@ export default {
 .enemy-side  { border-color: rgba(255, 60, 60, 0.3); }
 
 .frame-header {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--secondary);
     border-bottom: 1px solid var(--border-dim);
     padding-bottom: 5px;
     margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.enemy-title {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
     letter-spacing: 1px;
 }
 
@@ -722,7 +728,7 @@ export default {
 }
 .token-label {
     color: rgba(255, 255, 255, 0.4);
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 1px;
 }
 .token-badge {
@@ -730,13 +736,13 @@ export default {
     cursor: help;
 }
 
-.part-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; }
+.part-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12px; }
 .part-label { width: 70px; }
 .part-integrity { display: flex; gap: 2px; width: 30px; }
 .dot { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
 .part-hp-bar { flex: 1; height: 6px; background: #000; border: 1px solid #333; }
 .hp-fill { height: 100%; transition: width 0.3s; }
-.part-val { width: 50px; text-align: right; font-size: 10px; color: var(--text-dim); }
+.part-val { width: 50px; text-align: right; font-size: 11px; color: var(--text-dim); }
 .destroyed { opacity: 0.35; filter: grayscale(1); }
 
 .vitals-row {
@@ -746,25 +752,25 @@ export default {
     display: flex;
     gap: 20px;
 }
-.vital { flex: 1; font-size: 10px; }
-.vital label { display: block; margin-bottom: 3px; color: var(--text-dim); }
+.vital { flex: 1; font-size: 11px; }
+.vital label { display: block; margin-bottom: 3px; color: var(--text-dim); font-size: 10px; }
 .vital-bar { height: 4px; background: #000; margin-bottom: 3px; }
 .vital-fill { height: 100%; transition: width 0.3s; }
 
 /* Battle log */
 .battle-log {
-    height: 130px;
+    height: 170px;
     border: 1px solid var(--border-dim);
     background: #000;
     padding: 8px;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--primary);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
 }
-.log-entry { line-height: 1.3; }
+.log-entry { line-height: 1.35; }
 .log-player  { color: #00ff88; }
 .log-enemy   { color: #ff6666; }
 .log-critical { color: #ffcc00; font-weight: bold; }
@@ -792,7 +798,7 @@ export default {
     color: var(--error);
     padding: 5px 16px;
     font-family: inherit;
-    font-size: 11px;
+    font-size: 12px;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.15s;
@@ -825,7 +831,7 @@ export default {
 .result-overlay.defeat .result-title { color: var(--error); }
 
 .result-sub {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-dim);
     text-align: center;
     max-width: 480px;

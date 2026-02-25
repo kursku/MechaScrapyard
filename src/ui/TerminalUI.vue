@@ -13,6 +13,7 @@ export default {
             selectedCategory: 'scrapyard',
             renderTick: 0,
             _renderInterval: null,
+            _pauseRenderTick: false,
             _seenCategories: new Set(['pilot', 'scrapyard']),
             _showPrestigeModal: false,
             _selectedZoneId: null,
@@ -42,9 +43,26 @@ export default {
         tryItem(it) {
             Game.tryItem(it);
         },
-        enrollJob(id) { Game.enrollJob(id); this.renderTick++; },
-        promoteJob() { Game.promoteJob(); this.renderTick++; },
-        quitJob() { Game.quitJob(); this.renderTick++; },
+        setCategory(cat) {
+            this.selectedCategory = cat;
+            this._seenCategories.add(cat);
+            this.itemOut();
+        },
+        enrollJob(id) {
+            this.itemOut();
+            Game.enrollJob(id);
+            this.renderTick++;
+        },
+        promoteJob() {
+            this.itemOut();
+            Game.promoteJob();
+            this.renderTick++;
+        },
+        quitJob() {
+            this.itemOut();
+            Game.quitJob();
+            this.renderTick++;
+        },
         makeChoice(task, choice) {
             Game.runner.fulfillChoice(task, choice);
         },
@@ -95,6 +113,19 @@ export default {
                 }
             }
             return rate;
+        },
+        getResourcePriority(res) {
+            const corePriority = { energy: 0, scrap: 1, creds: 2 };
+            if (corePriority[res.id] !== undefined) return corePriority[res.id];
+            if (res.id === 'space') return 90;
+            if (res.id && res.id.startsWith('rep_')) return 100;
+            return 40 + (res.sortOrder || 0);
+        },
+        isCoreResource(res) {
+            return res.id === 'energy' || res.id === 'scrap' || res.id === 'creds';
+        },
+        isSecondaryResource(res) {
+            return res.id === 'space' || (res.id && res.id.startsWith('rep_'));
         },
         getTaskNetRates(task) {
             const rates = {};
@@ -162,6 +193,17 @@ export default {
         },
         equipItem(slotId, event) {
             Game.equipItem(slotId, event.target.value);
+        },
+        onMountSelectFocus() {
+            this._pauseRenderTick = true;
+        },
+        onMountSelectBlur() {
+            this._pauseRenderTick = false;
+        },
+        onMountSelectChange(slotId, event) {
+            this.equipItem(slotId, event);
+            this._pauseRenderTick = false;
+            this.renderTick++;
         },
         getLinkedEquipSlots(partSlotId) {
             const chassis = this.state.get(this.frame.chassisId);
@@ -322,7 +364,13 @@ export default {
                     if (i.hideWhen && Game.techTree.evaluate(i.hideWhen)) return false;
                     return true;
                 })
-                .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+                .sort((a, b) => {
+                    const priorityDiff = this.getResourcePriority(a) - this.getResourcePriority(b);
+                    if (priorityDiff !== 0) return priorityDiff;
+                    const sortDiff = (a.sortOrder || 0) - (b.sortOrder || 0);
+                    if (sortDiff !== 0) return sortDiff;
+                    return (a.name || a.id).localeCompare(b.name || b.id);
+                });
         },
         tasks() {
             this.renderTick;
@@ -562,10 +610,18 @@ export default {
             return nextTier[path];
         }
     },
+    watch: {
+        selectedCategory() {
+            this.itemOut();
+        },
+        activeJob() {
+            this.itemOut();
+        }
+    },
     mounted() {
         const TICK_MS = 200;
         this._renderInterval = setInterval(() => {
-            this.renderTick++;
+            if (!this._pauseRenderTick) this.renderTick++;
         }, TICK_MS);
 
         // Expose dialogue to global Game object so it can be called from logic
@@ -632,7 +688,10 @@ export default {
             </div>
 
             <h4 class="hud-label">> RESOURCE MONITOR</h4>
-            <template v-for="res in resources" :key="res.id">
+            <template v-for="(res, resIndex) in resources" :key="res.id">
+                <div v-if="resIndex > 0 && isSecondaryResource(res) && !isSecondaryResource(resources[resIndex - 1])" class="res-group-divider">
+                    <span>&#x2500;&#x2500; AUXILIARY &#x2500;&#x2500;</span>
+                </div>
                 <div v-if="res.id === 'ferrous_scrap' && resources[0]?.id !== 'ferrous_scrap'" class="res-group-divider">
                     <span>&#x2500;&#x2500; REFINED &#x2500;&#x2500;</span>
                 </div>
@@ -642,8 +701,10 @@ export default {
                 <!-- RESOURCE BUTTON -->
                 <div class="hud-resource-btn"
                      :class="{ 
-                        'rate-pos': getNetRate(res) > 0.01, 
-                        'rate-neg': getNetRate(res) < -0.01 
+                        'rate-pos': getNetRate(res) > 0.01,
+                        'rate-neg': getNetRate(res) < -0.01,
+                        'resource-core': isCoreResource(res),
+                        'resource-secondary': isSecondaryResource(res)
                      }"
                      :style="{ '--res-color': res.color || 'var(--primary)' }"
                      @mouseover="itemOver($event, res)"
@@ -707,7 +768,7 @@ export default {
             <nav class="terminal-category-tabs">
                 <button v-for="cat in categories" :key="cat"
                         :class="['hud-tab-btn', { active: selectedCategory === cat }]"
-                        @click="selectedCategory = cat; _seenCategories.add(cat)">
+                        @click="setCategory(cat)">
                     <span class="tab-indicator"></span>
                     {{ cat === 'pilot' ? 'PROFILE' : cat.toUpperCase() }}
                     <span v-if="isNewTab(cat)" class="tab-new-badge">NEW</span>
@@ -785,7 +846,9 @@ export default {
                                                 </div>
                                                 <select class="hud-select"
                                                         :value="frame.installedEquip && frame.installedEquip[equipSlotId] ? frame.installedEquip[equipSlotId] : ''"
-                                                        @change="equipItem && equipItem(equipSlotId, $event)">
+                                                        @focus="onMountSelectFocus"
+                                                        @blur="onMountSelectBlur"
+                                                        @change="onMountSelectChange(equipSlotId, $event)">
                                                     <option value="">[ EMPTY_SLOT ]</option>
                                                     <template v-if="getValidWeapons">
                                                         <option v-for="w in getValidWeapons(equipSlotId)" :key="w.id" :value="w.id">
@@ -901,23 +964,25 @@ export default {
                                     </div>
                                 </div>
 
-                                <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
-                                    <details>
-                                        <summary class="faction-perks-title" :style="{ color: fac.color, cursor: 'pointer' }">
-                                            &#x25BC; ACCESS VOR-X VENDOR (UNLOCKED)
+                                <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length">
+                                    <details class="faction-vendor-details">
+                                        <summary class="faction-vendor-summary" :style="{ '--fac-color': fac.color }">
+                                            ACCESS VOR-X VENDOR (UNLOCKED)
                                         </summary>
-                                        <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key" style="margin-top: 10px;">
-                                            <div class="vendor-category-title" style="background: rgba(255,255,255,0.05); padding: 2px 5px; font-size: 10px;">{{ cat.label }}</div>
-                                            <div v-for="itemId in cat.items" :key="itemId" class="vendor-item-row" style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                                <div class="vendor-item-meta" style="flex: 1;">
-                                                    <span class="vendor-item-name" style="font-size: 12px;">{{ getVendorItem(itemId)?.name || itemId }}</span>
-                                                    <span class="vendor-item-cost" style="color: var(--color-warning);">{{ getVendorItemCost(itemId) }} C</span>
+                                        <div class="faction-vendor-scroll">
+                                            <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key">
+                                                <div class="vendor-category-title">{{ cat.label }}</div>
+                                                <div v-for="itemId in cat.items" :key="itemId" class="vendor-item-row">
+                                                    <div class="vendor-item-meta">
+                                                        <span class="vendor-item-name">{{ getVendorItem(itemId)?.name || itemId }}</span>
+                                                        <span class="vendor-item-cost">{{ getVendorItemCost(itemId) }} C</span>
+                                                    </div>
+                                                    <button class="hud-btn small vendor-buy-btn"
+                                                        :disabled="!canBuyVendorItem(itemId, fac.id)"
+                                                        @click="buyVendorItem(itemId, fac.id)">
+                                                        BUY
+                                                    </button>
                                                 </div>
-                                                <button class="hud-btn small"
-                                                    :disabled="!canBuyVendorItem(itemId, fac.id)"
-                                                    @click="buyVendorItem(itemId, fac.id)">
-                                                    BUY
-                                                </button>
                                             </div>
                                         </div>
                                     </details>
@@ -1410,7 +1475,8 @@ export default {
 .factions-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-    gap: 20px; 
+    gap: 20px;
+    align-items: start;
 }
 .faction-card {
     display: flex; flex-direction: column;
@@ -1418,24 +1484,70 @@ export default {
     background-color: #0b0e12;
     padding: 20px;
     transition: transform 0.2s;
+    align-self: start;
+    min-height: 0;
 }
 .faction-card:hover { transform: translateY(-3px); }
 .faction-title { display: flex; align-items: center; gap: 10px; font-size: var(--font-size-lg); font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
 .faction-desc { font-size: var(--font-size-sm); color: var(--text-dim); line-height: 1.5; margin-bottom: 20px; }
-.faction-status { margin-top: auto; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); }
+.faction-status { margin-top: 14px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); }
 .faction-rep-row { display: flex; justify-content: space-between; font-weight: bold; font-size: var(--font-size-xs); margin-bottom: 10px; }
 .faction-alliance-row { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-size-xs); color: var(--text-dim); margin-bottom: 10px; }
 .alliance-chip { border: 1px solid; padding: 1px 6px; font-weight: bold; letter-spacing: 1px; font-size: 10px; }
 .faction-perks { background: rgba(0,0,0,0.4); padding: 10px; font-size: var(--font-size-xs); color: var(--text-dim); }
 .faction-perks-title { margin-bottom: 5px; font-weight: bold; }
 .faction-vendor { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); }
-.vendor-category { margin-bottom: 10px; }
-.vendor-category-title { font-size: 10px; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 6px; }
-.vendor-item-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
-.vendor-item-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.vendor-item-name { font-size: var(--font-size-xs); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vendor-item-cost { font-size: 10px; color: var(--text-dim); }
-.vendor-buy-btn { padding: 2px 10px; min-width: 54px; }
+.faction-vendor-details {
+    margin-top: 8px;
+}
+.faction-vendor-summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--fac-color, var(--primary));
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.faction-vendor-summary::-webkit-details-marker {
+    display: none;
+}
+.faction-vendor-summary::before {
+    content: "\25B8";
+    color: var(--fac-color, var(--primary));
+}
+.faction-vendor-details[open] .faction-vendor-summary::before {
+    content: "\25BE";
+}
+.faction-vendor-scroll {
+    margin-top: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.vendor-category { margin-bottom: 12px; }
+.vendor-category:last-child { margin-bottom: 0; }
+.vendor-category-title {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px 6px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+.vendor-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.vendor-item-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.vendor-item-name { font-size: var(--font-size-sm); color: var(--text); line-height: 1.2; }
+.vendor-item-cost { font-size: 11px; color: var(--color-warning); letter-spacing: 1px; }
+.vendor-buy-btn { padding: 3px 10px; min-width: 68px; flex-shrink: 0; }
 
 /* -- PILOT CONSOLE DECKS (2 COLUMN FIX) ---------------------- */
 .pilot-stats-grid {
@@ -1551,7 +1663,8 @@ export default {
     display: grid; 
     /* Same behavior for faction cards */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-    gap: 20px; 
+    gap: 20px;
+    align-items: start;
 }
 
 /* -- PILOT CONSOLE DECKS ---------------------- */
@@ -1685,6 +1798,30 @@ export default {
     margin-bottom: 5px;
     border-bottom: 1px solid rgba(0, 143, 17, 0.1);
     cursor: help;
+}
+.hud-resource-btn.resource-core {
+    border-left: 2px solid var(--primary);
+    background: rgba(255, 176, 0, 0.06);
+}
+.hud-resource-btn.resource-core .res-info {
+    font-size: var(--font-size-sm);
+}
+.hud-resource-btn.resource-core .res-val {
+    color: var(--text);
+    font-weight: bold;
+}
+.hud-resource-btn.resource-secondary {
+    opacity: 0.72;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.hud-resource-btn.resource-secondary .res-info {
+    font-size: var(--font-size-xxs);
+}
+.hud-resource-btn.resource-secondary .res-badge {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
 }
 
 .res-icon { font-size: var(--font-size-xl); color: var(--res-color); text-shadow: 0 0 5px var(--res-color); }
