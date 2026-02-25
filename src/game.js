@@ -2539,6 +2539,171 @@ const Game = {
         }
     },
 
+    /**
+     * Swap the player's active frame chassis.
+     * Auto-unequips parts and weapons that are incompatible with the new frame's category.
+     */
+    equipFrame(frameId) {
+        const frame = this.state.player.frame;
+        const inventory = this.state.player.inventory;
+        const newChassis = this.state.get(frameId);
+        if (!newChassis || newChassis.type !== 'frame') {
+            Log.add(`[ERROR] Unknown frame: ${frameId}`, 'error');
+            return false;
+        }
+
+        if (!inventory.frames.includes(frameId)) {
+            Log.add(`[ERROR] Frame ${newChassis.name} is not in your inventory.`, 'error');
+            return false;
+        }
+
+        const oldChassisId = frame.chassisId;
+        if (oldChassisId === frameId) return false;
+
+        const newCategory = newChassis.category;
+
+        // 1. Auto-unequip incompatible structural parts
+        for (const [slot, partId] of Object.entries(frame.installedParts || {})) {
+            const partTemplate = this.state.get(partId);
+            if (!partTemplate) continue;
+            const compat = partTemplate.category_compat || [];
+            if (compat.length > 0 && !compat.includes(newCategory)) {
+                const partState = frame.parts[slot];
+                if (partState) {
+                    inventory.parts.push({
+                        id: `${partId}_unequip_${Date.now()}`,
+                        templateId: partId,
+                        name: partTemplate.name,
+                        type: 'frame_part',
+                        slot: partTemplate.slot,
+                        condition: partState.condition || 1.0,
+                        hp: partState.hp,
+                        maxHp: partState.maxHp,
+                        integrity: partState.integrity,
+                        armor: partTemplate.armor,
+                        origin: partTemplate.origin
+                    });
+                    delete frame.parts[slot];
+                    delete frame.installedParts[slot];
+                    Log.add(`⚠ ${partTemplate.name} incompatible with ${newChassis.name} [${newCategory}] — moved to inventory.`, 'system');
+                }
+            }
+        }
+
+        // 2. Auto-unequip weapons/backpacks from slots the new chassis doesn't have
+        const newEquipSlots = newChassis.equipSlots || {};
+        for (const [slotId, itemId] of Object.entries(frame.installedEquip || {})) {
+            if (!itemId) continue;
+            if (!newEquipSlots[slotId]) {
+                const item = this.state.get(itemId);
+                if (item) {
+                    item.equipped = false;
+                    if (!inventory.weapons.includes(itemId) && item.type === 'weapon') {
+                        inventory.weapons.push(itemId);
+                    }
+                }
+                frame.installedEquip[slotId] = null;
+                Log.add(`⚠ Slot [${slotId.toUpperCase()}] does not exist on ${newChassis.name} — ${item?.name || itemId} returned.`, 'system');
+            }
+        }
+
+        // 3. Swap chassis
+        frame.chassisId = frameId;
+        Log.add(`◆ Frame swapped to ${newChassis.name.toUpperCase()} [${newCategory.toUpperCase()}]`, 'system');
+
+        // 4. Sync equip slots and recalculate stats
+        this.syncFrameSlots();
+        return true;
+    },
+
+    /**
+     * Install a part from inventory into the player's frame.
+     * @param {string} slot - target slot (torso, left_arm, right_arm, legs)
+     * @param {Object} partItem - the inventory part object (with templateId, condition, etc.)
+     */
+    equipPart(slot, partItem) {
+        const frame = this.state.player.frame;
+        const inventory = this.state.player.inventory;
+        const chassis = this.state.get(frame.chassisId);
+        if (!chassis) return false;
+
+        const templateId = partItem.templateId || partItem.id;
+        const partTemplate = this.state.get(templateId);
+        if (!partTemplate) {
+            Log.add(`[ERROR] Unknown part template: ${templateId}`, 'error');
+            return false;
+        }
+
+        // Validate slot type
+        if (partTemplate.slot !== slot && partTemplate.slot !== 'arm') {
+            Log.add(`[ERROR] ${partTemplate.name} cannot be installed in ${slot.toUpperCase()}.`, 'error');
+            return false;
+        }
+        if (partTemplate.slot === 'arm' && !slot.includes('arm')) {
+            Log.add(`[ERROR] ${partTemplate.name} is an arm part — cannot install in ${slot.toUpperCase()}.`, 'error');
+            return false;
+        }
+
+        // Validate category compatibility
+        const compat = partTemplate.category_compat || [];
+        if (compat.length > 0 && !compat.includes(chassis.category)) {
+            Log.add(`[ERROR] ${partTemplate.name} is not compatible with ${chassis.category.toUpperCase()} frames.`, 'error');
+            return false;
+        }
+
+        // Validate weight
+        const weightRange = chassis.weightRange?.[partTemplate.slot === 'arm' ? 'arm' : partTemplate.slot];
+        if (weightRange && partTemplate.weight) {
+            if (partTemplate.weight > weightRange[1]) {
+                Log.add(`[ERROR] ${partTemplate.name} (${partTemplate.weight}kg) exceeds weight limit for ${chassis.name} (max ${weightRange[1]}kg).`, 'error');
+                return false;
+            }
+        }
+
+        // Unequip current part in that slot → push to inventory
+        const currentPartId = frame.installedParts?.[slot];
+        if (currentPartId) {
+            const currentTemplate = this.state.get(currentPartId);
+            const currentState = frame.parts[slot];
+            if (currentTemplate && currentState) {
+                inventory.parts.push({
+                    id: `${currentPartId}_unequip_${Date.now()}`,
+                    templateId: currentPartId,
+                    name: currentTemplate.name,
+                    type: 'frame_part',
+                    slot: currentTemplate.slot,
+                    condition: currentState.condition || 1.0,
+                    hp: currentState.hp,
+                    maxHp: currentState.maxHp,
+                    integrity: currentState.integrity,
+                    armor: currentTemplate.armor,
+                    origin: currentTemplate.origin
+                });
+            }
+        }
+
+        // Install new part
+        if (!frame.installedParts) frame.installedParts = {};
+        frame.installedParts[slot] = templateId;
+        frame.parts[slot] = {
+            id: slot,
+            name: partTemplate.name,
+            hp: partItem.hp || partTemplate.hp,
+            maxHp: partItem.maxHp || partTemplate.maxHp || partTemplate.hp,
+            integrity: partItem.integrity || partTemplate.integrity,
+            status: 'operational',
+            condition: partItem.condition || 1.0
+        };
+
+        // Remove from inventory
+        const idx = inventory.parts.findIndex(p => p.id === partItem.id);
+        if (idx > -1) inventory.parts.splice(idx, 1);
+
+        Log.add(`✓ Installed ${partTemplate.name.toUpperCase()} in [${slot.toUpperCase()}].`, 'system');
+        this.state.recalculateFrameStats();
+        return true;
+    },
+
     syncFrameSlots() {
         const frame = this.state.player.frame;
         const chassis = this.state.get(frame.chassisId);

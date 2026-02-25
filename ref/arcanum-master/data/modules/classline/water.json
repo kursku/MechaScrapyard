@@ -1,0 +1,1360 @@
+{
+	"module": "water",
+	"data": {
+		"classes": [
+			{
+				"id": "hydromancer",
+				"name": "Hydromancer",
+				"desc": "Master of water.",
+				"tags": "t_basicclass,t_waterclass,t_spearclass",
+				"actdesc": "A mage specialising in water manipulation and barriers.",
+				"require": "g.t1unlocker>0&&g.waterlore>=6&&g.tier2==0&&!(g.tier1>0&&g.t2unlocker==0)",
+				"need": "(g.t1unlocker>0&&g.tier1==0)||g.t2unlocker>0",
+				"mod": {
+					"waterlore.max": 2,
+					"barrier.max": "10%",
+					"mana.max": 2
+				},
+				"flavor": "The first steps towards dissolution",
+				"sortOrder": 155
+			},
+			{
+				"id": "limnimancer",
+				"name": "Limnimancer",
+				"desc": "Master of the shores.",
+				"tags": "t_advancedclass,t_waterclass,t_spearclass",
+				"actdesc": "",
+				"require": "g.t3unlocker>0&&g.waterlore>=9&&g.tier4==0&&!(g.tier3>0&&g.t4unlocker==0)&&g.hydromancer>0",
+				"need": "(g.t3unlocker>0&&g.tier3==0)||g.t4unlocker>0",
+				"mod": {
+					"waterlore.max": 3,
+					"barrier.max": "15%",
+					"stamina.max": "20%",
+					"water.rate": 0.3,
+					"wet_real_estate.mod.space.max": 50
+				},
+				"flavor": "Still contending with the witches and ogres for mastery of the swamps.",
+				"sortOrder": 211
+			},
+			{
+				"id": "class_leviathan",
+				"name": "Leviathan",
+				"desc": "A mantle of salt and sea.",
+				"tags": "t_expertclass,t_waterclass,t_spearclass",
+				"actdesc": "",
+				"require": "g.t5unlocker>0&&g.waterlore>=16&&g.tier6==0&&!(g.tier5>0&&g.t6unlocker>0)&&g.limnimancer>0",
+				"need": "(g.t5unlocker>0&&g.tier5==0)||g.t6unlocker>0",
+				"mod": {
+					"waterlore.max": 3,
+					"barrier.max": "20%",
+					"stamina.max": "20%",
+					"spearlore.max": 3,
+					"wet_real_estate.mod.space.max": 100
+				},
+				"flavor": "Now the whims of the seas follow your own.",
+				"sortOrder": 309
+			}
+		],
+		"skills": [
+			{
+				"id": "waterlore2",
+				"name": "waveshaping",
+				"desc": "Every step brings you closer to becoming one with the seas.",
+				"require": "g.waterlore>=10&&g.t_waterclass>0&&g.tier2>0",
+				"level": 15,
+				"buy": {
+					"arcana": 50
+				},
+				"run": {
+					"stamina": 1,
+					"water": 0.5
+				},
+				"mod": {
+					"water.max": 1,
+					"water.rate": "1%",
+					"waterdmg": 3,
+					"player.barrier.max": "2%"
+				}
+			},
+			{
+				"id": "spearlore",
+				"name": "spear proficiency",
+				"desc": "Impale precisely what you mean to.",
+				"require": "g.t_spearclass>0",
+				"need": "armssource",
+				"level": 5,
+				"buy": {
+					"arcana": 25
+				},
+				"run": {
+					"stamina": 1.5
+				},
+				"mod": {
+					"speardmg": 3
+				}
+			}
+		],
+		"spells": [
+			{
+				"id": "tentacle_storm",
+				"name": "tentacle storm",
+				"require": "g.up_kraken_mount>0&&g.tier6>0",
+				"need": "g.kraken_mount>0",
+				"needtext": "Currently equipped mount must be tame kraken.",
+				"desc": "Remind the world of the terror of the kraken you slew.",
+				"level": 10,
+				"school": "martial",
+				"cd": 300,
+				"buy": {},
+				"caststoppers": [],
+				"cost": {
+					"vigor": 15
+				},
+				"attack": {
+					"targets": "enemies",
+					"maxTargets": 999,
+					"damage": "100~120",
+					"kind": "pierce",
+					"potencies": ["physdmg", "piercedmg"],
+					"dot": {
+						"name": "great rending",
+						"duration": 5,
+						"damage": "t.hp.max/40",
+						"potencies": [],
+						"mod": {
+							"self.speed": -5
+						}
+					}
+				}
+			},
+			{
+				"id": "water_barrierheal",
+				"name": "waters' warding",
+				"desc": "Shield yourself with a surge of swirling seawater.",
+				"extdesc": "Effect scales with your maximum barrier, restoring 0.1% per waveshaping level per second.",
+				"sortOrder": 436,
+				"level": 3,
+				"school": "water",
+				"keywords": {
+					"type": ["recovery"],
+					"target": ["self"],
+					"targets": ["single"],
+					"delivery": ["over time"]
+				},
+				"require": "g.limnimancer>0",
+				"buy": {
+					"research": 200,
+					"codices": 1,
+					"water": 5
+				},
+				"cost": { "water": 5 },
+				"cd": 60,
+				"result": { "waterlore.exp": 0.8 },
+				"dot": {
+					"duration": 50,
+					"effect": { "barrier": "t.barrier.max * g.waterlore2 * 0.001" }
+				}
+			},
+			{
+				"id": "leach_elements",
+				"name": "leach elements",
+				"desc": "Steal a defeated enemy's mana to replenish yourself.",
+				"sortOrder": 437,
+				"level": 3,
+				"school": "water",
+				"keywords": {
+					"type": ["debuff"],
+					"target": ["enemy"],
+					"targets": ["single"],
+					"delivery": ["over time"],
+					"special": ["resource"]
+				},
+				"require": "g.t_waterclass>0",
+				"buy": {
+					"research": 500,
+					"codices": 10
+				},
+				"cost": {
+					"water": 2
+				},
+				"result": {
+					"waterlore2.exp": 0.2
+				},
+				"attack": {
+					"targetspec": {
+						"notaffectedby": {
+							"condition": ["t_body_preparation"],
+							"strict": true,
+							"conditiontext": "body preparation"
+						}
+					},
+					"dot": {
+						"id": "pot_acquisition_dot",
+						"tags": "t_body_preparation,t_waterdot",
+						"checkTags": "t_body_preparation",
+						"kind": "water",
+						"duration": 300,
+						"name": "dissolution",
+						"mod": {
+							"self.defense": -1
+						},
+						"onDeath": {
+							"name": "potion leaching",
+							"harmless": true,
+							"acquire": {
+								"pot_elemental1": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"id": "leach_vitality",
+				"name": "leach vitality",
+				"desc": "Steal a defeated enemy's blood to replenish yourself.",
+				"sortOrder": 437,
+				"level": 3,
+				"school": "blood",
+				"keywords": {
+					"type": ["debuff"],
+					"target": ["enemy"],
+					"targets": ["single"],
+					"delivery": ["over time"],
+					"special": ["resource"]
+				},
+				"require": "g.up_blood_in_the_seas>0",
+				"buy": {},
+				"cost": {
+					"water": 2
+				},
+				"result": {
+					"bloodlore.exp": 0.2
+				},
+				"attack": {
+					"targetspec": {
+						"notaffectedby": {
+							"condition": ["t_body_preparation"],
+							"strict": true,
+							"conditiontext": "body preparation"
+						}
+					},
+					"dot": {
+						"id": "pot_acquisition_dot",
+						"tags": "t_body_preparation,t_waterdot",
+						"checkTags": "t_body_preparation",
+						"kind": "blood",
+						"duration": 300,
+						"name": "dissolution",
+						"mod": {
+							"self.defense": -1
+						},
+						"onDeath": {
+							"name": "blood leaching",
+							"harmless": true,
+							"acquire": {
+								"pot_heal1": 1
+							}
+						}
+					}
+				}
+			},
+			{
+				"id": "better_hightide",
+				"name": "higher tide",
+				"tags": "t_hightide_spell",
+				"desc": "Flood the field of battle.",
+				"need": "g.player.hasDot('watercommunion')",
+				"needtext": "Must have water sense active to cast this spell.",
+				"sortOrder": 503,
+				"level": 6,
+				"school": "water",
+				"keywords": {
+					"type": ["damage", "debuff"],
+					"target": ["enemy"],
+					"targets": ["multiple"],
+					"delivery": ["over time"]
+				},
+				"require": "g.tidalsublimation>0",
+				"cost": {
+					"water": 5
+				},
+				"cd": 120,
+				"result": {
+					"waterlore.exp": 0.5
+				},
+				"dot": {
+					"name": "high tide",
+					"duration": 30,
+					"applyinstanced": true,
+					"kind": "water",
+					"attack": {
+						"hits": [
+							{
+								"targets": "enemies",
+								"maxTargets": 999,
+								"dot": {
+									"name": "crushing tide",
+									"tags": "t_waterdot",
+									"checkTags": "",
+									"applyinstanced": true,
+									"kind": "water",
+									"damage": "1~2",
+									"duration": 3,
+									"mod": {
+										"self.speed": -3,
+										"dodge": -3
+									},
+									"potencies": ["spelldmg", "waterdmg"]
+								}
+							}
+						]
+					}
+				}
+			},
+			{
+				"id": "better_forceten",
+				"name": "force eleven",
+				"tags": "t_hurricane_spell",
+				"desc": "The storm before the calm.",
+				"need": "g.player.hasDot('watercommunion')",
+				"needtext": "Must have water sense active to cast this spell.",
+				"flavor": "Force without form.",
+				"sortOrder": 501,
+				"level": 15,
+				"school": "water",
+				"keywords": {
+					"type": ["damage"],
+					"target": ["enemy"],
+					"targets": ["multiple"],
+					"delivery": ["over time"]
+				},
+				"require": "g.tidalsublimation>0",
+				"cost": {
+					"water": 8
+				},
+				"cd": 50,
+				"result": {
+					"waterlore.exp": 0.8
+				},
+				"dot": {
+					"name": "force eleven",
+					"duration": 30,
+					"applyinstanced": true,
+					"kind": "water",
+					"attack": {
+						"hits": [
+							{
+								"targets": "enemies",
+								"maxTargets": 999,
+								"kind": "water",
+								"damage": "20~30",
+								"name": "hurricane",
+								"potencies": ["spelldmg", "waterdmg"]
+							}
+						]
+					}
+				}
+			},
+			{
+				"id": "suffocate",
+				"desc": "Condense a bubble of water around your enemy's face.",
+				"need": "g.player.hasDot('watercommunion')",
+				"needtext": "Must have water sense active to cast this spell.",
+				"level": 3,
+				"school": "water",
+				"keywords": {
+					"type": ["damage"],
+					"target": ["enemy"],
+					"targets": ["single"],
+					"delivery": ["over time"]
+				},
+				"require": "g.waterlore>5&&g.t_waterclass>0",
+				"buy": {
+					"research": 300,
+					"codices": 1,
+					"watergem": 1
+				},
+				"cost": { "water": 5 },
+				"result": { "waterlore.exp": 0.5 },
+				"attack": {
+					"harmless": true,
+					"targetspec": {
+						"notaffectedby": {
+							"condition": ["holdingbreath", "drowning"],
+							"strict": true,
+							"conditiontext": "holding breath or drowning"
+						}
+					},
+					"dot": {
+						"kind": "water",
+						"id": "holdingbreath",
+						"name": "holding breath",
+						"tags": "t_waterdot",
+						"checkTags": "",
+						"duration": 5,
+						"onExpire": {
+							"harmless": true,
+							"targets": "self",
+							"dot": {
+								"kind": "water",
+								"id": "drowning",
+								"tags": "t_waterdot",
+								"checkTags": "",
+								"duration": 10,
+								"damage": 20
+							}
+						}
+					}
+				}
+			},
+			{
+				"id": "mk_whale",
+				"name": "summon whale",
+				"desc": "In combat, drop a whale onto the battlefield to fight for you.",
+				"tags": "t_fauna_spell",
+				"level": 10,
+				"school": "summoning",
+				"keywords": {
+					"type": ["summon"],
+					"target": ["ally"],
+					"targets": ["single"],
+					"delivery": ["instant"]
+				},
+				"require": "g.t_waterclass>=2&&g.tier5>0",
+				"buy": {
+					"research": 2000,
+					"tomes": 10,
+					"waterrune": 3
+				},
+				"cost": { "water": 30 },
+				"cd": 20,
+				"result": { "summoning.exp": 3 },
+				"summon": [
+					{
+						"id": "sum_drop_whale",
+						"count": 1,
+						"max": 3
+					}
+				],
+				"mod": {
+					"sum_drop_whale.value": "?1"
+				},
+				"modtext": "Unlocks the Whale entry in your bestiary after the first cast."
+			},
+			{
+				"id": "flashfreeze",
+				"name": "flash freeze",
+				"desc": "Freeze the water in your enemies solid. More powerful if they're already affected by a water-based effect.",
+				"level": 5,
+				"school": "water",
+				"keywords": {
+					"type": ["damage"],
+					"target": ["enemy"],
+					"targets": ["multiple"],
+					"delivery": ["instant"]
+				},
+				"require": "g.t_waterclass>=2&&g.waterlore2>=8",
+				"buy": {
+					"research": 1000,
+					"codices": 20,
+					"watergem": 10
+				},
+				"cost": { "water": 10 },
+				"cd": 10,
+				"result": { "waterlore.exp": 1 },
+				"attack": {
+					"targets": "enemies",
+					"maxTargets": 999,
+					"damage": "Math.round(Math.random()*(20-8)+8)*Math.max((t.hasDot('t_waterdot')*1.5),1)",
+					"kind": "water",
+					"tohit": 2,
+					"potencies": ["spelldmg", "waterdmg"]
+				}
+			},
+			{
+				"id": "mon_mk_kraken_tentacles",
+				"name": "regenerate tentacles",
+				"desc": "Regenerates the kraken's tentacles",
+				"cd": 5,
+				"level": 4,
+				"school": "charms",
+				"keywords": {
+					"type": ["summon"],
+					"target": ["ally"],
+					"targets": ["single"],
+					"delivery": ["instant"]
+				},
+				"require": "g.charms>=99",
+				"summon": [
+					{
+						"id": "mon_kraken_sucker_tentacle",
+						"count": 5,
+						"max": 5
+					},
+					{
+						"id": "mon_kraken_razor_tentacle",
+						"count": 5,
+						"max": 5
+					}
+				]
+			},
+			{
+				"id": "mon_kraken_inkcloud",
+				"name": "inkcloud",
+				"desc": "Obscures all enemies' vision.",
+				"cd": 25,
+				"level": 4,
+				"school": "water",
+				"keywords": {
+					"type": ["buff", "debuff"],
+					"target": ["ally", "enemy"],
+					"targets": ["multiple"],
+					"delivery": ["over time"]
+				},
+				"require": "g.lore>=999",
+				"dot": {
+					"name": "swirling ink",
+					"duration": 30,
+					"applyinstanced": true,
+					"kind": "water",
+					"attack": {
+						"hits": [
+							{
+								"targets": "enemies",
+								"maxTargets": 999,
+								"mod": { "self.tohit": -5 }
+							},
+							{
+								"targets": "allies",
+								"mod": { "self.dodge": 4 }
+							}
+						]
+					}
+				}
+			}
+		],
+		"homes": [
+			{
+				"id": "island",
+				"name": "Shrouded Isle",
+				"tags": "outdoors,starsource,watersource,wet_real_estate",
+				"desc": "A lonely isle at sea.",
+				"require": "g.tier3>0&&g.t_waterclass>0",
+				"buy": {
+					"gold": 4000,
+					"gems": 40,
+					"research": 1600
+				},
+				"mod": {
+					"space.max": 270,
+					"minions.max": 25,
+					"waterlore.mod.water.max": 1,
+					"water.rate": 0.15
+				}
+			}
+		],
+		"tasks": [
+			{
+				"id": "islandmanagement",
+				"name": "island management",
+				"verb": "weatherproofing",
+				"require": "g.tier4>0&&g.t_waterclass>0",
+				"desc": "The ravages of nature have been collapsing parts of your structures. Time to see to that.",
+				"max": 1,
+				"length": 180,
+				"cost": {
+					"gold": 100,
+					"research": 400,
+					"gems": 10
+				},
+				"run": {
+					"gold": 5,
+					"water": 1.5,
+					"air": 1.5,
+					"stamina": 1,
+					"watergem": 0.05,
+					"airgem": 0.05
+				},
+				"mod": {
+					"island.mod.space.max": 100
+				},
+				"group": "housing"
+			},
+			{
+				"id": "desalination",
+				"desc": "Obtain freshwater direct from the largest source around.",
+				"verb": "desalinating",
+				"require": "g.waterlore2>0",
+				"length": 15,
+				"at": {
+					"10": {
+						"run.stamina": 0.1,
+						"effect.prismaticgems": 0.03
+					},
+					"50": {
+						"run.water": 0.1,
+						"effect.watergem": 0.03
+					},
+					"100": {
+						"run.stamina": 0.15,
+						"effect.prismaticgems": 0.03
+					},
+					"250": {
+						"run.water": 0.15,
+						"effect.watergem": 0.04,
+						"effect.prismaticgems": 0.04
+					}
+				},
+				"run": {
+					"stamina": 1,
+					"water": 1
+				},
+				"effect": {
+					"watergem": 0.03
+				},
+				"mod": {
+					"waterlore2.mod.waterdmg": "0.01//200/-10",
+					"waterlore2.rate": "0.025//350/-10",
+					"gems.max": "0.5//350/-10",
+					"prismaticgems.max": "0.25//350/-10"
+				},
+				"group": "storage"
+			},
+			{
+				"id": "pearl_diving",
+				"name": "pearl diving",
+				"desc": "Dive into the sea for its treasures.",
+				"verb": "diving",
+				"require": "g.t_waterclass>0",
+				"length": 30,
+				"perpetual": true,
+				"run": {
+					"stamina": 0.2,
+					"water": 0.2
+				},
+				"result": {
+					"gold": "80~100",
+					"gems": "7~8",
+					"bodies": {
+						"value": 0,
+						"skipLocked": true
+					}
+				},
+				"group": "affluence"
+			},
+			{
+				"id": "cause_shipwrecks",
+				"name": "wreck ships",
+				"desc": "Raise storms to sink ships and make diving more profitable.",
+				"extdesc": "Doing this will give you a temporary buff that increases diving's payout.",
+				"require": "g.t_waterclass>0&&g.evil2>0",
+				"cd": 80,
+				"length": 30,
+				"run": {
+					"stamina": 0.2,
+					"water": 0.2
+				},
+				"dot": {
+					"id": "plundering_shipwreck",
+					"name": "plundering shipwreck",
+					"duration": 120,
+					"mod": {
+						"pearl_diving.result.gold.min": 40,
+						"pearl_diving.result.gold.max": 80,
+						"pearl_diving.result.gems.min": 10,
+						"pearl_diving.result.gems.max": 11,
+						"pearl_diving.result.bodies": 8
+					}
+				},
+				"group": "affluence"
+			},
+			{
+				"id": "restore_seagod_shaft",
+				"name": "restore trident shaft",
+				"desc": "Restore the body of the trident you found in the sunken temple after slaying the kraken.",
+				"require": "g.conquertheseas>0",
+				"need": "!g.inv.find('seagod_shaft_restored',true)&&!g.inv.find('seagod_trident',true)",
+				"needtext": "Must not already have the restored shaft or the completed trident.",
+				"length": 90,
+				"cost": {
+					"gold": 5000,
+					"research": 4000,
+					"waterrune": 5,
+					"seagod_shaft_ruined": 1
+				},
+				"run": {
+					"stamina": 2,
+					"water": 1.5
+				},
+				"result": {
+					"seagod_shaft_restored": 1
+				},
+				"group": "crafting"
+			},
+			{
+				"id": "create_seagod_tines",
+				"name": "recreate trident tines",
+				"desc": "Recreate the tines of the divine trident you found in the kraken's lair.",
+				"require": "g.class_leviathan>0&&g.restore_seagod_shaft>0",
+				"need": "!g.inv.find('seagod_tines',true)&&!g.inv.find('seagod_trident',true)",
+				"needtext": "Must not already have the tines or the completed trident.",
+				"length": 90,
+				"cost": {
+					"gold": 10000,
+					"research": 3000,
+					"adamant": 50,
+					"tomes": 10,
+					"waterrune": 5
+				},
+				"run": {
+					"stamina": 2,
+					"water": 1.5
+				},
+				"result": {
+					"seagod_tines": 1
+				},
+				"group": "crafting"
+			}
+		],
+		"upgrades": [
+			{
+				"id": "kraken_mount",
+				"name": "tame kraken",
+				"sym": "🏰🦑",
+				"max": 1,
+				"desc": "Your new friend loves hugs!",
+				"require": "g.up_kraken_mount>0&&g.tier0>0",
+				"slot": "mount",
+				"buy": {},
+				"mod": {
+					"dist": 400,
+					"self.chaincast": 0.1,
+					"waterdmg": 10
+				}
+			},
+			{
+				"id": "waterbreathing",
+				"name": "water breathing",
+				"tags": "t_waterbreathing",
+				"desc": "Water is as air to you.",
+				"require": "g.limnimancer>0",
+				"max": 1,
+				"cost": {
+					"arcana": 5,
+					"watergem": 100
+				},
+				"mod": {
+					"self.resist.water": 10,
+					"waterlore.rate": 0.1,
+					"breath.max": "100%",
+					"breath.rate": 5,
+					"pearl_diving.length": -10
+				},
+				"group": "exploration"
+			},
+			{
+				"id": "sea_routes",
+				"name": "sea routes",
+				"desc": "The sea yields its secret ways to you.",
+				"require": "g.waterlore2>=10",
+				"max": 1,
+				"cost": {
+					"gold": 5000,
+					"research": 10000,
+					"waterrune": 1
+				},
+				"mod": {
+					"dist": "25%"
+				},
+				"group": "exploration"
+			},
+			{
+				"id": "sea_legs",
+				"name": "sea legs",
+				"desc": "Acclimatizing to the motion of the waves calms you.",
+				"require": "g.waterlore2>3",
+				"max": 1,
+				"cost": {
+					"gold": 500,
+					"research": 500,
+					"watergem": 5
+				},
+				"mod": {
+					"composure.max": 1,
+					"compsure.rate": 0.4
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "tidalsublimation",
+				"name": "tidal sublimation",
+				"desc": "Become one with the sublime and tame the raging tides.",
+				"extdesc": "Buying this will unlock improved versions of high tide and force ten with no backlash. The base and improved versions share their cooldowns.",
+				"require": "g.class_leviathan>0&&g.tier6>0",
+				"max": 1,
+				"cost": {
+					"gold": 2500,
+					"research": 1000,
+					"waterrune": 2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "up_blood_in_the_seas",
+				"name": "blood in the seas",
+				"desc": "Learn to leach from the body's stores of blood.",
+				"extdesc": "Buying this will unlock a new spell similar to leach elements that gives a HP potion.",
+				"require": "g.t_waterclass>0&&g.t_bloodclass>0",
+				"max": 1,
+				"cost": {},
+				"group": "knowledge"
+			},
+			{
+				"id": "jetty",
+				"desc": "Strong barriers around your home, to deter unwise attackers.",
+				"require": "g.waterlore2>=5",
+				"max": 2,
+				"cost": {
+					"gold": 300,
+					"research": 250
+				},
+				"mod": {
+					"waterlore2.max": 1,
+					"barrier.max": 5
+				},
+				"flavor": "Doubles as burial at sea.",
+				"group": "knowledge"
+			},
+			{
+				"id": "sharpenspear",
+				"name": "sharpen spear",
+				"desc": "Sharpen your spear to open oysters more efficiently.",
+				"require": "g.spearlore>0",
+				"max": 3,
+				"cost": {
+					"gold": 1500,
+					"research": 2000,
+					"watergem": 20
+				},
+				"mod": {
+					"pearl_diving.result.gems.min": 3,
+					"pearl_diving.result.gems.max": 3,
+					"spearlore.max": 1,
+					"spearlore.rate": 0.3
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "tamedcurrents",
+				"name": "tamed currents",
+				"require": "(g.hydromancer>0||g.t_waterclass>=2)&&g.dist>=200",
+				"max": 1,
+				"desc": "Train the currents around your home to behave.",
+				"cost": {
+					"gold": 3000,
+					"watergem": 5,
+					"water": 10
+				},
+				"mod": {
+					"dist": 100
+				},
+				"flavor": "Those good girls are perfect for keeping unwanted guests away.",
+				"group": "exploration"
+			},
+			{
+				"id": "watercollection",
+				"name": "water sample collection",
+				"desc": "Sorted by clarity.",
+				"require": "g.hydromancer>0||g.t_spearclass>=2",
+				"max": 3,
+				"cost": {
+					"gold": 500,
+					"research": 1000
+				},
+				"mod": {
+					"spearlore.max": 1,
+					"spearlore.rate": 0.3
+				},
+				"flavor": "From the clearest springs to the murkiest depths, you've pierced them all.",
+				"group": "knowledge"
+			},
+			{
+				"id": "churnmaelstrom",
+				"name": "churn maelstrom",
+				"desc": "Leave your mark on this world.",
+				"require": "g.tier4>0&&g.limnimancer>0",
+				"max": 1,
+				"cost": {
+					"gold": 5000,
+					"research": 3000,
+					"waterrune": 10
+				},
+				"result": {
+					"fame": 5
+				},
+				"mod": {
+					"gems.rate": 0.1,
+					"pearl_diving.result.gems.min": 3,
+					"pearl_diving.result.gems.max": 3,
+					"spearlore.max": 2,
+					"spearlore.rate": 0.6,
+					"waterlore2.max": 2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "oceanic_inspiration",
+				"name": "oceanic inspiration",
+				"desc": "Restoring part of the Ocean Pillar's trident has taught you more about the sea.",
+				"require": "g.restore_seagod_shaft>0",
+				"max": 1,
+				"mod": {
+					"waterlore.max": 3,
+					"airlore.max": 3,
+					"waterlore2.max": 1,
+					"water.rate": 0.2,
+					"air.rate": 0.2
+				},
+				"group": "knowledge",
+				"flavor": "You feel that you'll have to devote yourself further to the ocean to complete the trident."
+			},
+			{
+				"id": "oceanic_enlightenment",
+				"name": "oceanic enlightenment",
+				"desc": "Restoring part of the Ocean Pillar's trident has taught you more about spears and the sea.",
+				"require": "g.create_seagod_tines>0",
+				"max": 1,
+				"mod": {
+					"spearlore.max": 2,
+					"spearlore.rate": 0.6,
+					"waterlore2.max": 2,
+					"crafting.max": 2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "surfmount",
+				"name": "ride the waves",
+				"desc": "With some careful carpentry you've figured out how to ride a wave to traverse normally impassable bits of Dhrune's coasts on foot.",
+				"require": "g.crafting>=8&&g.waterlore>=10&&g.t_waterclass>0",
+				"max": 1,
+				"slot": "mount",
+				"buy": {
+					"watergem": 5,
+					"gold": 300,
+					"research": 300
+				},
+				"mod": {
+					"dist": 300,
+					"speed": 2
+				},
+				"group": "mount"
+			}
+		],
+		"enchants": [
+			{
+				"id": "en_fishing",
+				"name": "Fishing Spear",
+				"adj": "Fishing",
+				"desc": "Increases water damage.",
+				"require": "g.t_waterclass>0&&g.enchanting>0",
+				"buy": {
+					"arcana": 1,
+					"research": 100
+				},
+				"level": 1,
+				"only": "t_spear",
+				"length": 30,
+				"cost": { "arcana": 1 },
+				"alter": { "mod.waterdmg": 20 }
+			}
+		],
+		"quests": [
+			{
+				"id": "veldrantraces",
+				"name": "traces of Veldran",
+				"max": 1,
+				"desc": "While passing through Arazor, you feel the pull of water magic from a nearby shore.",
+				"require": "g.t_waterclass>0&&g.aragwastes>0",
+				"need": "g.veldransstorehouse>0",
+				"needtext": "Explore the old storehouses you found near the ruined wharf.",
+				"group": "advancement"
+			},
+			{
+				"id": "veldransfall",
+				"name": "fall of Veldran",
+				"max": 1,
+				"desc": "In the would-be unifier's stockpiles, you find that his fleet was laid low by the sea's wrath. This could be the inspiration you need.",
+				"require": "g.veldrantraces>0",
+				"need": "g.veldranswreck>0",
+				"needtext": "Explore the shipwreck and see what it leads you to. Perhaps keep exploring until you find some loot, but that's extra.",
+				"group": "advancement"
+			},
+			{
+				"id": "conquertheseas",
+				"name": "rule the waves",
+				"max": 1,
+				"desc": "Where Veldran failed, you'll conquer. Overcome the leviathan that ruined his fleet and win the power he sought to cement his legitimacy.",
+				"require": "g.limnimancer>0&&g.veldransfall>0",
+				"need": "g.kraken_clash>0",
+				"needtext": "Defeat the kraken."
+			}
+		],
+		"clashes": [
+			{
+				"id": "kraken_clash",
+				"name": "kraken's lair",
+				"unreturnable": true,
+				"sym": "⚔🦑",
+				"desc": "In the abyssal depths of the sea, you and the legendary kraken hunt each other. Finally, you meet above a sunken temple.",
+				"require": "g.limnimancer>0&&g.veldransfall>0",
+				"level": 17,
+				"dist": 800,
+				"run": {
+					"stamina": 1.5,
+					"breath": 5
+				},
+				"result": {
+					"title": "Sealord"
+				},
+				"length": 2,
+				"boss": {
+					"1": [
+						"mon_kraken_sucker_tentacle",
+						"mon_kraken_razor_tentacle",
+						"mon_kraken_sucker_tentacle",
+						"mon_kraken_razor_tentacle"
+					],
+					"2": [
+						"mon_kraken_boss",
+						"mon_kraken_razor_tentacle",
+						"mon_kraken_sucker_tentacle",
+						"mon_kraken_razor_tentacle",
+						"mon_kraken_sucker_tentacle",
+						"mon_kraken_razor_tentacle",
+						"mon_kraken_sucker_tentacle"
+					]
+				},
+				"loot": {
+					"seagod_shaft_ruined": 1
+				}
+			}
+		],
+		"monsters": [
+			{
+				"id": "mon_kraken_sucker_tentacle",
+				"name": "sucker tentacle",
+				"level": 16,
+				"kind": "magicbeast",
+				"hp": 200,
+				"resist": { "water": 100 },
+				"speed": 100,
+				"noproc": true,
+				"onSummon": {
+					"name": "defensive posture",
+					"targets": "self",
+					"dot": {
+						"tags": "t_taunt",
+						"flags": "taunt"
+					}
+				},
+				"onDeath": {
+					"targets": "leader",
+					"harmless": true,
+					"nodefense": true,
+					"dot": {
+						"name": "weakened defenses",
+						"duration": 5,
+						"mod": { "self.resist.water": -50 }
+					}
+				},
+				"attack": [
+					{
+						"name": "tentacle storm",
+						"kind": "blunt",
+						"targets": "enemies",
+						"maxTargets": 999,
+						"damage": "10~12"
+					},
+					{
+						"name": "grapple",
+						"kind": "blunt",
+						"damage": "15~20",
+						"dot": {
+							"name": "grappled",
+							"duration": 5,
+							"mod": {
+								"self.speed": -5
+							}
+						}
+					}
+				]
+			},
+			{
+				"id": "mon_kraken_razor_tentacle",
+				"name": "razor tentacle",
+				"level": 16,
+				"kind": "magicbeast",
+				"hp": 200,
+				"resist": { "water": 100 },
+				"speed": 100,
+				"noproc": true,
+				"onSummon": {
+					"name": "defensive posture",
+					"targets": "self",
+					"dot": {
+						"tags": "t_taunt",
+						"flags": "taunt"
+					}
+				},
+				"onDeath": {
+					"targets": "leader",
+					"harmless": true,
+					"nodefense": true,
+					"dot": {
+						"name": "weakened defenses",
+						"mod": { "self.resist.water": -50 }
+					}
+				},
+				"attack": [
+					{
+						"name": "tentacle storm",
+						"kind": "slash",
+						"targets": "enemies",
+						"maxTargets": 999,
+						"damage": "10~12"
+					},
+					{
+						"name": "exsanguinate",
+						"kind": "slash",
+						"damage": "15~20",
+						"dot": {
+							"name": "bleeding out",
+							"duration": 5,
+							"damage": "t.hp.max/20"
+						}
+					}
+				]
+			},
+			{
+				"id": "mon_kraken_boss",
+				"name": "The Kraken Unleashed",
+				"level": 19,
+				"kind": "magicbeast",
+				"spells": "mon_mk_kraken_tentacles,mon_kraken_inkcloud,elec3",
+				"hp": 2000,
+				"resist": { "water": 100 },
+				"speed": 10,
+				"noproc": true,
+				"attack": [
+					{
+						"name": "abyssal beak",
+						"kind": "pierce",
+						"targets": "enemyleader",
+						"damage": "80~100",
+						"leech": 2
+					}
+				],
+				"flavor": "Too overwhelming for even an archlock."
+			},
+			{
+				"id": "sum_drop_whale",
+				"name": "whale",
+				"tags": "t_summon",
+				"level": 10,
+				"kind": "beast",
+				"desc": "A whale plummeting onto the battlefield to crush your opposition.",
+				"hp": 300,
+				"noproc": true,
+				"speed": 0,
+				"onSummon": {
+					"hits": [
+						{
+							"name": "impact",
+							"damage": "100~150",
+							"kind": "blunt"
+						},
+						{
+							"name": "flowerpot",
+							"damage": 1,
+							"kind": "nature"
+						}
+					]
+				},
+				"attack": {
+					"name": "sweep",
+					"targets": "enemies",
+					"maxTargets": 999,
+					"damage": "20~30",
+					"kind": "blunt"
+				}
+			}
+		],
+		"items": [
+			{
+				"id": "seagod_shaft_ruined",
+				"name": "ruined trident shaft",
+				"desc": "A remnant of the Ocean Pillar's panoply, you can't help but wonder what you could make of it.",
+				"unique": true
+			},
+			{
+				"id": "seagod_shaft_restored",
+				"name": "restored trident shaft",
+				"desc": "It thrums with the power of the tides. You'll need to master the ocean further to complete it.",
+				"unique": true
+			},
+			{
+				"id": "seagod_tines",
+				"name": "recreated trident tines",
+				"desc": "You've recreated the missing part of the symbol of the Ocean Pillar! Now put the pieces together.",
+				"unique": true
+			}
+		],
+		"materials": [
+			{
+				"id": "weapon_seagod_material_fresh",
+				"name": "Of Lakes",
+				"adj": "%i of Lakes",
+				"level": 9,
+				"kind": "artifact",
+				"only": "seagod_trident",
+				"cost": {},
+				"require": "g.oceanic_enlightenment>0",
+				"alter": {
+					"mod": {
+						"water.rate": 1,
+						"water.max": 10,
+						"barrier.max": "15%"
+					},
+					"attack": [
+						{
+							"name": "leviathan fang",
+							"kind": "pierce",
+							"targets": "enemy",
+							"damage": "(i.damage||0)*1.5",
+							"potencies": ["physdmg", "piercedmg", "speardmg"]
+						},
+						{
+							"name": "bloody impalement",
+							"targets": "enemies",
+							"maxTargets": 999,
+							"damage": "(i.damage||0)*0.33",
+							"kind": "pierce",
+							"potencies": ["physdmg", "piercedmg", "speardmg"],
+							"dot": {
+								"duration": 6,
+								"damage": "3~6",
+								"mod": { "self.speed": -5 },
+								"potencies": ["physdmg", "piercedmg", "speardmg"]
+							}
+						},
+						{
+							"name": "tidal barrier",
+							"targets": "allies",
+							"maxTargets": 999,
+							"harmless": true,
+							"dot": {
+								"duration": 5,
+								"effect": { "barrier": 100 }
+							}
+						}
+					]
+				}
+			},
+			{
+				"id": "weapon_seagod_material_salt",
+				"name": "Of Seas",
+				"adj": "%i of Seas",
+				"level": 9,
+				"kind": "artifact",
+				"only": "seagod_trident",
+				"cost": {},
+				"require": "g.oceanic_enlightenment>0",
+				"alter": {
+					"mod": {
+						"water.rate": 1,
+						"water.max": 10,
+						"barrier.max": "30%"
+					},
+					"attack": [
+						{
+							"name": "leviathan fang",
+							"kind": "pierce",
+							"targets": "enemy",
+							"damage": "(i.damage||0)*1.5",
+							"potencies": ["physdmg", "piercedmg", "speardmg"]
+						},
+						{
+							"name": "bloody impalement",
+							"targets": "enemies",
+							"maxTargets": 999,
+							"damage": "(i.damage||0)*0.33",
+							"kind": "pierce",
+							"potencies": ["physdmg", "piercedmg", "speardmg"],
+							"dot": {
+								"duration": 6,
+								"damage": "3~6",
+								"mod": { "self.speed": -5 },
+								"potencies": ["physdmg", "piercedmg", "speardmg"]
+							}
+						},
+						{
+							"name": "tidal barrier",
+							"targets": "allies",
+							"maxTargets": 999,
+							"harmless": true,
+							"dot": {
+								"duration": 3,
+								"effect": { "barrier": 100 }
+							}
+						}
+					]
+				}
+			}
+		],
+		"weapons": [
+			{
+				"id": "seagod_trident",
+				"name": "Tidal Trident",
+				"desc": "The restored weapon of the Ocean Pillar, lost since the Rending. It thrums with the power of the tides.",
+				"level": 10,
+				"type": "weapon",
+				"tags": "t_martial,t_pierce,t_spear,t_artifact",
+				"require": "g.oceanic_enlightenment>0",
+				"enchants": 0,
+				"cost": { "seagod_shaft_restored": 1, "seagod_tines": 1 },
+				"slot": "mainhand",
+				"only": "artifact",
+				"damage": "15~20",
+				"sell": {
+					"seagod_tines": 1,
+					"seagod_shaft_restored": 1
+				}
+			}
+		],
+		"hall": {
+			"data": {
+				"upgrades": [
+					{
+						"id": "up_kraken_mount",
+						"name": "raise baby kraken",
+						"tags": "hall",
+						"sym": "🏰🦑",
+						"require": "g.class_leviathan>0",
+						"desc": "Hatch and rear the kraken's egg into a tame mount.",
+						"cost": {
+							"prestige": 10,
+							"waterrune": 10,
+							"watergem": 50,
+							"herbs": 100
+						},
+						"mod": {
+							"magicbeasts.max": 2,
+							"encounter.rate": "10%"
+						}
+					}
+				]
+			}
+		}
+	}
+}

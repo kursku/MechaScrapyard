@@ -1,0 +1,618 @@
+{
+	"module": "earth",
+	"data": {
+		"classes": [
+			{
+				"id": "geomancer",
+				"desc": "Lord of rocks.",
+				"tags": "t_tier2,t_earthclass,t_hammerclass",
+				"actdesc": "A mage specialising in earth manipulation and endurance.",
+				"require": "g.t2unlocker>0&&g.earthlore>=7&&g.tier2==0",
+				"cost": {
+					"earthgem": 10
+				},
+				"mod": {
+					"earthlore.max": 2,
+					"geosculpting.max": 2,
+					"stamina.max": "10%",
+					"mana.max": 2,
+					"earthspire.mod.space.max": 50
+				},
+				"flavor": "Your empire of dirt.",
+				"sortOrder": 154
+			},
+			{
+				"id": "earthshaker",
+				"desc": "Master of the tectonics.",
+				"tags": "t_tier4,t_earthclass,t_hammerclass",
+				"actdesc": "A supreme master of earth's destructive magics.",
+				"require": "g.t4unlocker>0&&g.earthlore>=11&&g.tier4==0",
+				"cost": {
+					"earthgem": 50
+				},
+				"mod": {
+					"earthlore.max": 3,
+					"player.defense": 15,
+					"stamina.max": "20%",
+					"earth.rate": 0.3,
+					"earthspire.mod.space.max": 50
+				},
+				"flavor": "Finally, a subduction license!",
+				"sortOrder": 251
+			},
+			{
+				"id": "titan",
+				"desc": "A mantle of metal and stone.",
+				"tags": "t_tier6,t_earthclass,t_hammerclass",
+				"actdesc": "An unstoppable force of nature, a Titan is Will incarnate.",
+				"require": "g.t6unlocker>0&&g.t_earthclass>0&&g.hammerlore>=10&&g.geosculpting>=10&&g.tier6==0",
+				"cost": {
+					"earthgem": 100,
+					"earthrune": 20
+				},
+				"mod": {
+					"earthlore.max": 3,
+					"player.defense": 30,
+					"stamina.max": "20%",
+					"hammerlore.max": 3,
+					"earthspire.mod.space.max": 100
+				},
+				"flavor": "When in good moods, Titans sculpted mountains. In bad ones, nations became craters.",
+				"sortOrder": 350
+			}
+		],
+		"skills": [
+			{
+				"id": "geosculpting",
+				"desc": "Bend the earth to your will.",
+				"require": "g.t_earthclass>0",
+				"level": 5,
+				"buy": {
+					"arcana": 30
+				},
+				"run": {
+					"stamina": 0.5
+				},
+				"mod": {
+					"player.defense": 0.3,
+					"player.dodge": -0.2,
+					"earthspire.mod.space.max": 1
+				}
+			},
+			{
+				"id": "earthlore2",
+				"name": "earth mastery",
+				"desc": "A mastery of earth.",
+				"require": "g.earthlore>=10&&g.t_earthclass>0&&g.tier2>0",
+				"level": 15,
+				"buy": {
+					"arcana": 50
+				},
+				"run": {
+					"stamina": 1,
+					"earth": 0.5
+				},
+				"mod": {
+					"earthrune.max": 2,
+					"earth.max": 1,
+					"earth.rate": "1%",
+					"earthdmg": 3
+				}
+			}
+		],
+		"resources": [
+			{
+				"id": "deepsteel",
+				"name": "core steel",
+				"group": "materials",
+				"desc": "Steel forged in the very core of the world.",
+				"flavor": "Forged in the hottest of fires, under the immense pressure, not even the most extraordinary smith could produce metal of such quality.",
+				"max": 25,
+				"sortOrder": 475
+			}
+		],
+		"spells": [
+			{
+				"id": "gems_acquisition",
+				"name": "crystal seeding",
+				"desc": "Afflict the opponent with an earthen curse, so that their bones turn into gems.",
+				"extdesc": "Gains 1 gem for every 10 defense the opponent had",
+				"flavor": "Sure to baffle future paleontologists.",
+				"sortOrder": 870,
+				"level": 3,
+				"school": "earth",
+				"keywords": {
+					"type": ["debuff"],
+					"target": ["enemy"],
+					"targets": ["single"],
+					"delivery": ["over time"],
+					"special": ["resource"]
+				},
+				"require": "g.t_earthclass>0",
+				"buy": {
+					"research": 500,
+					"codices": 10
+				},
+				"cost": {
+					"earth": 2
+				},
+				"result": {
+					"geosculpting.exp": 0.2
+				},
+				"attack": {
+					"targetspec": {
+						"notaffectedby": {
+							"condition": ["t_body_preparation"],
+							"strict": true,
+							"conditiontext": "body preparation"
+						}
+					},
+					"dot": {
+						"id": "gems_acquisition_dot",
+						"tags": "t_body_preparation",
+						"kind": "earth",
+						"duration": 300,
+						"name": "crystal bones",
+						"mod": {
+							"self.speed": -1
+						},
+						"onDeath": {
+							"harmless": true,
+							"acquire": {
+								"gems": "Math.max(a.defense/10,0.1)"
+							}
+						}
+					}
+				}
+			},
+			{
+				"id": "deepshell",
+				"name": "core steel shell",
+				"desc": "Cover yourself in a shell made of core steel.",
+				"sortOrder": 840,
+				"level": 15,
+				"school": "earth",
+				"tags": "t_defbuff",
+				"keywords": {
+					"type": ["buff"],
+					"target": ["self"],
+					"targets": ["single"],
+					"delivery": ["over time"]
+				},
+				"require": "g.titan>0&&g.geosculpting>=12",
+				"buy": {
+					"research": 8000,
+					"tomes": 25,
+					"earthrune": 25,
+					"deepsteel": 1
+				},
+				"cost": {
+					"deepsteel": 1
+				},
+				"cd": 300,
+				"result": {
+					"geosculpting.exp": 600
+				},
+				"dot": {
+					"tags": "toughskin",
+					"duration": 600,
+					"mod": {
+						"self.defense": 200
+					}
+				}
+			},
+			{
+				"id": "entomb",
+				"desc": "Bury your enemies deep beneath the ground.",
+				"sortOrder": 800,
+				"level": 25,
+				"school": "earth",
+				"keywords": {
+					"type": ["damage", "debuff"],
+					"target": ["enemy"],
+					"targets": ["multiple"],
+					"delivery": ["over time"]
+				},
+				"require": "g.titan>0",
+				"buy": {
+					"research": 20000,
+					"tomes": 70,
+					"codices": 100,
+					"earthrune": 30,
+					"earthgem": 200
+				},
+				"cost": {
+					"earth": 25,
+					"sindel": 2,
+					"deepsteel": 1
+				},
+				"result": {
+					"geosculpting.exp": 600
+				},
+				"attack": {
+					"targets": "enemies",
+					"maxTargets": 999,
+					"dot": {
+						"duration": 30,
+						"damage": "50~75",
+						"potencies": ["spelldmg", "earthdmg"],
+						"mod": {
+							"self.speed": -15
+						}
+					}
+				}
+			}
+		],
+		"homes": [
+			{
+				"id": "earthspire",
+				"name": "earthen spire",
+				"desc": "An impervious spire of metal and stone.",
+				"buy": {
+					"research": 500,
+					"gold": 3000,
+					"codices": 15
+				},
+				"require": "g.geosculpting>=5",
+				"mod": {
+					"space.max": 150,
+					"minions.max": 10,
+					"earthlore.mod.earth.max": 1,
+					"geosculpting.mod.player.defense": 0.2,
+					"earth.max": 5,
+					"earth.rate": 0.5
+				},
+				"flavor": "A monument to your geosculpting mastery."
+			}
+		],
+		"tasks": [
+			{
+				"id": "terraform",
+				"name": "warp landscape",
+				"desc": "Improve the conditions of your local countryside.",
+				"verb": "terraforming",
+				"require": "geosculpting",
+				"length": 15,
+				"at": {
+					"10": {
+						"run.stamina": 0.1,
+						"effect.prismaticgems": 0.03
+					},
+					"50": {
+						"run.earth": 0.1,
+						"effect.earthgem": 0.03
+					},
+					"100": {
+						"run.stamina": 0.15,
+						"effect.prismaticgems": 0.03
+					},
+					"250": {
+						"run.earth": 0.15,
+						"effect.earthgem": 0.04,
+						"effect.prismaticgem": 0.04
+					}
+				},
+				"run": {
+					"stamina": 1,
+					"earth": 1
+				},
+				"effect": {
+					"earthgem": 0.03
+				},
+				"mod": {
+					"geosculpting.mod.player.defense": "0.001//350/-10",
+					"geosculpting.mod.earthspire.mod.space.max": "0.005//200/-10",
+					"geosculpting.rate": "0.02//350/-10",
+					"gems.max": "0.5//350/-10",
+					"prismaticgems.max": "0.25//350/-10"
+				},
+				"group": "storage"
+			},
+			{
+				"id": "remakehammer",
+				"name": "call hammer",
+				"desc": "You forged it once, call forth another.",
+				"need": "g.inv.max-g.inv._used>=1",
+				"needtext": "Must have at least 1 inventory space free.",
+				"verb": "Recalling",
+				"require": "g.maketitanhammer>0",
+				"length": 10,
+				"cost": {
+					"earthgem": 30,
+					"earthrune": 10,
+					"sindel": 1,
+					"deepsteel": 1
+				},
+				"run": {
+					"stamina": 8,
+					"earth": 5
+				},
+				"loot": {
+					"titanhammer": 1
+				},
+				"group": "weapon"
+			},
+			{
+				"id": "maketitanhammer",
+				"name": "titan's hammer",
+				"desc": "The powers of creation and destruction, locked in your grip.",
+				"need": "g.inv.max-g.inv._used>=1",
+				"needtext": "Must have at least 1 inventory space free.",
+				"max": 1,
+				"verb": "Creating Masterpiece",
+				"require": "g.titan>0&&g.mythicanvil>0&&g.deepsteel>=1",
+				"length": 180,
+				"cost": {
+					"earthgem": 300,
+					"earthrune": 20,
+					"ichor": 5,
+					"sindel": 5,
+					"deepsteel": 15
+				},
+				"run": {
+					"stamina": 4,
+					"earth": 3
+				},
+				"loot": {
+					"titanhammer": 1
+				},
+				"group": "weapon"
+			}
+		],
+		"upgrades": [
+			{
+				"id": "earthworks",
+				"desc": "Strong walls around your home, to deter unwise attackers.",
+				"require": "g.geosculpting>=5",
+				"max": 2,
+				"cost": {
+					"gold": 300,
+					"research": 250
+				},
+				"mod": {
+					"geosculpting.max": 1,
+					"player.defense": 5
+				},
+				"flavor": "Doubles as a burial mound.",
+				"group": "knowledge"
+			},
+			{
+				"id": "coretap",
+				"name": "core tap",
+				"desc": "Tap the world's core for endless heat.",
+				"require": "(g.earthshaker>0||(g.t_earthclass+g.t_elementalclass)>=3)&&g.geosculpting>=6",
+				"max": 1,
+				"cost": {
+					"gold": 5000,
+					"research": 4000,
+					"earthrune": 5
+				},
+				"mod": {
+					"firelore.max": 3,
+					"earthlore.max": 3,
+					"geosculpting.max": 1,
+					"earth.rate": 0.2,
+					"fire.rate": 0.2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "tamedroads",
+				"name": "tamed pathway",
+				"require": "g.geomancer>0||(g.t_earthclass+g.t_elementalclass>=3)&&g.dist>=200",
+				"max": 1,
+				"desc": "Train the roads around your home to behave.",
+				"cost": {
+					"gold": 3000,
+					"earthgem": 5,
+					"earth": 10
+				},
+				"mod": {
+					"dist": 100
+				},
+				"flavor": "Those good boys are perfect for keeping unwanted guests away.",
+				"group": "exploration"
+			},
+			{
+				"id": "hiddenchamber",
+				"name": "hidden chamber",
+				"tags": "t_underground",
+				"desc": "A place to meditate in solitude, deep beneath the earth.",
+				"max": 1,
+				"require": "g.geosculpting>0",
+				"cost": {
+					"gold": 500,
+					"research": 500,
+					"earthgem": 5
+				},
+				"mod": {
+					"concentrate.max": 1,
+					"concentrate.rate": 0.4
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "rockcollection",
+				"name": "minerals collection",
+				"desc": "Sorted by hardness.",
+				"require": "g.geomancer>0||g.t_hammerclass>=2",
+				"max": 3,
+				"cost": {
+					"gold": 500,
+					"research": 1000
+				},
+				"mod": {
+					"hammerlore.max": 1,
+					"hammerlore.rate": 0.3
+				},
+				"flavor": "A fantastic way to test your strength.",
+				"group": "knowledge"
+			},
+			{
+				"id": "artificialmountain",
+				"name": "raise mountain",
+				"desc": "Leave your mark on this world.",
+				"require": "g.earthshaker>0||g.t_earthclass>=2",
+				"max": 1,
+				"cost": {
+					"gold": 5000,
+					"research": 3000,
+					"earthrune": 10
+				},
+				"result": {
+					"fame": 5
+				},
+				"mod": {
+					"gems.rate": 0.1,
+					"act_mine.effect.gems": 0.1,
+					"hammerlore.max": 2,
+					"hammerlore.rate": 0.6,
+					"geosculpting.max": 2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "constructquarry",
+				"name": "magic quarry",
+				"desc": "A rocky escarpment to conduct your excavations more efficiently.",
+				"require": "geosculpting",
+				"max": 3,
+				"cost": {
+					"gold": 1500,
+					"research": 2000,
+					"earthgem": 20
+				},
+				"mod": {
+					"act_mine.effect.gems": 0.1,
+					"hammerlore.max": 1,
+					"hammerlore.rate": 0.3
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "mythicanvil",
+				"name": "mythic anvil",
+				"desc": "Made of mythical metals, this anvil can withstand even a titan's power.",
+				"require": "titan",
+				"max": 1,
+				"cost": {
+					"gold": 10000,
+					"research": 3000,
+					"tomes": 10,
+					"earthrune": 5
+				},
+				"mod": {
+					"hammerlore.max": 2,
+					"hammerlore.rate": 0.6,
+					"geosculpting.max": 2,
+					"crafting.max": 2
+				},
+				"group": "knowledge"
+			},
+			{
+				"id": "undertunnels",
+				"name": "subterranean pathways",
+				"desc": "A twisting maze of indistinguishable passages spanning your domain.",
+				"require": "g.geosculpting>=10",
+				"max": 1,
+				"cost": {
+					"gold": 5000,
+					"research": 10000,
+					"earthrune": 1
+				},
+				"mod": {
+					"dist": "25%"
+				},
+				"group": "exploration"
+			}
+		],
+		"rares": [
+			{
+				"id": "titanhammer",
+				"name": "titan's hammer",
+				"desc": "Wrought from unyielding adamant, it hums with the energies of the earth.",
+				"type": "weapon",
+				"slot": "mainhand",
+				"damage": "15~20",
+				"attack": [
+					{
+						"name": "titanic slam",
+						"kind": "blunt",
+						"targets": "enemy",
+						"damage": "(i.damage||0)*1.5",
+						"potencies": ["physdmg", "bluntdmg", "hammerdmg"]
+					},
+					{
+						"name": "earthbreaker",
+						"targets": "enemies",
+						"maxTargets": 999,
+						"damage": "(i.damage||0)*0.33",
+						"kind": "blunt",
+						"potencies": ["physdmg", "bluntdmg", "hammerdmg"],
+						"dot": {
+							"duration": 6,
+							"damage": "3~6",
+							"mod": { "self.speed": -5 },
+							"potencies": ["physdmg", "bluntdmg", "hammerdmg"]
+						}
+					},
+					{
+						"name": "earth barrier",
+						"targets": "allies",
+						"maxTargets": 999,
+						"harmless": true,
+						"dot": {
+							"level": 1,
+							"id": "dot_adamantskin",
+							"name": "earth barrier",
+							"tags": "toughskin",
+							"duration": 15,
+							"mod": { "self.defense": 50 }
+						}
+					}
+				],
+				"alter": {
+					"mod": {
+						"earth.rate": 1,
+						"earth.max": 10,
+						"self.defense": 30,
+						"self.dodge": "-50%",
+						"smite.attack.tohit": 2,
+						"smite.level": -2,
+						"smite.attack.damage": "20%",
+						"fissure.cd": "-25%",
+						"fissure.attack.dot.duration": 1
+					}
+				},
+				"tags": "t_martial,t_blunt,t_hammer,t_artifact",
+				"level": 10,
+				"enchants": 0,
+				"unique": true,
+				"sell": {
+					"gold": 1000
+				}
+			}
+		],
+		"hall": {
+			"data": {
+				"upgrades": [
+					{
+						"id": "titan_foundations",
+						"name": "stabilized foundations",
+						"tags": "hall",
+						"desc": "A procedure to prevent earthquakes from affecting member's buildings.",
+						"require": "g.titan>0",
+						"max": 3,
+						"cost": {
+							"prestige": 40,
+							"deepsteel": 25
+						},
+						"mod": {
+							"space.max": 2
+						}
+					}
+				]
+			}
+		}
+	}
+}
