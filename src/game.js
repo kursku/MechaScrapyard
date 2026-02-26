@@ -143,6 +143,16 @@ const Game = {
             if (this.state.items['mech_fist']) {
                 this.state.items['mech_fist'].owned = 1;
             }
+
+            // System boot dialogue — fires after Vue mounts and overrides showDialogue stub
+            setTimeout(() => {
+                this.showDialogue('system', [
+                    'SYSTEM BOOT... PILOT INTERFACE ONLINE.',
+                    'Location: SECTOR 9 SCRAPYARD, NEW TOKYO. Year: 2187.',
+                    'Pilot status: UNREGISTERED. Frame status: NONE.',
+                    'You have nothing. Start digging.',
+                ]);
+            }, 1200);
         }
 
         // Initial unlock check
@@ -1796,7 +1806,7 @@ const Game = {
             },
             {
                 id: 'first_victory',
-                condition: () => (g.msn_rogue_drone_patrol?.completed || 0) > 0,
+                condition: () => (g.mission_scrap_drone?.completed || 0) > 0,
                 action: () => this.showDialogue('grandpa', [
                     "You did it. You actually did it.",
                     "That Frame... it responded to you. Just like it did for your father.",
@@ -1972,7 +1982,7 @@ const Game = {
             },
             {
                 id: 'choice_injured_pilot',
-                condition: () => (g.msn_rogue_drone_patrol?.completed || 0) > 0,
+                condition: () => (g.mission_scrap_drone?.completed || 0) > 0,
                 delay: 5000,
                 action: () => this.presentChoice(this.state.items.evt_moral_injured_pilot)
             },

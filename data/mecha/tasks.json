@@ -42,6 +42,7 @@
         "desc": "Move heavy debris to build physical strength.",
         "flavor": "Who needs a gym when you have tons of iron?",
         "locked": false,
+        "require": "g.scrap>=30",
         "group": "pilot",
         "perpetual": true,
         "run": {
@@ -58,6 +59,7 @@
         "desc": "Study old mecha schematics and repair broken logic boards.",
         "flavor": "Patience is a neuro-transmitter.",
         "locked": false,
+        "require": "g.scrap>=30",
         "group": "pilot",
         "perpetual": true,
         "run": {
@@ -74,6 +76,7 @@
         "desc": "Practice reaction time by catching small salvage drones.",
         "flavor": "Fast as a bolt, sharp as a blade.",
         "locked": false,
+        "require": "g.scrap>=30",
         "group": "pilot",
         "perpetual": true,
         "run": {
@@ -90,6 +93,7 @@
         "desc": "Spend time in the toxic fumes and harsh conditions of the lower yards.",
         "flavor": "What doesn't melt you makes you harder.",
         "locked": false,
+        "require": "g.scrap>=30",
         "group": "pilot",
         "perpetual": true,
         "run": {
