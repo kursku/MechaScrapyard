@@ -65,7 +65,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ---
 
 ## Phase 3 — Content & Polish
-**Status:** `NOT STARTED`
+**Status:** `🔄 IN PROGRESS`
 **Goal:** Real story progression through Phase 3. Zones explorable. UI design-system compliant.
 **Estimated effort:** ~2–3 weeks
 **Spec folder:** `docs/phases/phase3/`
@@ -75,7 +75,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 | 1 | `SPEC_phase3_missions.md` | Content / Missions | ⬜ not started | — |
 | 2 | `SPEC_zone_exploration.md` | Zones system | ⬜ not started | — |
 | 3 | `SPEC_token_dot_system.md` | Combat system | ⬜ not started | — |
-| 4 | `SPEC_android_slot.md` | Runner / Android | ⬜ not started | — |
+| 4 | `SPEC_android_slot.md` | Runner / Android | ✅ complete | `6ac4c65` |
 | 5 | `SPEC_event_display.md` | Narrative / Events | ⬜ not started | — |
 | 6 | `SPEC_icon_migration.md` | Design system | ⬜ not started | — |
 | 7 | `SPEC_visual_equip.md` | Mecha UI | ⬜ not started | — |
