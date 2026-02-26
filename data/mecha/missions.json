@@ -59,5 +59,121 @@
             "glory": 2,
             "creds": 10
         }
+    },
+    {
+        "id": "msn_salvage_run_01",
+        "name": "Salvage Run: Sector 7",
+        "desc": "Standard sweep through the outer ring. Drones, debris, and opportunity.",
+        "flavor": "Even the junk has junk in it. Dig deeper.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "survey",
+        "difficulty": 1,
+        "cost": {
+            "energy": 5
+        },
+        "enemies": ["scrap_drone"],
+        "turnLimit": 15,
+        "rewards": {
+            "glory": 1,
+            "creds": 10,
+            "scrap": 20
+        },
+        "firstClearBonus": {
+            "glory": 2,
+            "scrap": 10
+        },
+        "failRewards": {
+            "scrap": 5
+        }
+    },
+    {
+        "id": "msn_rogue_drone_patrol",
+        "name": "Rogue Drone Pack",
+        "desc": "A cluster of corrupted drones has taken up permanent residence near the water reclamation plant. Clear them.",
+        "flavor": "They've been scrapping each other for parts. The survivors are meaner for it.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "patrol",
+        "difficulty": 2,
+        "require": "g.scrap>=50",
+        "cost": {
+            "energy": 10
+        },
+        "enemies": ["scrap_drone", "scrap_drone"],
+        "turnLimit": 20,
+        "rewards": {
+            "glory": 2,
+            "creds": 20,
+            "scrap": 35
+        },
+        "firstClearBonus": {
+            "glory": 2,
+            "creds": 15
+        },
+        "failRewards": {
+            "glory": 1,
+            "scrap": 8
+        }
+    },
+    {
+        "id": "msn_rival_gang_01",
+        "name": "Rival Gang — First Contact",
+        "desc": "The Ironjaw crew has been raiding your usual spots. Time for an introduction.",
+        "flavor": "They fight dirty. You'll have to fight dirtier.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "secure",
+        "difficulty": 3,
+        "require": "g.glory>=1",
+        "cost": {
+            "energy": 15
+        },
+        "enemies": ["rival_grunt"],
+        "turnLimit": 25,
+        "rewards": {
+            "glory": 3,
+            "creds": 35,
+            "scrap": 25,
+            "parts": 2
+        },
+        "firstClearBonus": {
+            "glory": 3,
+            "creds": 20
+        },
+        "failRewards": {
+            "glory": 1,
+            "creds": 10
+        }
+    },
+    {
+        "id": "msn_corrupted_sentinel",
+        "name": "Corrupted Sentinel",
+        "desc": "Something ancient is waking up in the deep scrapyard. It doesn't like visitors.",
+        "flavor": "The serial number dates back forty years. Whatever it was built to protect... it still is.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "elimination",
+        "difficulty": 4,
+        "require": "g.glory>=5",
+        "cost": {
+            "energy": 20
+        },
+        "enemies": ["corrupted_sentinel"],
+        "turnLimit": 30,
+        "rewards": {
+            "glory": 5,
+            "creds": 50,
+            "scrap": 40,
+            "parts": 4
+        },
+        "firstClearBonus": {
+            "glory": 5,
+            "creds": 30
+        },
+        "failRewards": {
+            "glory": 2,
+            "creds": 15
+        }
     }
 ]

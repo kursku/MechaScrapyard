@@ -36,7 +36,11 @@
             "scavenge_residential"
         ],
         "availableMissions": [
-            "mission_scrap_drone"
+            "mission_scrap_drone",
+            "msn_salvage_run_01",
+            "msn_rogue_drone_patrol",
+            "msn_rival_gang_01",
+            "msn_corrupted_sentinel"
         ],
         "npcs": [
             "grandpa"
