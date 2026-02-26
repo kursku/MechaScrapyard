@@ -7,6 +7,7 @@
         "flavor": "Every piece of rust tells a story.",
         "tips": "Your bread and butter. Runs continuously until you stop it or run out of energy.",
         "locked": false,
+        "androidEligible": true,
         "perpetual": true,
         "group": "scrapyard",
         "tags": "t_scrapyard",
@@ -25,6 +26,7 @@
         "flavor": "Nobody asks questions about the kid from the scrapyard.",
         "tips": "Quick way to earn Creds. Takes 10 seconds to complete.",
         "locked": false,
+        "androidEligible": true,
         "group": "income",
         "tags": "t_income",
         "cost": {
@@ -140,6 +142,7 @@
         "flavor": "The deeper you dig, the better the finds.",
         "tips": "Upgraded scavenging. Higher yield but costs more energy per second.",
         "require": "g.sorting_station>0",
+        "androidEligible": true,
         "perpetual": true,
         "group": "scrapyard",
         "tags": "t_scrapyard",
@@ -159,6 +162,7 @@
         "flavor": "Don't open the box. Don't ask about the box.",
         "tips": "Better pay than Odd Jobs. 15 seconds, higher Creds reward.",
         "require": "g.workshop_lv2>0",
+        "androidEligible": true,
         "group": "income",
         "tags": "t_income",
         "cost": {

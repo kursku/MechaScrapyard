@@ -16,6 +16,7 @@ export default {
     data() {
         return {
             renderTick: 0,
+            selectedAndroidTask: '',
         };
     },
     mounted() {
@@ -25,9 +26,26 @@ export default {
         if (this._tick) clearInterval(this._tick);
     },
     computed: {
-        android() {
+        androidUnlocked() {
             this.renderTick;
-            return this.state.android;
+            return this.state.android?.active || false;
+        },
+        androidStatus() {
+            return Game.runner.slots.android ? 'ACTIVE' : 'STANDBY';
+        },
+        androidEligibleTasks() {
+            this.renderTick;
+            return Object.values(this.state.items)
+                .filter(i => i.type === 'task' && i.androidEligible && !i.locked);
+        },
+        androidSlot() {
+            this.renderTick;
+            return Game.runner.slots.android;
+        },
+        androidSlotTask() {
+            const slot = this.androidSlot;
+            if (!slot) return null;
+            return this.state.items[slot.taskId] || null;
         },
         rawScrap() {
             this.renderTick;
@@ -54,8 +72,14 @@ export default {
         formatModKey,
         fmtRate,
         
-        assignAndroid(id) { Game.assignAndroid(id); },
-        unassignAndroid() { Game.unassignAndroid(); },
+        startAndroid() {
+            if (!this.selectedAndroidTask) return;
+            Game.runner.startAndroidTask(this.selectedAndroidTask);
+            this.selectedAndroidTask = '';
+        },
+        stopAndroid() {
+            Game.runner.stopAndroidTask();
+        },
         getTaskName(id) {
             const task = this.state.items[id];
             return task ? task.name : 'Unknown';
@@ -94,42 +118,28 @@ export default {
 <template>
     <section class="scrapyard-panel">
         
-        <!-- 1. ANDROID CONTROL PANEL -->
-        <div class="android-control-panel" v-if="android && android.active">
-            <div class="android-header">
-                <div class="android-name">
-                    &#x1F916; {{ android.name.toUpperCase() }}
-                    <span class="android-lvl-badge">LV.{{ android.level || 1 }}</span>
-                </div>
-                <div class="text-muted" style="font-size: 12px;">Kinetic Industrial Task Automaton</div>
-            </div>
+        <!-- 1. ANDROID TASK SLOT -->
+        <div v-if="androidUnlocked" class="android-task-section">
+            <div class="hud-section-title">> ANDROID_UNIT: [ {{ androidStatus }} ]</div>
 
-            <div class="android-stats">
-                <div class="stat-block">
-                    <span class="stat-block-label">ENERGY CORE</span>
-                    <div class="battery-bar-container">
-                        <div class="battery-bar-fill" :style="{ width: ((android.energy || 0) / (android.maxEnergy || 100) * 100) + '%' }"></div>
-                        <span class="battery-text">{{ Math.floor(android.energy || 0) }}/{{ android.maxEnergy || 100 }}</span>
+            <div v-if="androidSlot && androidSlotTask" class="active-task-row">
+                <span class="task-label">{{ androidSlotTask.name.toUpperCase() }}</span>
+                <div class="hud-progress-bar">
+                    <div class="hud-progress-fill android-fill"
+                         :style="{ width: (androidSlotTask.perpetual ? 100 : (androidSlot.progress / androidSlotTask.length) * 100) + '%' }">
                     </div>
                 </div>
-                <div class="stat-block">
-                    <span class="stat-block-label">OPERATIONAL EFFICIENCY</span>
-                    <div style="font-size: 16px; color: var(--color-success); font-weight: bold;">
-                        {{ Math.round((android.efficiency || 1) * 100) }}% 
-                        <span style="font-size: 10px; color: var(--text-dim);">[Boosted by Focus]</span>
-                    </div>
-                </div>
+                <span v-if="androidSlotTask.perpetual" class="task-perpetual-tag">CONT.</span>
+                <button class="hud-btn small" @click="stopAndroid">HALT</button>
             </div>
-
-            <div class="android-task-row">
-                <div class="android-status">
-                    <span v-if="android.assignment" class="working">&#x25B6; EXECUTING: {{ getTaskName(android.assignment).toUpperCase() }}</span>
-                    <span v-else class="idle">&#x25A0; STANDBY MODE</span>
-                </div>
-                <div>
-                    <button v-if="android.assignment" class="btn-outline btn-stop" @click="unassignAndroid">STOP TASK</button>
-                    <button v-else class="btn-outline" style="border-style: dashed; opacity: 0.5;" disabled>AWAITING ORDERS</button>
-                </div>
+            <div v-else class="task-assign-row">
+                <select class="hud-select" v-model="selectedAndroidTask">
+                    <option value="">[ SELECT_TASK ]</option>
+                    <option v-for="task in androidEligibleTasks" :key="task.id" :value="task.id">
+                        {{ task.name.toUpperCase() }}
+                    </option>
+                </select>
+                <button class="hud-btn small" :disabled="!selectedAndroidTask" @click="startAndroid">DEPLOY</button>
             </div>
         </div>
 
@@ -168,14 +178,6 @@ export default {
                         <div style="font-size: 11px; margin-top: 8px; font-weight: bold; color: var(--text-dim)">[ INITIATE ]</div>
                     </div>
                     
-                    <div style="display: flex; gap: 8px;">
-                        <button v-if="android && android.active && task.perpetual" 
-                                class="btn-outline btn-assign" 
-                                :disabled="android.assignment === task.id" 
-                                @click.stop="assignAndroid(task.id)">
-                                {{ android.assignment === task.id ? '\u{1F916} ASSIGNED' : '\u{1F916} ASSIGN K.I.T.A.' }}
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -219,3 +221,84 @@ export default {
         </div>
     </section>
 </template>
+
+<style scoped>
+.android-task-section {
+    border: 1px solid rgba(0, 255, 170, 0.25);
+    background: rgba(0, 255, 170, 0.03);
+    padding: 8px 10px;
+    margin-bottom: 12px;
+}
+
+.active-task-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.task-label {
+    font-size: 10px;
+    color: var(--primary);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.hud-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border-dim, #222);
+    border: 1px solid var(--border, #333);
+}
+
+.hud-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+}
+
+.android-fill {
+    background: rgba(0, 255, 170, 0.7);
+}
+
+.task-perpetual-tag {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.task-assign-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    align-items: center;
+}
+
+.hud-select {
+    flex: 1;
+    background: var(--bg, #0a0c0e);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    padding: 3px 6px;
+    letter-spacing: 1px;
+}
+
+.hud-btn.small {
+    font-size: 10px;
+    padding: 3px 8px;
+    letter-spacing: 1px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-family: var(--font-mono, monospace);
+}
+
+.hud-btn.small:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+</style>

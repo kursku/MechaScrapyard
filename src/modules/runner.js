@@ -13,6 +13,33 @@ export default class Runner {
         this.taskProgress = 0;
         this.activeRecipe = null;
         this.recipeProgress = 0;
+        this.androidSlot = null; // { taskId, progress }
+    }
+
+    /** Exposes both operator slots for template access. */
+    get slots() {
+        return {
+            kenji: this.activeTask
+                ? { taskId: this.activeTask.id, progress: this.taskProgress }
+                : null,
+            android: this.androidSlot,
+        };
+    }
+
+    startAndroidTask(taskId) {
+        const task = this.state.items[taskId];
+        if (!task || task.locked) return false;
+        if (this.androidSlot) this.stopAndroidTask();
+        this.androidSlot = { taskId, progress: 0 };
+        Log.add(`[ANDROID] Started: ${task.name}`, 'action');
+        return true;
+    }
+
+    stopAndroidTask() {
+        if (!this.androidSlot) return;
+        const name = this.state.items[this.androidSlot.taskId]?.name || this.androidSlot.taskId;
+        Log.add(`[ANDROID] Halted: ${name}`, 'action');
+        this.androidSlot = null;
     }
 
     /**
@@ -159,6 +186,50 @@ export default class Runner {
             this._handleSkillExp(task, dt);
         }
 
+        // --- Android Slot ---
+        if (this.androidSlot) {
+            const aSlot = this.androidSlot;
+            const aTask = this.state.items[aSlot.taskId];
+            if (!aTask) {
+                this.androidSlot = null;
+            } else {
+                // Pay run costs from the shared energy pool
+                if (aTask.run) {
+                    let canPay = true;
+                    for (const [k, v] of Object.entries(aTask.run)) {
+                        const res = this.state.items[k];
+                        if (!res || res.val < v * dt) { canPay = false; break; }
+                    }
+                    if (canPay) {
+                        for (const [k, v] of Object.entries(aTask.run)) {
+                            const res = this.state.items[k];
+                            if (res) res.val = clamp(res.val - v * dt, 0, res.max);
+                        }
+                        if (aTask.effect) {
+                            for (const [k, v] of Object.entries(aTask.effect)) {
+                                const res = this.state.items[k];
+                                if (res && !res.locked) res.val = clamp(res.val + v * dt, 0, res.max);
+                            }
+                        }
+                    } else {
+                        Log.add('[ANDROID] Energy depleted — task halted.', 'error');
+                        this.androidSlot = null;
+                    }
+                }
+                // Progress timed tasks; perpetual tasks run indefinitely
+                if (this.androidSlot && !aTask.perpetual && aTask.length) {
+                    const speed = this.getTaskSpeed(aTask);
+                    aSlot.progress += dt * speed;
+                    if (aSlot.progress >= aTask.length) {
+                        this.state.award(aTask.result);
+                        Log.add(`[ANDROID] Task complete: ${aTask.name}`, 'success');
+                        result.taskCompleted = true;
+                        this.androidSlot = null;
+                    }
+                }
+            }
+        }
+
         // --- Active Recipe ---
         if (this.activeRecipe) {
             const recipe = this.activeRecipe;
@@ -236,6 +307,9 @@ export default class Runner {
             taskProgress: this.taskProgress,
             activeRecipe: this.activeRecipe?.id || null,
             recipeProgress: this.recipeProgress,
+            androidSlot: this.androidSlot
+                ? { taskId: this.androidSlot.taskId, progress: this.androidSlot.progress }
+                : null,
         };
     }
 
@@ -248,6 +322,9 @@ export default class Runner {
         if (data.activeRecipe && items[data.activeRecipe]) {
             this.activeRecipe = items[data.activeRecipe];
             this.recipeProgress = data.recipeProgress || 0;
+        }
+        if (data.androidSlot && items[data.androidSlot.taskId]) {
+            this.androidSlot = { taskId: data.androidSlot.taskId, progress: data.androidSlot.progress || 0 };
         }
     }
 }
