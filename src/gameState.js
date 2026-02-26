@@ -386,6 +386,7 @@ export default class GameState {
             if (item.type === 'zone') {
                 saved.discovered = item.discovered;
                 saved.explored = item.explored;
+                saved.status = item.status;
             }
             data[id] = saved;
         }
@@ -466,6 +467,7 @@ export default class GameState {
             if (item.type === 'zone' && saved.discovered !== undefined) {
                 item.discovered = saved.discovered;
                 item.explored = saved.explored || 0;
+                if (saved.status) item.status = saved.status;
             }
         }
         if (json.player) {

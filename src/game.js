@@ -317,15 +317,15 @@ const Game = {
 
         const unlocked = this.techTree.check();
 
-        // --- Zone Discovery ---
+        // --- Zone Discovery (auto-scout when require condition met) ---
         for (const item of unlocked) {
-            if (item.type === 'zone' && !item.discovered) {
-                item.discovered = true;
-                Log.add(`🗺 New zone discovered: ${item.name}`, 'story');
+            if (item.type === 'zone' && item.status === 'locked') {
+                item.status = 'scouted';
+                Log.add(`📡 Zone detected: ${item.name}`, 'story');
                 this.showDialogue('system', [
-                    `ZONE UNLOCKED: ${item.name}`,
+                    `ZONE DETECTED: ${item.name}`,
                     item.desc,
-                    item.narrativeHook
+                    `Intel suggests access is possible. Check the zone map to unlock.`
                 ]);
             }
         }
@@ -457,6 +457,29 @@ const Game = {
                 frame.stress = Math.max(0, frame.stress - recoveryRate * dt);
             }
         }
+    },
+
+    /**
+     * Unlock a scouted zone. Pays scoutCost if defined.
+     * Moves zone from 'scouted' → 'unlocked' and sets discovered = true.
+     * @param {string} zoneId
+     */
+    unlockZone(zoneId) {
+        const zone = this.state.items[zoneId];
+        if (!zone || zone.type !== 'zone' || zone.status !== 'scouted') return;
+        if (zone.scoutCost && !this.state.payCost(zone.scoutCost)) {
+            Log.add(`[ZONE] Insufficient resources to access ${zone.name}.`, 'error');
+            return;
+        }
+        zone.status = 'unlocked';
+        zone.discovered = true;
+        Log.add(`🗺 Zone unlocked: ${zone.name}`, 'story');
+        this.showDialogue('system', [
+            `ZONE UNLOCKED: ${zone.name}`,
+            zone.desc,
+            zone.narrativeHook
+        ]);
+        this.techTree.check();
     },
 
     /**
@@ -2331,12 +2354,14 @@ const Game = {
             item.locked = item.locked ?? (item.require ? true : false);
             item.discovered = item.discovered || false;
             item.explored = item.explored || 0;
+            // 3-state zone progression: 'locked' | 'scouted' | 'unlocked'
+            item.status = item.status || (item.discovered ? 'unlocked' : 'locked');
 
             const rItem = reactive(item);
 
-            // Expose to g. namespace: g.zone_scrapyard = 1 if discovered
+            // Expose to g. namespace: g.zone_scrapyard = 1 if unlocked
             Object.defineProperty(this.state.g, item.id, {
-                get: () => rItem.discovered ? 1 : 0,
+                get: () => rItem.status === 'unlocked' ? 1 : 0,
                 configurable: true,
             });
 
