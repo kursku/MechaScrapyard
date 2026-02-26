@@ -153,6 +153,8 @@ const Game = {
         // Attach Game to window for Developer/Debugger purposes
         if (typeof window !== 'undefined') {
             window.Game = this;
+            // Force-save on tab close so no progress is lost between autosaves
+            window.addEventListener('beforeunload', () => Persist.save(this));
         }
 
         console.log('Game initialized.', Object.keys(this.state.items).length, 'items loaded.');
@@ -168,9 +170,11 @@ const Game = {
             if (!this.paused) this.tick();
         }, TICK_MS);
 
-        // Autosave
+        // Autosave — emit SAVE_CONFIRM on success so the HUD can flash
         this._autosaveInterval = setInterval(() => {
-            if (this.loaded) Persist.save(this);
+            if (this.loaded && Persist.save(this)) {
+                Events.emit('SAVE_CONFIRM');
+            }
         }, Persist.AUTOSAVE_INTERVAL);
     },
 
