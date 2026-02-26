@@ -38,11 +38,37 @@ export default {
             this.renderTick;
             return this.state.get(this.frame.chassisId);
         },
+        partsBySlot() {
+            const slotOrder = ['torso', 'left_arm', 'right_arm', 'legs'];
+            const slotLabels = { torso: 'TORSO', left_arm: 'LEFT ARM', right_arm: 'RIGHT ARM', legs: 'LEGS' };
+            const groups = {};
+            for (const slot of slotOrder) {
+                groups[slot] = {
+                    label: slotLabels[slot] || slot.toUpperCase(),
+                    parts: (this.state.player.partsInventory || []).filter(p => p.slot === slot),
+                };
+            }
+            const knownSlots = new Set(slotOrder);
+            const others = (this.state.player.partsInventory || []).filter(p => !knownSlots.has(p.slot));
+            if (others.length > 0) groups['other'] = { label: 'OTHER', parts: others };
+            return groups;
+        },
+        installedWeaponIds() {
+            const equip = this.frame?.installedEquip || {};
+            return new Set(Object.values(equip).filter(Boolean));
+        },
     },
     methods: {
         renderBar,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
+        getInstalledPartForSlot(slot) {
+            return this.frame?.parts?.[slot] || null;
+        },
+        itemOverPart(e, part) {
+            const installed = this.getInstalledPartForSlot(part.slot);
+            RollOver(e, part, { compare: installed });
+        },
 
         // --- Equipment ---
         getValidWeapons(slotId) {
@@ -276,29 +302,34 @@ export default {
             <!-- PARTS TAB -->
             <div v-else-if="selectedInventoryTab === 'parts'" class="inventory-grid">
                 <div v-if="!state.player.partsInventory || state.player.partsInventory.length === 0" class="empty-state">NO PARTS IN STORAGE</div>
-                <div v-for="part in state.player.partsInventory" :key="part.id"
-                     class="hud-task-card salvage-card"
-                     :style="getPartMfrStyle(part)"
-                     @mouseover="itemOver($event, part)" @mouseleave="itemOut">
-                    <div class="hud-card-header">
-                        <span v-if="getPartMfrIcon(part)" class="mfr-icon" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrIcon(part) }}</span>
-                        {{ part.name.toUpperCase() }}
+                <template v-for="(group, slotKey) in partsBySlot" :key="slotKey">
+                    <div v-if="group.parts.length > 0" class="slot-group-header">
+                        {{ group.label }} ({{ group.parts.length }})
                     </div>
-                    <div class="salvage-meta" style="justify-content: space-between;">
-                        <span>[{{ part.slot.toUpperCase() }}]</span>
-                        <span class="mfr-tag" v-if="getPartMfrName(part)" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrName(part) }}</span>
-                        <span :class="{ worn: part.condition < 0.5 }">{{ Math.round(part.condition * 100) }}% CND</span>
+                    <div v-for="part in group.parts" :key="part.id"
+                         class="hud-task-card salvage-card"
+                         :style="getPartMfrStyle(part)"
+                         @mouseover="itemOverPart($event, part)" @mouseleave="itemOut">
+                        <div class="hud-card-header">
+                            <span v-if="getPartMfrIcon(part)" class="mfr-icon" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrIcon(part) }}</span>
+                            {{ part.name.toUpperCase() }}
+                        </div>
+                        <div class="salvage-meta" style="justify-content: space-between;">
+                            <span>[{{ part.slot.toUpperCase() }}]</span>
+                            <span class="mfr-tag" v-if="getPartMfrName(part)" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrName(part) }}</span>
+                            <span :class="{ worn: part.condition < 0.5 }">{{ Math.round(part.condition * 100) }}% CND</span>
+                        </div>
+                        <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px; align-items: center;">
+                            <button class="hud-btn small" @click="equipPart(part.slot, part)">EQUIP</button>
+                            <template v-if="_dismantleTarget === part.id">
+                                <span class="dismantle-confirm-label">CONFIRM?</span>
+                                <button class="hud-btn small danger" @click="confirmDismantle(part)">YES</button>
+                                <button class="hud-btn small" @click="_dismantleTarget = null">NO</button>
+                            </template>
+                            <button v-else class="hud-btn small" @click="_dismantleTarget = part.id">DISMANTLE</button>
+                        </div>
                     </div>
-                    <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px; align-items: center;">
-                        <button class="hud-btn small" @click="equipPart(part.slot, part)">EQUIP</button>
-                        <template v-if="_dismantleTarget === part.id">
-                            <span class="dismantle-confirm-label">CONFIRM?</span>
-                            <button class="hud-btn small danger" @click="confirmDismantle(part)">YES</button>
-                            <button class="hud-btn small" @click="_dismantleTarget = null">NO</button>
-                        </template>
-                        <button v-else class="hud-btn small" @click="_dismantleTarget = part.id">DISMANTLE</button>
-                    </div>
-                </div>
+                </template>
             </div>
 
             <!-- WEAPONS TAB -->
@@ -306,12 +337,14 @@ export default {
                 <div v-if="state.player.inventory.weapons.length === 0" class="empty-state">NO WEAPONS IN STORAGE</div>
                 <div v-for="weaponId in state.player.inventory.weapons" :key="weaponId"
                      class="hud-task-card salvage-card"
+                     :class="{ 'is-installed': installedWeaponIds.has(weaponId) }"
                      :style="state.items[weaponId]?.mfr ? { borderLeftColor: getMfrColor(state.items[weaponId].mfr) } : {}"
                      @mouseover="itemOver($event, state.items[weaponId])" @mouseleave="itemOut">
                     <template v-if="state.items[weaponId]">
                         <div class="hud-card-header">
                             <span v-if="getMfrIcon(state.items[weaponId].mfr)" class="mfr-icon" :style="{ color: getMfrColor(state.items[weaponId].mfr) }">{{ getMfrIcon(state.items[weaponId].mfr) }}</span>
                             {{ state.items[weaponId].name.toUpperCase() }}
+                            <span v-if="installedWeaponIds.has(weaponId)" class="installed-badge">INSTALLED</span>
                         </div>
                         <div class="salvage-meta">
                             <span>[{{ (state.items[weaponId].category || state.items[weaponId].slot || '').toUpperCase() }}]</span>
@@ -319,7 +352,8 @@ export default {
                                 {{ getMfrName(state.items[weaponId].mfr) }}
                             </span>
                         </div>
-                        <div class="salvage-hint" style="margin-top: 8px;">EQUIP VIA RIG_CONFIG SLOT MENU ↑</div>
+                        <div class="salvage-hint" v-if="!installedWeaponIds.has(weaponId)" style="margin-top: 8px;">EQUIP VIA RIG_CONFIG SLOT MENU ↑</div>
+                        <div class="salvage-hint installed" v-else style="margin-top: 8px;">CURRENTLY INSTALLED IN RIG</div>
                     </template>
                 </div>
             </div>
@@ -359,5 +393,34 @@ export default {
 .hud-btn.small.danger:hover {
     background: var(--error);
     color: #000;
+}
+
+/* Parts slot grouping */
+.slot-group-header {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    padding: 4px 0 2px;
+    border-bottom: 1px solid var(--border-dim);
+    margin-bottom: 6px;
+    margin-top: 10px;
+}
+
+/* Installed weapon badge */
+.installed-badge {
+    font-size: 9px;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 1px 4px;
+    letter-spacing: 1px;
+    margin-left: auto;
+}
+.salvage-card.is-installed {
+    border-left-color: var(--primary);
+    background: rgba(0, 255, 170, 0.03);
+}
+.salvage-hint.installed {
+    color: var(--primary);
+    opacity: 0.6;
 }
 </style>

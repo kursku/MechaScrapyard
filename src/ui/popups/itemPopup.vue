@@ -5,13 +5,15 @@ import Game from '@/game';
 const state = reactive({
     visible: false,
     item: null,
+    compare: null,
     x: 0,
     y: 0
 });
 
-export function RollOver(e, item) {
+export function RollOver(e, item, opts) {
     if (!item) return;
     state.item = item;
+    state.compare = opts?.compare || null;
     state.visible = true;
     
     let cx = 0;
@@ -49,6 +51,7 @@ export function RollOver(e, item) {
 export function ItemOut() {
     state.visible = false;
     state.item = null;
+    state.compare = null;
 }
 
 export default {
@@ -81,7 +84,14 @@ export default {
             return ICONS[id] || '•';
         };
 
-        return { state, fmtRate, getNetRate, resourceIcon, Game };
+        const fmtDelta = (a, b) => {
+            const d = (a || 0) - (b || 0);
+            if (d === 0) return '—';
+            return (d > 0 ? '+' : '') + Math.round(d);
+        };
+        const deltaClass = (a, b) => (a || 0) >= (b || 0) ? 'delta-pos' : 'delta-neg';
+
+        return { state, fmtRate, getNetRate, resourceIcon, fmtDelta, deltaClass, Game };
     }
 }
 </script>
@@ -145,6 +155,30 @@ export default {
                 <span>NET RATE:</span>
                 <span>{{ fmtRate(getNetRate(state.item)) }}/s</span>
             </div>
+        </div>
+
+        <!-- STAT DIFF vs installed part (only shown when compare context is provided) -->
+        <div v-if="state.compare" class="popup-section compare-section">
+            <div class="section-label">VS INSTALLED: {{ state.compare.name?.toUpperCase() }}</div>
+            <div class="cost-row">
+                <span>MAX HP</span>
+                <span>{{ state.item.maxHp || '—' }}
+                    <span :class="deltaClass(state.item.maxHp, state.compare.maxHp)">
+                        ({{ fmtDelta(state.item.maxHp, state.compare.maxHp) }})
+                    </span>
+                </span>
+            </div>
+            <div class="cost-row">
+                <span>CONDITION</span>
+                <span>{{ Math.round((state.item.condition || 0) * 100) }}%
+                    <span :class="deltaClass(state.item.condition, state.compare.condition)">
+                        ({{ fmtDelta((state.item.condition || 0) * 100, (state.compare.condition || 0) * 100) }}%)
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div v-else-if="state.item.slot && state.item.maxHp" class="popup-section compare-section">
+            <div class="section-label compare-hint">HOVER SHOWS DIFF VS INSTALLED</div>
         </div>
 
         <div v-if="state.item.flavor" class="popup-flavor">
@@ -241,4 +275,9 @@ export default {
     color: var(--text-faint);
     padding: 0 12px 10px;
 }
+
+.compare-section { border-top-color: rgba(0, 255, 170, 0.2); }
+.compare-hint { color: var(--text-dim); opacity: 0.5; font-size: 0.68rem; }
+.delta-pos { color: #4f8; font-size: 0.75rem; }
+.delta-neg { color: #f44; font-size: 0.75rem; }
 </style>
