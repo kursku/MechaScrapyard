@@ -3,3 +3,16 @@ dist/
 .vite/
 *.local
 .DS_Store
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Claude Code local settings
+.claude/
+
+# Development-only: planning docs, references, temp artifacts
+docs/
+design-system/
+ref/
+temp_zip/

@@ -27,10 +27,8 @@ export default {
     computed: {
         blueprints() {
             this.renderTick;
-            return Object.values(this.state.items).filter(i => 
-                i.type === 'blueprint' && 
-                !i.locked && 
-                (i.repeatable || i.type === 'recycle' || (i.owned || 0) < (i.max || 1))
+            return Object.values(this.state.items).filter(i =>
+                i.type === 'blueprint' && !i.locked
             );
         },
         filteredBlueprints() {
