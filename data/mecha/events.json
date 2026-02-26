@@ -4,6 +4,7 @@
         "name": "Prologue",
         "speaker": "grandpa",
         "require": "",
+        "seen": false,
         "desc": "You wake up in the scrapyard. Grandpa is tinkering with a broken generator nearby. Another day in the Scrapyard District.",
         "result": {
             "title": "Scrapyard Kid"
@@ -14,6 +15,7 @@
         "name": "Getting Organized",
         "speaker": "grandpa",
         "require": "g.sorting_station>0",
+        "seen": false,
         "desc": "Grandpa nods approvingly at your new sorting station. 'Your father used to keep things organized too,' he says, looking away."
     },
     {
@@ -21,6 +23,7 @@
         "name": "The Workshop Awakens",
         "speaker": "grandpa",
         "require": "g.workshop_lv2>0",
+        "seen": false,
         "desc": "As the workshop powers up for the first time in years, you notice scratches on the workbench — measurements, notes, a name: your father's."
     },
     {
@@ -28,6 +31,7 @@
         "name": "Father's Legacy",
         "speaker": "grandpa",
         "require": "g.garage>0",
+        "seen": false,
         "desc": "Behind the rusted door, covered in dust and cobwebs, stands a mecha. Small, old, battered — but unmistakably your father's first build. The cockpit still has his callsign etched into the frame.",
         "result": {
             "reputation": 1
@@ -38,6 +42,7 @@
         "name": "Turning Junk Into Future",
         "speaker": "grandpa",
         "require": "g.refinery>0",
+        "seen": false,
         "desc": "The refinery hums to life. Grandpa watches from the doorway. 'He always said this machine would change everything,' he whispers. 'He wasn't wrong.'"
     },
     {
@@ -45,6 +50,7 @@
         "name": "First Schematic",
         "speaker": "system",
         "require": "g.bp_nano_infra>0",
+        "seen": false,
         "desc": "You study the Nano Infra schematics. The engineering is elegant — far beyond what you'd expect from street tech. Where did these come from?"
     },
     {
@@ -52,6 +58,7 @@
         "name": "The Bazaar",
         "speaker": "system",
         "require": "g.search_neon_bazaar>0",
+        "seen": false,
         "desc": "The Neon Bazaar is everything they warned you about — and more. Holographic vendors, whispered deals, and the unmistakable scent of opportunity."
     },
     {
@@ -59,15 +66,15 @@
         "name": "The Empty Workshop",
         "speaker": "system",
         "require": "g.msn_scrapyard_siege>0",
-        "desc": "The workshop is quieter now. The tools are where he left them. The bench he built forty years ago still stands against the wall. Some things outlast the people who made them.",
-        "seen": false
+        "seen": false,
+        "desc": "The workshop is quieter now. The tools are where he left them. The bench he built forty years ago still stands against the wall. Some things outlast the people who made them."
     },
     {
         "id": "evt_workshop_after",
         "name": "Routines",
         "speaker": "system",
         "require": "g.msn_scrapyard_siege>0&&g.scrap>=100",
-        "desc": "The sorting station runs. The refinery hums. The scrapyard does what it was built to do. You keep working. It's what he would have wanted.",
-        "seen": false
+        "seen": false,
+        "desc": "The sorting station runs. The refinery hums. The scrapyard does what it was built to do. You keep working. It's what he would have wanted."
     }
 ]

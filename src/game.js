@@ -485,8 +485,45 @@ const Game = {
                         }
                     }
                 }
+
+                // Fire narrative event for this phase
+                this._checkHomePhaseTrigger(home.id);
             }
         }
+    },
+
+    /**
+     * Fire the narrative event associated with a home phase transition.
+     */
+    _checkHomePhaseTrigger(itemId) {
+        const phaseEventMap = {
+            'scrapyard_phase2': 'evt_sorting',
+            'scrapyard_phase3': 'evt_garage_discovery',
+            'scrapyard_phase4': 'evt_refinery_online',
+        };
+        const eventId = phaseEventMap[itemId];
+        if (!eventId) return;
+
+        this.queueEvent(eventId);
+
+        if (itemId === 'scrapyard_phase3') {
+            this._unlockDadsFrame();
+        }
+    },
+
+    /**
+     * Discover Dad's frame when the garage phase activates.
+     */
+    _unlockDadsFrame() {
+        const frame = this.state.items['frame_hayabusa_mk1'];
+        if (!frame) return;
+        frame.discovered = true;
+        frame.locked = false;
+        const inventory = this.state.player?.inventory;
+        if (inventory && !inventory.frames.includes('frame_hayabusa_mk1')) {
+            inventory.frames.push('frame_hayabusa_mk1');
+        }
+        Log.add("◆ A battered frame found in the garage. Your father's callsign is etched in the cockpit.", 'narrative');
     },
 
     /**
@@ -980,6 +1017,13 @@ const Game = {
         Log.add('', 'system');
         Log.add('The seat in the back row is empty.', 'story');
         Log.add('', 'system');
+
+        // Queue post-siege narrative events
+        this.queueEvent('evt_grandpa_memorial');
+        this.queueEvent('evt_workshop_after');
+
+        // Silence Grandpa speaker going forward
+        this.state._grandpaSilenced = true;
     },
 
     // ── Prestige System (GDD §2+§3+§6+§8) ───────────────────────
@@ -1706,6 +1750,22 @@ const Game = {
 
     equipManeuvers(ids) {
         this.combatRunner.setManeuvers(ids);
+    },
+
+    /**
+     * Queue and display a story event once.
+     * Marks event as seen, logs narrative text, and shows a dialogue.
+     * Phase 3 SPEC_event_display will replace this with a proper modal queue.
+     */
+    queueEvent(eventId) {
+        const event = this.state.items[eventId];
+        if (!event || event.seen) return;
+        event.seen = true;
+        if (event.desc) {
+            Log.add(`◆ ${event.name}: ${event.desc}`, 'narrative');
+        }
+        const speaker = event.speaker || 'system';
+        this.showDialogue(speaker, [event.desc]);
     },
 
     /**
