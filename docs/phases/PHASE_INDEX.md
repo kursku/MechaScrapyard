@@ -72,7 +72,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 
 | # | Spec | Area | Status | Commit |
 |---|------|------|--------|--------|
-| 1 | `SPEC_phase3_missions.md` | Content / Missions | ⬜ not started | — |
+| 1 | `SPEC_phase3_missions.md` | Content / Missions | ✅ complete | `dc56deb` |
 | 2 | `SPEC_zone_exploration.md` | Zones system | ⬜ not started | — |
 | 3 | `SPEC_token_dot_system.md` | Combat system | ⬜ not started | — |
 | 4 | `SPEC_android_slot.md` | Runner / Android | ✅ complete | `6ac4c65` |
