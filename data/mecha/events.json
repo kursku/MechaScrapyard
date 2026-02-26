@@ -76,5 +76,29 @@
         "require": "g.msn_scrapyard_siege>0&&g.scrap>=100",
         "seen": false,
         "desc": "The sorting station runs. The refinery hums. The scrapyard does what it was built to do. You keep working. It's what he would have wanted."
+    },
+    {
+        "id": "evt_debt_notice",
+        "name": "Father's Debt",
+        "speaker": "system",
+        "require": "",
+        "seen": false,
+        "desc": "The enforcer drops a dataslate on the workbench without a word. The number on it is not small. 'Your old man borrowed from us. You're his blood. Figure it out.' He walks. The door doesn't close all the way."
+    },
+    {
+        "id": "evt_covenant_approach",
+        "name": "The Covenant Extends a Hand",
+        "speaker": "system",
+        "require": "",
+        "seen": false,
+        "desc": "A message arrives through an Underground contact. No name, just a frequency and a time. 'We've watched your work. The Steel Covenant has resources. You have potential. This doesn't have to be difficult.' Someone is paying attention."
+    },
+    {
+        "id": "evt_nephilim_spotted",
+        "name": "Nephilim in the Yard",
+        "speaker": "kenji",
+        "require": "",
+        "seen": false,
+        "desc": "They weren't just salvaging. The scan patterns, the sectors they focused on — someone hired them to look for something specific. Something Grandpa left behind. Something they already know exists."
     }
 ]

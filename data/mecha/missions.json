@@ -175,5 +175,96 @@
             "glory": 2,
             "creds": 15
         }
+    },
+    {
+        "id": "msn_fathers_debt_01",
+        "name": "Father's Debt — Notice",
+        "desc": "An Ironjaw enforcer left a calling card at the workshop. Kenji's father owes more than scrap.",
+        "flavor": "Some debts don't stay buried.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "story",
+        "difficulty": 4,
+        "require": "g.glory>=10",
+        "cost": {
+            "energy": 20
+        },
+        "enemies": ["rival_grunt", "ironjaw_enforcer"],
+        "turnLimit": 30,
+        "onComplete": { "event": "evt_debt_notice" },
+        "rewards": {
+            "glory": 3,
+            "creds": 60,
+            "scrap": 50,
+            "parts": 3
+        },
+        "firstClearBonus": {
+            "glory": 5,
+            "creds": 20
+        },
+        "failRewards": {
+            "glory": 1,
+            "creds": 15
+        }
+    },
+    {
+        "id": "msn_steel_covenant_intro",
+        "name": "Steel Covenant Envoy",
+        "desc": "A Steel Covenant representative wants to talk — but first, a proof of strength.",
+        "flavor": "Every faction tests you. This one at least tells you up front.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "story",
+        "difficulty": 5,
+        "require": "g.glory>=15",
+        "cost": {
+            "energy": 25
+        },
+        "enemies": ["covenant_test_unit"],
+        "turnLimit": 30,
+        "onComplete": { "event": "evt_covenant_approach" },
+        "rewards": {
+            "glory": 5,
+            "creds": 80,
+            "rep_underground": 10
+        },
+        "firstClearBonus": {
+            "glory": 5,
+            "creds": 30
+        },
+        "failRewards": {
+            "glory": 2,
+            "creds": 20
+        }
+    },
+    {
+        "id": "msn_nephilim_salvage",
+        "name": "Nephilim Salvage Team",
+        "desc": "Nephilim Corp has a team stripping your zone. They won't stop unless you make them.",
+        "flavor": "They weren't just salvaging. Someone hired them to look for something specific.",
+        "group": "combat",
+        "type": "mission",
+        "missionType": "story",
+        "difficulty": 6,
+        "require": "g.glory>=8",
+        "cost": {
+            "energy": 30
+        },
+        "enemies": ["nephilim_operator", "nephilim_operator"],
+        "turnLimit": 35,
+        "onComplete": { "event": "evt_nephilim_spotted" },
+        "rewards": {
+            "glory": 8,
+            "creds": 100,
+            "scrap": 80
+        },
+        "firstClearBonus": {
+            "glory": 8,
+            "creds": 40
+        },
+        "failRewards": {
+            "glory": 2,
+            "creds": 20
+        }
     }
 ]

@@ -203,5 +203,128 @@
                 "status": "operational"
             }
         }
+    },
+    {
+        "id": "ironjaw_enforcer",
+        "name": "Ironjaw Enforcer",
+        "desc": "A debt collector in steel. The Ironjaw gangs keep their best mechs for making examples.",
+        "attributes": {
+            "atk": 40,
+            "def": 15,
+            "enr": 40,
+            "cor": 8
+        },
+        "parts": {
+            "torso": {
+                "name": "Enforcer Chassis",
+                "integrity": 3,
+                "hp": 60,
+                "maxHp": 60,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Pneumatic Fist",
+                "integrity": 2,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Debt Stamp",
+                "integrity": 2,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Heavy Striders",
+                "integrity": 3,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            }
+        }
+    },
+    {
+        "id": "covenant_test_unit",
+        "name": "Covenant Test Unit",
+        "desc": "A Steel Covenant combat-evaluation mech. Engineered to measure, not to kill — but capable of both.",
+        "attributes": {
+            "atk": 45,
+            "def": 25,
+            "enr": 35,
+            "cor": 10
+        },
+        "parts": {
+            "torso": {
+                "name": "Covenant Core",
+                "integrity": 3,
+                "hp": 90,
+                "maxHp": 90,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Evaluation Array",
+                "integrity": 3,
+                "hp": 40,
+                "maxHp": 40,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Precision Arm",
+                "integrity": 3,
+                "hp": 40,
+                "maxHp": 40,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Balanced Striders",
+                "integrity": 3,
+                "hp": 40,
+                "maxHp": 40,
+                "status": "operational"
+            }
+        }
+    },
+    {
+        "id": "nephilim_operator",
+        "name": "Nephilim Operator",
+        "desc": "Nephilim Corp salvage unit. Light, fast, and equipped with corporate-grade scanning tech.",
+        "attributes": {
+            "atk": 50,
+            "def": 20,
+            "enr": 55,
+            "cor": 12
+        },
+        "parts": {
+            "torso": {
+                "name": "Nephilim Frame",
+                "integrity": 2,
+                "hp": 70,
+                "maxHp": 70,
+                "status": "operational"
+            },
+            "left_arm": {
+                "name": "Scan Arm",
+                "integrity": 2,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            },
+            "right_arm": {
+                "name": "Salvage Claw",
+                "integrity": 2,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            },
+            "legs": {
+                "name": "Sprint Legs",
+                "integrity": 2,
+                "hp": 30,
+                "maxHp": 30,
+                "status": "operational"
+            }
+        }
     }
 ]

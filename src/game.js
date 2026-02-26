@@ -1501,6 +1501,11 @@ const Game = {
             }
         }
 
+        // Fire post-victory narrative event if specified
+        if (result === 'victory' && missionData?.onComplete?.event) {
+            this.queueEvent(missionData.onComplete.event);
+        }
+
         // --- Check for faction rep tier transitions ---
         this._checkRepTierTransitions();
 
