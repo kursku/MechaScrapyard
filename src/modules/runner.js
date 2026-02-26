@@ -218,12 +218,13 @@ export default class Runner {
             't_recipe': 'skill_crafting'
         };
 
+        const trainSpeed = 1 + (this.state.items['skill_train_speed']?.val || 0);
         for (const [tag, skillId] of Object.entries(tagMap)) {
             if (task.tags.includes(tag)) {
                 const skill = this.state.items[skillId];
                 if (skill && !skill.locked) {
-                    // Skills grow slowly. 0.01 per second?
-                    skill.val = clamp(skill.val + 0.01 * dt, 0, skill.max);
+                    // Skills grow slowly. 0.01 per second, boosted by pilot_sim (skill_train_speed).
+                    skill.val = clamp(skill.val + 0.01 * trainSpeed * dt, 0, skill.max);
                 }
             }
         }

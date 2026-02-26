@@ -161,8 +161,8 @@ const Game = {
         // Initial unlock check
         this.techTree.recheck(Object.values(this.state.items));
 
-        // Synthetic stat items for skill mod targets — read by awardFactionRep, repairFrame, recalculateFrameStats, runner
-        for (const id of ['repair_speed', 'frame_atk_bonus', 'faction_rep_gain_pct', 'recipe_speed', 'event_reveal_speed']) {
+        // Synthetic stat items for skill/furniture mod targets
+        for (const id of ['repair_speed', 'frame_atk_bonus', 'faction_rep_gain_pct', 'recipe_speed', 'event_reveal_speed', 'skill_train_speed', 'frame_repair_rate']) {
             if (!this.state.items[id]) {
                 this.state.items[id] = { id, val: 0, type: 'stat_cache', locked: false };
             }
@@ -219,6 +219,9 @@ const Game = {
 
         // 1. Update resource rates
         this._doResources(dt);
+
+        // 1b. Passive frame repair (repair_bay furniture)
+        this._doPassiveRepair(dt);
 
         // 2. Update runner (active task + recipe)
         const result = this.runner.update(dt);
@@ -399,17 +402,33 @@ const Game = {
                 }
             } else {
                 // Synthetic stat_cache item (repair_speed, frame_atk_bonus, etc.)
+                // Total = permanent furniture _base + skill contribution
                 const stat = this.state.items[target];
                 if (stat && stat.type === 'stat_cache') {
-                    if (stat.val !== newVal) {
+                    const totalVal = (stat._base || 0) + newVal;
+                    if (stat.val !== totalVal) {
                         if (target === 'frame_atk_bonus') atkChanged = true;
-                        stat.val = newVal;
+                        stat.val = totalVal;
                     }
                 }
             }
         }
 
         if (atkChanged) this.state.recalculateFrameStats();
+    },
+
+    /**
+     * Passive frame repair tick driven by frame_repair_rate (set by repair_bay furniture).
+     * Slowly restores HP on operational (non-destroyed) parts that are below max.
+     */
+    _doPassiveRepair(dt) {
+        const rate = this.state.items['frame_repair_rate']?.val || 0;
+        if (!rate || !this.state.frame?.parts) return;
+        for (const p of Object.values(this.state.frame.parts)) {
+            if (p.status === 'operational' && p.hp < p.maxHp) {
+                p.hp = Math.min(p.maxHp, p.hp + p.maxHp * rate * dt);
+            }
+        }
     },
 
     /**

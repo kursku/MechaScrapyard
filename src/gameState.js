@@ -192,15 +192,33 @@ export default class GameState {
 
     /**
      * Apply a mod object to the state.
-     * Format: { "resource.property": additiveValue }
+     * Formats:
+     *   "resource.property": additiveValue  — e.g. "scrap.max": 30
+     *   "statId": additiveValue             — e.g. "space": 2, "recipe_speed": 0.15
      */
     applyMod(mod) {
         if (!mod) return;
         for (const [path, val] of Object.entries(mod)) {
-            const [id, prop] = path.split('.');
-            const item = this.items[resolveItemId(id)];
-            if (item && prop && typeof val === 'number') {
-                item[prop] = (item[prop] || 0) + val;
+            if (typeof val !== 'number') continue;
+            const dotIdx = path.indexOf('.');
+            if (dotIdx !== -1) {
+                const id = path.slice(0, dotIdx);
+                const prop = path.slice(dotIdx + 1);
+                const item = this.items[resolveItemId(id)];
+                if (item && prop) item[prop] = (item[prop] || 0) + val;
+            } else {
+                // Simple key — for stat_cache items, accumulate into _base so that
+                // _applySkillMods can merge skill contributions on top each tick.
+                // For regular resource items (e.g. "space"), add directly to val.
+                const item = this.items[path];
+                if (item) {
+                    if (item.type === 'stat_cache') {
+                        item._base = (item._base || 0) + val;
+                        item.val = item._base; // will be updated by _applySkillMods next tick
+                    } else {
+                        item.val = (item.val || 0) + val;
+                    }
+                }
             }
         }
     }

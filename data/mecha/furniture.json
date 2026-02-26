@@ -26,11 +26,12 @@
     {
         "id": "workbench",
         "name": "Reinforced Workbench",
-        "desc": "A sturdy bench for assembling and repairing components.",
+        "desc": "A sturdy bench for assembling and repairing components. Speeds up all crafting.",
         "require": "g.workshop_lv2>0",
         "max": 1,
         "cost": { "scrap": 50, "creds": 30 },
         "mod": {
+            "recipe_speed": 0.15,
             "space": 2
         },
         "flavor": "Built to survive a mecha falling on it. Probably."
@@ -86,5 +87,55 @@
             "space": 1
         },
         "flavor": "You've slept on worse."
+    },
+    {
+        "id": "research_desk",
+        "name": "Research Terminal",
+        "desc": "A data terminal for studying schematics and netrunning. Unlocks advanced research paths.",
+        "require": "g.workshop_lv2>0&&g.refinery>0",
+        "max": 1,
+        "cost": { "scrap": 60, "creds": 80, "nano_infra": 5 },
+        "mod": {
+            "space": 2
+        },
+        "flavor": "The answers are out there. This is how you find them."
+    },
+    {
+        "id": "cybernetic_bench",
+        "name": "Cybernetic Workbench",
+        "desc": "A specialized workstation for neural interface work and augmentation installation.",
+        "require": "g.research_desk>0&&g.skill_hacking>=2",
+        "max": 1,
+        "cost": { "scrap": 80, "nano_infra": 10, "creds": 150 },
+        "mod": {
+            "space": 3
+        },
+        "flavor": "Where flesh meets machine. Handle with care."
+    },
+    {
+        "id": "pilot_sim",
+        "name": "Combat Simulator",
+        "desc": "A training rig that lets you practice maneuvers without field risk. Boosts all pilot skill training.",
+        "require": "g.garage>0&&g.research_desk>0",
+        "max": 1,
+        "cost": { "scrap": 70, "creds": 120, "nano_infra": 8 },
+        "mod": {
+            "skill_train_speed": 0.20,
+            "space": 3
+        },
+        "flavor": "Simulated pain still teaches real lessons."
+    },
+    {
+        "id": "repair_bay",
+        "name": "Automated Repair Bay",
+        "desc": "A robotic maintenance system that slowly restores frame condition between missions.",
+        "require": "g.garage>0",
+        "max": 2,
+        "cost": { "scrap": 50, "creds": 60 },
+        "mod": {
+            "frame_repair_rate": 0.01,
+            "space": 2
+        },
+        "flavor": "It works while you sleep. Barely, but it works."
     }
 ]
