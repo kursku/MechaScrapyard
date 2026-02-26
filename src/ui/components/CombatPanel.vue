@@ -56,10 +56,10 @@ export default {
             if (!parts) return false;
             return Object.values(parts).some(p => p.status === 'destroyed' || p.hp < p.maxHp);
         },
-        // Last 12 log lines, reversed for newest-on-top
+        // Full log reversed for newest-on-top; capped at 100 to avoid perf issues in long fights
         recentLog() {
             const log = this.combatRunner.combatLog || [];
-            return log.slice(-12).reverse();
+            return log.slice(-100).reverse();
         },
     },
     methods: {
@@ -281,7 +281,7 @@ export default {
                 </div>
 
                 <!-- ── SHOP ────────────────────────────────────────────── -->
-                <div class="shop-section" v-if="shopManeuvers.length > 0">
+                <div class="shop-section" v-if="shopManeuvers.length > 0 && (state.items.glory?.val || 0) > 0">
                     <div class="hud-section-title">> MANEUVER SHOP</div>
                     <div class="maneuver-grid">
                         <div v-for="m in shopManeuvers" :key="m.id" class="maneuver-mini-card shop-item">
@@ -293,6 +293,11 @@ export default {
                             <button class="btn-buy" @click="buyManeuver(m.id)">UNLOCK</button>
                         </div>
                     </div>
+                </div>
+                <div v-else-if="shopManeuvers.length > 0 && (state.items.glory?.val || 0) === 0"
+                     class="shop-locked-msg">
+                    > MANEUVER SHOP LOCKED
+                    <span class="shop-locked-hint">Complete missions to earn GLORY and unlock tactical maneuvers.</span>
                 </div>
             </div>
         </div>
@@ -406,7 +411,12 @@ export default {
                     <span class="config-indicator sm">{{ activeStance.icon }} {{ activeStance.name }}</span>
                     <span class="config-indicator sm">{{ activeTargeting.icon }} {{ activeTargeting.name }}</span>
                 </div>
-                <button class="btn-retreat" :disabled="!!combatResult" @click="retreat">
+                <button
+                    class="btn-retreat"
+                    :disabled="!!combatResult"
+                    @click="retreat"
+                    title="Retreat: mission fails. Partial salvage and reduced glory recovered. Pilot survives."
+                >
                     ⚑ RETREAT
                 </button>
             </div>
@@ -653,6 +663,21 @@ export default {
     font-family: inherit;
 }
 .btn-buy:hover { background: var(--primary); color: #000; }
+
+.shop-locked-msg {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 10px;
+    border: 1px dashed rgba(0, 255, 170, 0.15);
+    letter-spacing: 1px;
+}
+.shop-locked-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    opacity: 0.6;
+    letter-spacing: 0;
+}
 
 /* ── Battle view ────────────────────────────────────────────────────────── */
 .battle-view {

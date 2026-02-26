@@ -8,6 +8,7 @@ import { RollOver, ItemOut, default as itemPopup } from "@/ui/popups/itemPopup.v
 import CombatPanel from "./components/CombatPanel.vue";
 import ResourceBufferBadge from "./components/ResourceBufferBadge.vue";
 import DialogueModal from "./popups/DialogueModal.vue";
+import { getAllianceLabel } from "@/ui/uiHelpers";
 
 // Section Components
 import FactionsPanel from "./sections/FactionsPanel.vue";
@@ -147,7 +148,7 @@ export default {
                         progressPct = Math.max(0, Math.min(100, (current / range) * 100));
                     }
                     
-                    return { ...f, repValue, currentTier, nextTier, progressPct };
+                    return { ...f, repValue, currentTier, nextTier, progressPct, allianceLabel: getAllianceLabel(repValue) };
                 });
         },
         currentHome() {
@@ -191,6 +192,12 @@ export default {
         };
         Game.showChoiceDialogue = (speakerId, pages, choices, onChoice) => {
             if (this.$refs.dialogue) this.$refs.dialogue.showWithChoices(speakerId, pages, choices, onChoice);
+        };
+        Game.dismissDialogue = () => {
+            if (this.$refs.dialogue) {
+                this.$refs.dialogue.queue = [];
+                this.$refs.dialogue.close();
+            }
         };
     },
     beforeUnmount() {

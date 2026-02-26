@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 async function bootGame(page) {
   await page.goto('/');
   await page.waitForFunction(() => window.Game && window.Game.loaded === true);
+  // Dismiss any boot-time dialogues (system intro fires at 1200ms) so they don't block UI clicks
+  await page.waitForFunction(() => !!window.Game.dismissDialogue);
+  await page.evaluate(() => window.Game.dismissDialogue());
+  await page.locator('.dialogue-overlay').waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
 }
 
 test('factions tab smoke: alliance labels and vendor list render after dev unlock', async ({ page }) => {
@@ -14,7 +18,9 @@ test('factions tab smoke: alliance labels and vendor list render after dev unloc
   await bootGame(page);
   await page.evaluate(() => {
     window.Game.devUnlockAll();
+    window.Game.dismissDialogue(); // clear any milestone dialogues triggered by devUnlockAll
   });
+  await page.locator('.dialogue-overlay').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
 
   await page.getByRole('button', { name: /factions/i }).click();
   await expect(page.getByRole('heading', { name: /> reputation & factions/i })).toBeVisible();
