@@ -18,6 +18,7 @@ export default {
             renderTick: 0,
             selectedInventoryTab: 'frames',
             _pauseRenderTick: false,
+            _dismantleTarget: null,
         };
     },
     mounted() {
@@ -93,6 +94,10 @@ export default {
             Game.dismantlePart(part);
             this.$emit('action');
         },
+        confirmDismantle(part) {
+            this.dismantlePart(part);
+            this._dismantleTarget = null;
+        },
 
         // --- Manufacturer helpers ---
         _getMfr(mfrId) {
@@ -156,6 +161,18 @@ export default {
                     <span class="stat-label">ENR</span>
                     <span class="stat-val text-warning">{{ frame.attributes.enr || 0 }}</span>
                 </div>
+                <div class="stat-box">
+                    <span class="stat-label">COR</span>
+                    <span class="stat-val text-corruption">{{ frame.attributes.cor || 0 }}</span>
+                </div>
+            </div>
+            <div
+                class="energy-hint"
+                v-if="(state.items.energy?.val || 0) < 20"
+                title="Energy regenerates over time. Increase your cap by building base upgrades."
+            >
+                ⚡ ENR: {{ Math.floor(state.items.energy?.val || 0) }}/{{ state.items.energy?.max || 0 }}
+                <span class="hint-text">[ regenerates passively ]</span>
             </div>
 
             <!-- Hardware Config Table -->
@@ -213,9 +230,15 @@ export default {
         <div class="inventory-deck hud-card-section" style="margin-top: 15px;">
             <h3 class="hud-section-title">> RECOVERED_INVENTORY</h3>
             <div class="hud-category-tabs" style="margin-bottom: 10px;">
-                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'frames' }" @click="selectedInventoryTab = 'frames'">FRAMES</div>
-                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'parts' }" @click="selectedInventoryTab = 'parts'">PARTS</div>
-                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'weapons' }" @click="selectedInventoryTab = 'weapons'">WEAPONS</div>
+                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'frames' }" @click="selectedInventoryTab = 'frames'">
+                    FRAMES ({{ state.player.inventory.frames.length }})
+                </div>
+                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'parts' }" @click="selectedInventoryTab = 'parts'">
+                    PARTS ({{ state.player.partsInventory?.length || 0 }})
+                </div>
+                <div class="hud-tab" :class="{ active: selectedInventoryTab === 'weapons' }" @click="selectedInventoryTab = 'weapons'">
+                    WEAPONS ({{ state.player.inventory.weapons.length }})
+                </div>
             </div>
 
             <!-- FRAMES TAB -->
@@ -266,9 +289,14 @@ export default {
                         <span class="mfr-tag" v-if="getPartMfrName(part)" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrName(part) }}</span>
                         <span :class="{ worn: part.condition < 0.5 }">{{ Math.round(part.condition * 100) }}% CND</span>
                     </div>
-                    <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px;">
+                    <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px; align-items: center;">
                         <button class="hud-btn small" @click="equipPart(part.slot, part)">EQUIP</button>
-                        <button class="hud-btn small" @click="dismantlePart(part)">DISMANTLE</button>
+                        <template v-if="_dismantleTarget === part.id">
+                            <span class="dismantle-confirm-label">CONFIRM?</span>
+                            <button class="hud-btn small danger" @click="confirmDismantle(part)">YES</button>
+                            <button class="hud-btn small" @click="_dismantleTarget = null">NO</button>
+                        </template>
+                        <button v-else class="hud-btn small" @click="_dismantleTarget = part.id">DISMANTLE</button>
                     </div>
                 </div>
             </div>
@@ -298,3 +326,38 @@ export default {
         </div>
     </section>
 </template>
+
+<style scoped>
+.text-corruption { color: #c070ff; }
+
+.energy-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 6px;
+    padding: 4px 8px;
+    border: 1px dashed rgba(255, 200, 0, 0.2);
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+.energy-hint .hint-text {
+    opacity: 0.5;
+    font-size: 9px;
+}
+
+.dismantle-confirm-label {
+    font-size: 10px;
+    color: var(--error);
+    letter-spacing: 1px;
+    margin-right: 4px;
+}
+.hud-btn.small.danger {
+    border-color: var(--error);
+    color: var(--error);
+}
+.hud-btn.small.danger:hover {
+    background: var(--error);
+    color: #000;
+}
+</style>
