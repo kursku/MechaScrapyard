@@ -10,11 +10,6 @@ import '../css/mecha_terminal.css';
 if (__DIST) {
     console.log = function () { };
 } else {
-    // Combat Design §15 — Load test script in dev
-    import('../test_combat.js').then(m => {
-        window.testCombat = m.testCombat;
-    }).catch(err => console.error('DEV> Could not load test_combat.js', err));
-
     // Global access for console debugging
     window.Game = Game;
 }

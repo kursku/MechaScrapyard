@@ -335,6 +335,9 @@ export default class GameState {
 
         attributes.def += totalArmor;
 
+        // Skill combat bonus (frame_atk_bonus synthetic stat, set by _applySkillMods)
+        attributes.atk += this.items['frame_atk_bonus']?.val || 0;
+
         // Round all attributes for display
         for (const k in attributes) {
             attributes[k] = Math.round(attributes[k] * 10) / 10;

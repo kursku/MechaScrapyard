@@ -72,6 +72,9 @@ const Game = {
     /** @type {number} */
     _milestoneTimer: 0,
 
+    /** Cache of last-applied skill rate contributions — keyed by "skill:resource.property" */
+    _skillRateCache: {},
+
     /**
      * Initialize game with loaded data.
      * @param {Object} rawData - Data from DataLoader
@@ -158,6 +161,13 @@ const Game = {
         // Initial unlock check
         this.techTree.recheck(Object.values(this.state.items));
 
+        // Synthetic stat items for skill mod targets — read by awardFactionRep, repairFrame, recalculateFrameStats, runner
+        for (const id of ['repair_speed', 'frame_atk_bonus', 'faction_rep_gain_pct', 'recipe_speed', 'event_reveal_speed']) {
+            if (!this.state.items[id]) {
+                this.state.items[id] = { id, val: 0, type: 'stat_cache', locked: false };
+            }
+        }
+
         this.loaded = true;
 
         // Attach Game to window for Developer/Debugger purposes
@@ -203,6 +213,9 @@ const Game = {
      */
     tick() {
         const dt = TICK_MS / 1000;
+
+        // 0. Recompute skill-driven stat and rate mods
+        this._applySkillMods();
 
         // 1. Update resource rates
         this._doResources(dt);
@@ -336,6 +349,67 @@ const Game = {
             this.milestoneCheck();
             this._milestoneTimer = 0;
         }
+    },
+
+    /**
+     * Evaluate a skill mod string against a skill level.
+     * Format: "base//cap/offset" — e.g. "0.02//100/-8" → 0.02 * clamp(level - 8, 0, 100)
+     * Simple numeric values are treated as flat per-level bonuses.
+     */
+    _evalModStr(modStr, level) {
+        if (typeof modStr === 'number') return modStr * level;
+        if (typeof modStr !== 'string') return 0;
+        const [base, rest] = modStr.split('//');
+        const b = parseFloat(base) || 0;
+        if (!rest) return b * level;
+        const parts = rest.split('/');
+        const cap = parseFloat(parts[0]) || 100;
+        const offset = parseFloat(parts[1]) || 0;
+        return b * Math.max(0, Math.min(level + offset, cap));
+    },
+
+    /**
+     * Recompute all skill-driven mod contributions and apply them.
+     * - resource.property targets (e.g. scrap.rate): applied as delta each tick via cache
+     * - synthetic stat_cache items (repair_speed, frame_atk_bonus, etc.): set directly
+     */
+    _applySkillMods() {
+        const contributions = {};
+        for (const item of Object.values(this.state.items)) {
+            if (item.type !== 'skill' || item.locked || !item.mod) continue;
+            const level = item.val || 0;
+            for (const [target, modStr] of Object.entries(item.mod)) {
+                contributions[target] = (contributions[target] || 0) + this._evalModStr(modStr, level);
+            }
+        }
+
+        let atkChanged = false;
+        for (const [target, newVal] of Object.entries(contributions)) {
+            if (target.includes('.')) {
+                // Resource rate target (e.g. "scrap.rate")
+                const [id, prop] = target.split('.');
+                const res = this.state.items[id];
+                if (!res || !prop) continue;
+                const cacheKey = `skill:${target}`;
+                const prev = this._skillRateCache[cacheKey] || 0;
+                const delta = newVal - prev;
+                if (Math.abs(delta) > 0.00001) {
+                    res[prop] = (res[prop] || 0) + delta;
+                    this._skillRateCache[cacheKey] = newVal;
+                }
+            } else {
+                // Synthetic stat_cache item (repair_speed, frame_atk_bonus, etc.)
+                const stat = this.state.items[target];
+                if (stat && stat.type === 'stat_cache') {
+                    if (stat.val !== newVal) {
+                        if (target === 'frame_atk_bonus') atkChanged = true;
+                        stat.val = newVal;
+                    }
+                }
+            }
+        }
+
+        if (atkChanged) this.state.recalculateFrameStats();
     },
 
     /**
@@ -701,7 +775,8 @@ const Game = {
         if (repRes.locked) return false;
 
         const moralMod = this._getMoralityRepMod(faction, rawAmount);
-        const adjustedAmount = rawAmount > 0 ? Math.round(rawAmount * moralMod) : Math.round(rawAmount);
+        const socialBonus = 1 + (this.state.items['faction_rep_gain_pct']?.val || 0);
+        const adjustedAmount = rawAmount > 0 ? Math.round(rawAmount * moralMod * socialBonus) : Math.round(rawAmount);
         const min = repRes.min ?? 0;
         const max = repRes.max ?? 100;
         const before = repRes.val || 0;
@@ -1283,12 +1358,14 @@ const Game = {
             return;
         }
 
+        const repairSpeedBonus = this.state.items['repair_speed']?.val || 0;
         const frameParts = this.state.player.frame.parts;
         let repaired = 0;
         Object.values(frameParts).forEach(p => {
             if (p.status === 'destroyed') {
                 p.status = 'operational';
-                p.hp = Math.floor(p.maxHp * 0.5);
+                // repair_speed bonus increases HP restored from 50% toward 100%
+                p.hp = Math.min(p.maxHp, Math.floor(p.maxHp * (0.5 + repairSpeedBonus)));
                 p.integrity = 1;
                 repaired++;
                 Log.add(`🛠️ ${p.name} RESTORED to operational status.`, 'success');

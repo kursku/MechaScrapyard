@@ -2,7 +2,7 @@
     {
         "id": "skill_gathering",
         "name": "Resource Gathering",
-        "desc": "Efficiency in collecting and sorting raw materials.",
+        "desc": "Efficiency in collecting and sorting raw materials. Each level increases passive scrap production.",
         "school": "gathering",
         "require": "g.sorting_station>0",
         "max": 20,
@@ -11,49 +11,55 @@
     {
         "id": "skill_mecha_tech",
         "name": "Mecha Upgrades",
-        "desc": "Knowledge of mecha assembly, maintenance, and customization.",
+        "desc": "Knowledge of mecha assembly, maintenance, and customization. Each level improves repair speed.",
         "school": "mecha",
         "require": "g.garage>0",
-        "max": 20
+        "max": 20,
+        "mod": { "repair_speed": "0.05//20/0" }
     },
     {
         "id": "skill_combat",
         "name": "Combat",
-        "desc": "Piloting skill, weapon handling, and defensive maneuvers.",
+        "desc": "Piloting skill, weapon handling, and defensive maneuvers. Each level improves base ATK.",
         "school": "combat",
         "require": "g.garage>0",
-        "max": 20
+        "max": 20,
+        "mod": { "frame_atk_bonus": "0.5//20/0" }
     },
     {
         "id": "skill_hacking",
         "name": "Hacking & Cybernetics",
-        "desc": "Netrunning, system exploitation, and cyberware integration.",
+        "desc": "Netrunning, system exploitation, and cyberware integration. Each level generates passive data chip income.",
         "school": "hacking",
         "require": "g.research_desk>0",
-        "max": 20
+        "max": 20,
+        "mod": { "data_chip.rate": "0.01//20/0" }
     },
     {
         "id": "skill_investigation",
         "name": "Investigation",
-        "desc": "Analyzing clues, deduction, and uncovering hidden information.",
+        "desc": "Analyzing clues, deduction, and uncovering hidden information. Each level accelerates narrative event discovery.",
         "school": "investigation",
         "require": "g.workshop_lv2>0",
-        "max": 20
+        "max": 20,
+        "mod": { "event_reveal_speed": "0.03//20/0" }
     },
     {
         "id": "skill_crafting",
         "name": "Crafting & Research",
-        "desc": "Fabrication techniques, blueprint analysis, and tech research.",
+        "desc": "Fabrication techniques, blueprint analysis, and tech research. Each level speeds up all refinery recipes.",
         "school": "crafting",
         "require": "g.refinery>0",
-        "max": 20
+        "max": 20,
+        "mod": { "recipe_speed": "0.04//20/0" }
     },
     {
         "id": "skill_social",
         "name": "Social Influence",
-        "desc": "Diplomacy, intimidation, and commercial negotiation.",
+        "desc": "Diplomacy, intimidation, and commercial negotiation. Each level gives a bonus to all faction rep gains.",
         "school": "social",
         "require": "g.workshop_lv2>0",
-        "max": 20
+        "max": 20,
+        "mod": { "faction_rep_gain_pct": "0.02//20/0" }
     }
 ]

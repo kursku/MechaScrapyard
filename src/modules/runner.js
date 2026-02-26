@@ -162,7 +162,8 @@ export default class Runner {
         // --- Active Recipe ---
         if (this.activeRecipe) {
             const recipe = this.activeRecipe;
-            this.recipeProgress += dt;
+            const recipeSpeed = 1 + (this.state.items['recipe_speed']?.val || 0);
+            this.recipeProgress += dt * recipeSpeed;
             if (this.recipeProgress >= recipe.length) {
                 this.state.award(recipe.result);
                 Log.add(`✓ Refined: ${recipe.name.replace('Refine: ', '')}`, 'success');
