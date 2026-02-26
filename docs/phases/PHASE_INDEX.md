@@ -47,7 +47,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ---
 
 ## Phase 2 — Core Experience
-**Status:** `🔄 IN PROGRESS`
+**Status:** `✅ COMPLETE` — tagged `phase2-complete`
 **Goal:** Skills matter. Combat has depth. UI is informative. First story beats land.
 **Estimated effort:** ~1 week
 **Spec folder:** `docs/phases/phase2/`
@@ -60,7 +60,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 | 4 | `SPEC_combat_depth.md` | Combat UI | ✅ complete | `89f54e1` |
 | 5 | `SPEC_mecha_depth.md` | Mecha UI | ✅ complete | `73a626a` |
 | 6 | `SPEC_ui_fundamentals.md` | General UI | ✅ complete | `152425f` |
-| 7 | `SPEC_content_missions.md` | Content / Missions | ⬜ not started | — |
+| 7 | `SPEC_content_missions.md` | Content / Missions | ✅ complete | `c076bac` |
 
 ---
 
