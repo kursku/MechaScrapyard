@@ -59,7 +59,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 | 3 | `SPEC_home_event_wiring.md` | Narrative / Events | ✅ complete | `0e38b55` |
 | 4 | `SPEC_combat_depth.md` | Combat UI | ✅ complete | `89f54e1` |
 | 5 | `SPEC_mecha_depth.md` | Mecha UI | ✅ complete | `73a626a` |
-| 6 | `SPEC_ui_fundamentals.md` | General UI | ✅ complete | — |
+| 6 | `SPEC_ui_fundamentals.md` | General UI | ✅ complete | `152425f` |
 | 7 | `SPEC_content_missions.md` | Content / Missions | ⬜ not started | — |
 
 ---
