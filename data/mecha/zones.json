@@ -36,7 +36,7 @@
             "scavenge_residential"
         ],
         "availableMissions": [
-            "msn_rogue_drone_patrol"
+            "mission_scrap_drone"
         ],
         "npcs": [
             "grandpa"
@@ -52,7 +52,7 @@
         "icon": "🏢",
         "color": "#88f",
         "locked": true,
-        "require": "g.garage>0&&g.msn_rogue_drone_patrol>0",
+        "require": "g.garage>0&&g.mission_scrap_drone>0",
         "phase": 2,
         "discovered": false,
         "subAreas": [

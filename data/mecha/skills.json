@@ -13,7 +13,7 @@
         "name": "Mecha Upgrades",
         "desc": "Knowledge of mecha assembly, maintenance, and customization.",
         "school": "mecha",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "max": 20
     },
     {
@@ -21,7 +21,7 @@
         "name": "Combat",
         "desc": "Piloting skill, weapon handling, and defensive maneuvers.",
         "school": "combat",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "max": 20
     },
     {
@@ -29,7 +29,7 @@
         "name": "Hacking & Cybernetics",
         "desc": "Netrunning, system exploitation, and cyberware integration.",
         "school": "hacking",
-        "require": "g.mesa_pesquisa>0",
+        "require": "g.research_desk>0",
         "max": 20
     },
     {

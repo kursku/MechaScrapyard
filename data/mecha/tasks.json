@@ -247,7 +247,7 @@
         "desc": "Carefully disassemble wreckage to extract usable mecha components.",
         "flavor": "Patience. One wrong cut and it's all scrap.",
         "tips": "Produces Mecha Parts for restoring your father's mecha.",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "group": "scrapyard",
         "tags": "t_scrapyard",
         "cost": {
@@ -284,7 +284,7 @@
         "desc": "Perform maintenance and structural repairs on your mecha frame.",
         "flavor": "It's dirty work, but someone's got to keep this bucket of bolts together.",
         "tips": "Restores integrity to damaged parts. Each completion restores 1 integrity and full HP to all functional parts.",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "group": "scrapyard",
         "tags": [
             "t_scrapyard"

@@ -80,7 +80,7 @@
         "flavor": "Every bolt counts when you're building a giant.",
         "group": "base",
         "tags": "t_scrapyard",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "color": "#a0b0c0",
         "max": 30,
         "sortOrder": 15,
@@ -92,7 +92,7 @@
         "desc": "Encrypted data fragments. Used for research and hacking.",
         "flavor": "Knowledge is power \u2014 and power is expensive.",
         "group": "currency",
-        "require": "g.mesa_pesquisa>0",
+        "require": "g.research_desk>0",
         "max": 50,
         "sortOrder": 25,
         "color": "#4cf",
@@ -121,7 +121,7 @@
         "color": "#f5c542",
         "max": 500,
         "sortOrder": 200,
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "abbr": "G"
     },
     {
@@ -135,7 +135,7 @@
         "val": 10,
         "max": 20,
         "sortOrder": 220,
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "abbr": "Sp"
     },
     {

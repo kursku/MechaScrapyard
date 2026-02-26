@@ -73,7 +73,7 @@
         "rank": 1,
         "locked": true,
         "owned": 0,
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "cost": {
             "glory": 10
         },
@@ -94,7 +94,7 @@
         "rank": 1,
         "locked": true,
         "owned": 0,
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "cost": {
             "glory": 15
         },

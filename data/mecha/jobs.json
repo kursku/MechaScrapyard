@@ -5,7 +5,7 @@
         "desc": "The NTPD is understaffed and desperate. They'll take anyone who can pilot a Frame.",
         "flavor": "The badge is tarnished. But someone has to wear it.",
         "icon": "🛡️",
-        "require": "g.garage>0&&g.msn_rogue_drone_patrol>0",
+        "require": "g.garage>0&&g.mission_scrap_drone>0",
         "locked": true,
         "group": "career",
         "category": "law",

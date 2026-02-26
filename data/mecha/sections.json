@@ -27,17 +27,17 @@
     {
         "id": "sect_mecha",
         "name": "mecha",
-        "require": "g.garagem>0"
+        "require": "g.garage>0"
     },
     {
         "id": "sect_skills",
         "name": "skills",
-        "require": "g.mesa_pesquisa>0"
+        "require": "g.research_desk>0"
     },
     {
         "id": "sect_combat",
         "name": "combat",
-        "require": "g.garagem>0"
+        "require": "g.garage>0"
     },
     {
         "id": "sect_map",

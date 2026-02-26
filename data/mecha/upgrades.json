@@ -52,7 +52,7 @@
         }
     },
     {
-        "id": "garagem",
+        "id": "garage",
         "name": "Restore Garage",
         "desc": "Clear out the old locked garage. Something from the past awaits inside.",
         "flavor": "Dad's tools are still here. So is something else...",
@@ -97,7 +97,7 @@
         }
     },
     {
-        "id": "mesa_pesquisa",
+        "id": "research_desk",
         "name": "Research Desk",
         "desc": "A workbench for analyzing data chips and studying schematics.",
         "flavor": "Knowledge is the real currency.",

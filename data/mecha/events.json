@@ -2,7 +2,7 @@
     {
         "id": "evt_intro",
         "name": "Prologue",
-        "require": "energy",
+        "require": "",
         "desc": "You wake up in the scrapyard. Grandpa is tinkering with a broken generator nearby. Another day in the Scrapyard District.",
         "result": {
             "title": "Scrapyard Kid"
@@ -23,7 +23,7 @@
     {
         "id": "evt_garage_discovery",
         "name": "Father's Legacy",
-        "require": "g.garagem>0",
+        "require": "g.garage>0",
         "desc": "Behind the rusted door, covered in dust and cobwebs, stands a mecha. Small, old, battered — but unmistakably your father's first build. The cockpit still has his callsign etched into the frame.",
         "result": {
             "reputation": 1
