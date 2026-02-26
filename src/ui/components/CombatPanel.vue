@@ -61,6 +61,22 @@ export default {
             const log = this.combatRunner.combatLog || [];
             return log.slice(-100).reverse();
         },
+        anyActiveTokens() {
+            const playerTokens = this.playerFrame?.tokens?.length > 0;
+            const enemyTokens = this.currentEnemies.some(e => e.tokens?.length > 0);
+            return playerTokens || enemyTokens;
+        },
+        activeTokenTypes() {
+            const types = new Set();
+            (this.playerFrame?.tokens || []).forEach(t => types.add(t.type));
+            this.currentEnemies.forEach(e => (e.tokens || []).forEach(t => types.add(t.type)));
+            return Array.from(types);
+        },
+        playerPower() {
+            const frame = this.playerFrame;
+            if (!frame?.attributes) return 0;
+            return (frame.attributes.atk || 0) + (frame.attributes.def || 0);
+        },
     },
     methods: {
         fmt, pct,
@@ -139,6 +155,26 @@ export default {
                 backgroundColor: pctVal > 75 ? '#ff3333' : '#00afff'
             };
         },
+        renderEnemyHeatBar(enemy) {
+            const p = enemy.heat || 0;
+            return {
+                width: p + '%',
+                backgroundColor: p > 75 ? '#ff3333' : '#ff9900',
+            };
+        },
+        renderEnemyStressBar(enemy) {
+            const p = Math.min(100, ((enemy.stress || 0) / 30) * 100);
+            return {
+                width: p + '%',
+                backgroundColor: p > 75 ? '#ff3333' : '#00afff',
+            };
+        },
+        powerClass(mission) {
+            const threshold = (mission.difficulty || 1) * 8;
+            if (this.playerPower >= threshold * 1.2) return 'power-safe';
+            if (this.playerPower >= threshold) return 'power-ok';
+            return 'power-risky';
+        },
         logClass(line) {
             if (line.includes('DESTROYED')) return 'log-destroyed';
             if (line.includes('CRITICAL')) return 'log-critical';
@@ -195,6 +231,9 @@ export default {
                     </div>
                     <div class="mission-footer">
                         <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">COST: {{ m.cost?.energy || 0 }} ENR</span>
+                        <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">
+                            PWR: {{ playerPower }} vs ★×{{ m.difficulty || 1 }}
+                        </span>
                         <span class="rewards">
                             <span v-if="m.rewards?.glory">{{ m.rewards.glory }} GLORY</span>
                             <span v-if="m.rewards?.creds"> · {{ m.rewards.creds }}¢</span>
@@ -318,6 +357,20 @@ export default {
                 <span class="turn-badge">TURN {{ combatRunner.turnNumber }}</span>
             </div>
 
+            <!-- Token legend — shows active token descriptions -->
+            <div class="token-legend" v-if="anyActiveTokens">
+                <span
+                    v-for="tokenType in activeTokenTypes"
+                    :key="tokenType"
+                    class="token-legend-entry"
+                    :style="{ borderLeftColor: tokenDef(tokenType).color }"
+                >
+                    <span class="tl-icon" :style="{ color: tokenDef(tokenType).color }">{{ tokenDef(tokenType).icon }}</span>
+                    <span class="tl-name">{{ tokenDef(tokenType).name?.toUpperCase() }}</span>
+                    <span class="tl-desc">{{ tokenDef(tokenType).desc }}</span>
+                </span>
+            </div>
+
             <!-- Frame status grid -->
             <div class="battle-grid">
                 <!-- PLAYER FRAME -->
@@ -394,6 +447,18 @@ export default {
                             <div class="part-val">{{ Math.floor(part.hp) }}/{{ part.maxHp }}</div>
                         </div>
                     </div>
+                    <div class="vitals-row" v-if="enemy.heat !== undefined || enemy.stress !== undefined">
+                        <div class="vital" v-if="enemy.heat !== undefined">
+                            <label>HEAT</label>
+                            <div class="vital-bar heat"><div class="vital-fill" :style="renderEnemyHeatBar(enemy)"></div></div>
+                            <span>{{ Math.floor(enemy.heat || 0) }}%</span>
+                        </div>
+                        <div class="vital" v-if="enemy.stress !== undefined">
+                            <label>STRESS</label>
+                            <div class="vital-bar stress"><div class="vital-fill" :style="renderEnemyStressBar(enemy)"></div></div>
+                            <span>{{ Math.floor(enemy.stress || 0) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -407,9 +472,18 @@ export default {
 
             <!-- Footer -->
             <div class="battle-footer">
-                <div class="footer-config">
-                    <span class="config-indicator sm">{{ activeStance.icon }} {{ activeStance.name }}</span>
-                    <span class="config-indicator sm">{{ activeTargeting.icon }} {{ activeTargeting.name }}</span>
+                <div class="footer-stances">
+                    <span class="footer-label">STANCE:</span>
+                    <button
+                        v-for="s in stanceOptions"
+                        :key="s.id"
+                        :class="['stance-mini-btn', { active: combatRunner.stance === s.id }]"
+                        :title="s.desc"
+                        :disabled="!!combatResult"
+                        @click="setStance(s.id)"
+                    >
+                        {{ s.icon }} {{ s.name.toUpperCase() }}
+                    </button>
                 </div>
                 <button
                     class="btn-retreat"
@@ -875,4 +949,49 @@ export default {
     transition: all 0.15s;
 }
 .hud-btn:hover { background: var(--primary); color: #000; }
+
+/* Token legend */
+.token-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-dim);
+    font-size: 10px;
+}
+.token-legend-entry {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-left: 6px;
+    border-left: 2px solid;
+    line-height: 1.3;
+}
+.tl-icon { font-size: 12px; }
+.tl-name { font-weight: bold; color: var(--text); letter-spacing: 0.5px; }
+.tl-desc { color: var(--text-dim); }
+
+/* Mid-combat stance switching */
+.footer-stances { display: flex; align-items: center; gap: 5px; }
+.footer-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-right: 3px; }
+.stance-mini-btn {
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 10px;
+    padding: 3px 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.stance-mini-btn:hover { border-color: var(--primary); color: var(--primary); }
+.stance-mini-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0,255,170,0.08); }
+.stance-mini-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Power indicator */
+.power-indicator { font-size: 10px; font-weight: bold; letter-spacing: 0.5px; }
+.power-safe  { color: var(--primary); }
+.power-ok    { color: #f5c542; }
+.power-risky { color: var(--error); }
 </style>
