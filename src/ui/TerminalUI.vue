@@ -93,8 +93,8 @@ export default {
             const hasMissions = Object.values(this.state.items).some(i => i.type === 'mission' && !i.locked);
             if (hasMissions) groups.add('combat');
 
-            const list = Array.from(groups);
-            list.unshift('pilot'); 
+            const list = Array.from(groups).filter(g => g !== 'pilot');
+            list.unshift('pilot');
             if (this.frame && this.chassis) list.splice(1, 0, 'mecha');
             
             const hasFactions = this.factions && this.factions.length > 0;
@@ -196,6 +196,8 @@ export default {
         Game.dismissDialogue = () => {
             if (this.$refs.dialogue) {
                 this.$refs.dialogue.queue = [];
+                this.$refs.dialogue.onComplete = null;
+                this.$refs.dialogue.onChoice = null;
                 this.$refs.dialogue.close();
             }
         };
@@ -349,8 +351,6 @@ export default {
 </template>
 
 <style scoped>
-@import "@/../css/mecha_terminal.css";
-
 /* -- HUD GRID SYSTEM ------------------------ */
 .hud-grid {
     display: grid;

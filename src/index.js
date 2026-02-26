@@ -5,6 +5,7 @@ import Persist from 'modules/persist';
 
 import Main from 'ui/main.vue';
 import globalMixin from '@/globalMixin';
+import '../css/mecha_terminal.css';
 
 if (__DIST) {
     console.log = function () { };

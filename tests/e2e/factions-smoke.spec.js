@@ -3,9 +3,14 @@ import { test, expect } from '@playwright/test';
 async function bootGame(page) {
   await page.goto('/');
   await page.waitForFunction(() => window.Game && window.Game.loaded === true);
-  // Dismiss any boot-time dialogues (system intro fires at 1200ms) so they don't block UI clicks
+  // Dismiss any boot-time dialogues and suppress all future game-triggered dialogues
   await page.waitForFunction(() => !!window.Game.dismissDialogue);
-  await page.evaluate(() => window.Game.dismissDialogue());
+  await page.evaluate(() => {
+    window.Game.dismissDialogue();
+    // Replace showDialogue with no-ops so game-tick milestone events can't block UI
+    window.Game.showDialogue = () => {};
+    window.Game.showChoiceDialogue = () => {};
+  });
   await page.locator('.dialogue-overlay').waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
 }
 
