@@ -47,6 +47,20 @@ export default {
             if (!slot) return null;
             return this.state.items[slot.taskId] || null;
         },
+        androidData() {
+            this.renderTick;
+            return this.state.android;
+        },
+        androidXPPercent() {
+            const a = this.state.android;
+            if (!a || !a.xpToNext) return 0;
+            return Math.min(100, (a.xp / a.xpToNext) * 100);
+        },
+        androidEnergyPercent() {
+            const a = this.state.android;
+            if (!a || !a.maxEnergy) return 0;
+            return Math.min(100, (a.energy / a.maxEnergy) * 100);
+        },
         rawScrap() {
             this.renderTick;
             return this.state.items.scrap;
@@ -121,6 +135,25 @@ export default {
         <!-- 1. ANDROID TASK SLOT -->
         <div v-if="androidUnlocked" class="android-task-section">
             <div class="hud-section-title">> ANDROID_UNIT: [ {{ androidStatus }} ]</div>
+
+            <!-- K.I.T.A. stats row -->
+            <div class="kita-stats-row">
+                <span class="kita-level-badge">LVL {{ androidData.level }}</span>
+                <div class="kita-stat-block">
+                    <span class="kita-stat-label">XP</span>
+                    <div class="kita-bar-track">
+                        <div class="kita-bar-fill kita-xp-fill" :style="{ width: androidXPPercent + '%' }"></div>
+                    </div>
+                    <span class="kita-stat-val">{{ androidData.xp }}/{{ androidData.xpToNext }}</span>
+                </div>
+                <div class="kita-stat-block">
+                    <span class="kita-stat-label">NRG</span>
+                    <div class="kita-bar-track">
+                        <div class="kita-bar-fill kita-nrg-fill" :style="{ width: androidEnergyPercent + '%' }"></div>
+                    </div>
+                    <span class="kita-stat-val">{{ Math.floor(androidData.energy) }}/{{ androidData.maxEnergy }}</span>
+                </div>
+            </div>
 
             <div v-if="androidSlot && androidSlotTask" class="active-task-row">
                 <span class="task-label">{{ androidSlotTask.name.toUpperCase() }}</span>
@@ -260,6 +293,69 @@ export default {
 
 .android-fill {
     background: rgba(0, 255, 170, 0.7);
+}
+
+/* K.I.T.A. stats row */
+.kita-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0 2px;
+    flex-wrap: wrap;
+}
+
+.kita-level-badge {
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: rgba(0, 255, 170, 0.9);
+    background: rgba(0, 255, 170, 0.08);
+    border: 1px solid rgba(0, 255, 170, 0.3);
+    padding: 2px 6px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.kita-stat-block {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    min-width: 100px;
+}
+
+.kita-stat-label {
+    font-size: 8px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    width: 22px;
+}
+
+.kita-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kita-bar-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+}
+
+.kita-xp-fill {
+    background: rgba(0, 200, 255, 0.7);
+}
+
+.kita-nrg-fill {
+    background: rgba(255, 200, 0, 0.7);
+}
+
+.kita-stat-val {
+    font-size: 8px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    white-space: nowrap;
 }
 
 .task-perpetual-tag {

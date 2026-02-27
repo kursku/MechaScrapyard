@@ -155,5 +155,50 @@
             "name": "Rare Schematic Found!",
             "desc": "Nanofiber Loom schematics found! A new material is available for refinement."
         }
+    },
+    {
+        "id": "android_battery",
+        "name": "K.I.T.A. Power Cell",
+        "desc": "Extended battery pack. Increases K.I.T.A.'s energy capacity and recharge rate.",
+        "flavor": "More juice. More hours. More K.I.T.A.",
+        "tags": "t_android",
+        "require": "g.android_active>0",
+        "max": 3,
+        "cost": { "scrap": 20, "nano_infra": 3, "creds": 25 },
+        "mod": {},
+        "log": {
+            "name": "Power Cell Installed",
+            "desc": "K.I.T.A.'s energy capacity expanded. Recharge rate improved."
+        }
+    },
+    {
+        "id": "android_sorting_arm",
+        "name": "K.I.T.A. Sorting Arm",
+        "desc": "Precision manipulator arm. K.I.T.A. works faster and makes fewer mistakes.",
+        "flavor": "Four fingers. One purpose. Absolute dedication.",
+        "tags": "t_android",
+        "require": "g.android_active>0&&g.workshop_lv2>0",
+        "max": 1,
+        "cost": { "scrap": 45, "nano_infra": 8, "creds": 50 },
+        "mod": {},
+        "log": {
+            "name": "Sorting Arm Calibrated",
+            "desc": "K.I.T.A. efficiency improved by 15%. Task output increased."
+        }
+    },
+    {
+        "id": "android_neural_chip",
+        "name": "K.I.T.A. Neural Chip",
+        "desc": "Advanced cognition module. K.I.T.A. learns faster and adapts to complex tasks.",
+        "flavor": "She paused for 0.3 seconds before installing it. You think she was nervous.",
+        "tags": "t_android",
+        "require": "g.android_active>0&&g.android_level>=5&&g.workshop_lv2>0",
+        "max": 1,
+        "cost": { "nano_infra": 15, "data_chips": 5, "creds": 120 },
+        "mod": {},
+        "log": {
+            "name": "Neural Chip Online",
+            "desc": "K.I.T.A. efficiency improved by 20%. New task categories unlocked."
+        }
     }
 ]

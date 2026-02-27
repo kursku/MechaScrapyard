@@ -126,6 +126,40 @@
         ]
     },
     {
+        "id": "evt_android_discovery",
+        "name": "Something in the Pile",
+        "speaker": "system",
+        "require": "",
+        "seen": false,
+        "desc": "While sorting a deep pile of electronic scrap, you find something unusual — a humanoid frame, half-buried in circuit boards. It's small. Industrial design. Old but not broken. One eye flickers with residual power.",
+        "choices": [
+            {
+                "id": "repair_now",
+                "label": "Bring it to the workshop and power it up",
+                "desc": "It's in rough shape, but the workshop has what you need.",
+                "morality": 5,
+                "effect": { "electronic_scrap": -10, "scrap": -15 },
+                "log": "It boots. One eye flickers open. 'TASK... ASSIGN... TASK...'"
+            },
+            {
+                "id": "repair_careful",
+                "label": "Study it first, then repair carefully",
+                "desc": "Rushing repairs on unknown tech is how you lose fingers.",
+                "morality": 0,
+                "effect": { "electronic_scrap": -5, "energy": -15, "data_chips": -3 },
+                "log": "'Kinetic Industrial Task Automaton, designation K.I.T.A. Ready for assignment.'"
+            },
+            {
+                "id": "strip_for_parts",
+                "label": "Strip it for components",
+                "desc": "An intact android frame is worth more as parts than as a helper.",
+                "morality": -15,
+                "effect": { "electronic_scrap": 25, "nano_infra": 5 },
+                "log": "The android is dismantled. Grandpa watches from the doorway in silence."
+            }
+        ]
+    },
+    {
         "id": "evt_nephilim_spotted",
         "name": "Nephilim in the Yard",
         "speaker": "kenji",
