@@ -46,7 +46,7 @@ export default {
         </transition>
         <!-- Storage quota warning -->
         <div v-if="quotaError" class="quota-warning">
-            ⚠ SAVE FAILED — STORAGE FULL
+            !! SAVE FAILED — STORAGE FULL
         </div>
     </div>
 </template>

@@ -197,7 +197,7 @@ export default {
                 v-if="(state.items.energy?.val || 0) < 20"
                 title="Energy regenerates over time. Increase your cap by building base upgrades."
             >
-                ⚡ ENR: {{ Math.floor(state.items.energy?.val || 0) }}/{{ state.items.energy?.max || 0 }}
+                [ENR] {{ Math.floor(state.items.energy?.val || 0) }}/{{ state.items.energy?.max || 0 }}
                 <span class="hint-text">[ regenerates passively ]</span>
             </div>
 
