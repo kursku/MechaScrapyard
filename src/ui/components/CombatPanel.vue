@@ -31,10 +31,25 @@ export default {
             return Object.values(this.state.items).filter(i => i.type === 'maneuver');
         },
         ownedManeuvers() {
-            return this.allManeuvers.filter(i => i.owned > 0);
+            const pos = this.combatRunner.position || 'fighter';
+            return this.allManeuvers.filter(i =>
+                i.owned > 0 && (!i.position || i.position === pos || i.position === 'any')
+            );
         },
         shopManeuvers() {
             return this.allManeuvers.filter(i => i.owned === 0 && !i.locked);
+        },
+        positionOptions() {
+            return [
+                { id: 'fighter', icon: '⚔', label: 'FIGHTER', desc: 'High damage, counter-strike' },
+                { id: 'scout',   icon: '👁', label: 'SCOUT',   desc: 'Speed, evasion, intel' },
+                { id: 'gunner',  icon: '🎯', label: 'GUNNER',  desc: 'Accuracy, precision fire' },
+            ];
+        },
+        activePosition() {
+            const pos = this.combatRunner.position || 'fighter';
+            const icons = { fighter: '⚔', scout: '👁', gunner: '🎯' };
+            return `${icons[pos] || '◈'} ${pos.toUpperCase()}`;
         },
         equippedIds() {
             return this.combatRunner.equippedManeuvers || [];
@@ -113,6 +128,9 @@ export default {
         setTargeting(id) {
             Game.combatRunner.setTargeting(id);
         },
+        setPosition(id) {
+            Game.setPosition(id);
+        },
         repairFrame() {
             Game.repairFrame();
         },
@@ -184,6 +202,7 @@ export default {
             if (line.includes('SLOW') || line.includes('🐢')) return 'log-slow';
             if (line.includes('TARGET_LOCK') || line.includes('🎯')) return 'log-lock';
             if (line.includes('SUPPRESS') || line.includes('🛡️')) return 'log-suppress';
+            if (line.startsWith('◈') || line.startsWith('↩')) return 'log-maneuver';
             if (line.includes('YOU →') || line.includes('YOU hit')) return 'log-player';
             if (line.includes('→') && line.includes('YOU')) return 'log-enemy';
             if (line.includes('Combat Ended')) return 'log-result';
@@ -287,6 +306,22 @@ export default {
                             <span class="config-desc">{{ t.desc }}</span>
                         </button>
                     </div>
+
+                    <!-- Position selector -->
+                    <div class="config-label" style="margin-top: 10px;">POSITION</div>
+                    <div class="config-options">
+                        <button
+                            v-for="pos in positionOptions"
+                            :key="pos.id"
+                            :class="['config-btn', { active: combatRunner.position === pos.id }]"
+                            :title="pos.desc"
+                            @click="setPosition(pos.id)"
+                        >
+                            <span class="config-icon">{{ pos.icon }}</span>
+                            <span class="config-name">{{ pos.label }}</span>
+                            <span class="config-desc">{{ pos.desc }}</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- ── LOADOUT ──────────────────────────────────────────── -->
@@ -352,6 +387,10 @@ export default {
                 <span class="config-sep">|</span>
                 <span class="config-indicator">
                     {{ activeTargeting.icon }} {{ activeTargeting.name.toUpperCase() }}
+                </span>
+                <span class="config-sep">|</span>
+                <span class="config-indicator position-badge">
+                    {{ activePosition }}
                 </span>
                 <span class="config-sep">|</span>
                 <span class="turn-badge">TURN {{ combatRunner.turnNumber }}</span>
@@ -777,6 +816,7 @@ export default {
     letter-spacing: 1px;
 }
 .config-indicator.sm { font-size: 11px; opacity: 0.7; }
+.position-badge { color: #ffd; letter-spacing: 1.5px; }
 .config-sep { color: var(--border-dim); }
 .turn-badge {
     margin-left: auto;
@@ -882,6 +922,7 @@ export default {
 .log-slow    { color: #88f; }
 .log-lock    { color: #f0f; }
 .log-suppress { color: #aaa; }
+.log-maneuver { color: #bf9; font-style: italic; }
 
 /* Footer */
 .battle-footer {

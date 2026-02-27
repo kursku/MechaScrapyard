@@ -216,12 +216,15 @@ export default class CombatRunner {
 
         // Maneuver loadout
         this.equippedManeuvers = []; // IDs
+        this.position = 'fighter';   // 'fighter' | 'scout' | 'gunner'
 
         // Configuration (locked during combat)
         this.stance = 'balanced';
         this.targeting = 'auto';
 
         this.activeModifiers = { damageMult: 1, accuracyBonus: 0 };
+        // Per-turn defense modifier (set by instincts like Berserker, reset each turn)
+        this.turnDefMod = 0;
     }
 
     // ─── Token Management (§8) ────────────────────────────────────────────────
@@ -362,6 +365,12 @@ export default class CombatRunner {
         this.targeting = policyId;
     }
 
+    setPosition(pos) {
+        if (this.active) return; // Locked during combat
+        if (!['fighter', 'scout', 'gunner'].includes(pos)) return;
+        this.position = pos;
+    }
+
     // ─── Enemy cloning ────────────────────────────────────────────────────────
 
     _cloneEnemy(template) {
@@ -420,12 +429,18 @@ export default class CombatRunner {
         const atkSign = stanceDef.atkMod >= 0 ? '+' : '';
         const defSign = stanceDef.defMod >= 0 ? '+' : '';
 
+        const posIcons = { fighter: '⚔', scout: '👁', gunner: '🎯' };
+        const posIcon = posIcons[this.position] || '◈';
+        const equippedNames = this.equippedManeuvers
+            .map(id => this.state.items[id]?.name).filter(Boolean).join(', ') || 'none';
+
         this.combatLog.push(`Deploying frame... Mission: ${mission.name}`);
         this.combatLog.push(`▶ Stance: ${stanceDef.name} (ATK ${atkSign}${Math.round(stanceDef.atkMod * 100)}% / DEF ${defSign}${Math.round(stanceDef.defMod * 100)}%)`);
         this.combatLog.push(`◎ Targeting: ${targetDef.name}`);
+        this.combatLog.push(`${posIcon} Position: ${this.position.toUpperCase()} | Maneuvers: ${equippedNames}`);
 
         Log.add(`[COMBAT] Deploying frame... Mission: ${mission.name}`, 'combat');
-        Log.add(`[COMBAT] ${stanceDef.icon} ${stanceDef.name} | ${targetDef.icon} ${targetDef.name}`, 'combat');
+        Log.add(`[COMBAT] ${stanceDef.icon} ${stanceDef.name} | ${targetDef.icon} ${targetDef.name} | ${posIcon} ${this.position.toUpperCase()}`, 'combat');
 
         Events.emit('COMBAT_START', { mission: mission.id });
     }
@@ -457,12 +472,19 @@ export default class CombatRunner {
 
         const playerFrame = this.state.player.frame;
 
+        // Reset per-turn maneuver modifiers (Berserker defMod etc.)
+        this.turnDefMod = 0;
+
         // Instincts Phase
         this.processManeuvers('turn_start', { unit: playerFrame });
 
-        // Action Phase
+        // Action Phase — action_replace maneuvers take priority over standard attack
         if (this.canAct(playerFrame, 'Your Frame')) {
-            this.resolvePlayerAttack();
+            const actionTarget = this.enemies.find(e => !CombatUtils.isFrameDestroyed(e));
+            const maneuverUsed = this.processManeuvers('action', { unit: playerFrame, target: actionTarget });
+            if (!maneuverUsed) {
+                this.resolvePlayerAttack();
+            }
         }
 
         // Each enemy attacks
@@ -672,6 +694,8 @@ export default class CombatRunner {
             modifiers.accuracyBonus = (modifiers.accuracyBonus || 0) + Math.round(stanceDef.atkMod * 100);
         } else {
             modifiers.accuracyBonus = (modifiers.accuracyBonus || 0) - Math.round(stanceDef.defMod * 100);
+            // Maneuver defMod: negative = player more vulnerable (enemy gets higher accuracy)
+            modifiers.accuracyBonus -= Math.round((this.turnDefMod || 0) * 100);
         }
 
         modifiers.accuracyBonus += wpnAcc;
@@ -745,6 +769,21 @@ export default class CombatRunner {
 
             const suppressStacks = this.getTokenStacks(attacker, 'SUPPRESS');
             if (suppressStacks > 0) damage = Math.max(1, damage - suppressStacks);
+
+            // ── Pre-hit Dodge Check (evasive reactions fire BEFORE damage lands) ─
+            if (!isPlayer) {
+                for (const id of this.equippedManeuvers) {
+                    const m = this.state.items[id];
+                    if (!m || !m.owned || m.trigger !== 'on_hit_received') continue;
+                    if (!m.effect?.dodgeChance) continue;
+                    if (m.position && m.position !== this.position && m.position !== 'any') continue;
+                    if (Math.random() < m.effect.dodgeChance) {
+                        this.combatLog.push(`↩ ${m.name}: ${m.trigger_desc || 'Attack evaded!'}`);
+                        this.activeModifiers = { damageMult: 1, accuracyBonus: 0 };
+                        return false; // treated as miss — damage never lands
+                    }
+                }
+            }
 
             const dmgResult = CombatUtils.applyDamage(defender, partId, damage);
 
@@ -1019,6 +1058,7 @@ export default class CombatRunner {
             result: this.result,
             stance: this.stance,
             targeting: this.targeting,
+            position: this.position,
             equippedManeuvers: this.equippedManeuvers,
             playerTokens: this.state.player.frame.tokens || [],
         };
@@ -1035,6 +1075,7 @@ export default class CombatRunner {
         this.result = data.result || null;
         this.stance = data.stance || 'balanced';
         this.targeting = data.targeting || 'auto';
+        this.position = data.position || 'fighter';
         this.equippedManeuvers = data.equippedManeuvers || [];
 
         if (data.playerTokens) {
@@ -1057,10 +1098,14 @@ export default class CombatRunner {
             const mnvr = this.state.items[id];
             if (!mnvr || mnvr.owned === 0) continue;
 
+            // Position gate: maneuver must match current position or be universal
+            if (mnvr.position && mnvr.position !== this.position && mnvr.position !== 'any') continue;
+
             if (phase === 'turn_start' && mnvr.trigger === 'turn_start') {
                 this._executeInstinct(mnvr, context);
             }
-            if (phase === 'on_hit_received' && mnvr.trigger === 'on_hit_received') {
+            // on_hit_received: only counter-attack reactions (dodge is checked pre-damage)
+            if (phase === 'on_hit_received' && mnvr.trigger === 'on_hit_received' && !mnvr.effect?.dodgeChance) {
                 this._executeReaction(mnvr, context);
             }
             if (phase === 'action' && mnvr.trigger === 'action_replace') {
@@ -1073,21 +1118,65 @@ export default class CombatRunner {
     _executeInstinct(mnvr, { unit }) {
         if (mnvr.triggerCondition === 'stress>60' && (unit.stress || 0) < 60) return;
 
-        this.combatLog.push(`⚡ Instinct: ${mnvr.name}`);
+        const desc = mnvr.trigger_desc ? ` — ${mnvr.trigger_desc}` : '';
+        this.combatLog.push(`◈ ${mnvr.name}${desc}`);
+
+        // ATK boost: adds to damageMult (applied to player damage this turn)
         if (mnvr.effect?.atkMod) this.activeModifiers.damageMult += mnvr.effect.atkMod;
+        // Accuracy boost (e.g. Lock & Load)
         if (mnvr.effect?.accuracyMod) this.activeModifiers.accuracyBonus += mnvr.effect.accuracyMod * 100;
+        // DEF penalty: stored separately, applied to enemy accuracy in _executeAttack
+        if (mnvr.effect?.defMod) this.turnDefMod = (this.turnDefMod || 0) + mnvr.effect.defMod;
     }
 
     _executeReaction(mnvr, { unit, attacker }) {
-        this.combatLog.push(`↩ Reaction: ${mnvr.name}`);
+        const desc = mnvr.trigger_desc ? ` — ${mnvr.trigger_desc}` : '';
+        this.combatLog.push(`↩ ${mnvr.name}${desc}`);
 
         if (mnvr.effect?.counterAttack && attacker) {
-            const dmg = 10 * (mnvr.effect.damageMod || 1);
-            CombatUtils.applyDamage(attacker, 'torso', dmg, true);
+            // Scale counter damage off player's current weapon
+            const weapon = this.getActiveWeapon(unit);
+            const baseDmg = weapon ? (weapon.baseDamage || 5) : 5;
+            const dmg = Math.max(1, Math.round(baseDmg * (mnvr.effect.damageMod || 0.5)));
+            CombatUtils.applyDamage(attacker, 'torso', dmg);
+            this.combatLog.push(`  ↩ Counter-strike: ${dmg} dmg → ${attacker.name}`);
+
+            // Heat cost from counter-attack
+            if (mnvr.effect?.heatGen) {
+                const chassis = this.state.items[unit.chassisId];
+                const heatCap = chassis ? chassis.heatCap : 100;
+                unit.heat = Math.min(heatCap, (unit.heat || 0) + mnvr.effect.heatGen);
+            }
         }
     }
 
     _executeManeuver(mnvr, { unit, target }) {
-        this.combatLog.push(`▶ Maneuver: ${mnvr.name}`);
+        const desc = mnvr.trigger_desc ? ` — ${mnvr.trigger_desc}` : '';
+        this.combatLog.push(`▶ ${mnvr.name}${desc}`);
+
+        if (!target) return true; // consumed the action even if no target
+
+        if (mnvr.effect?.replaceAttack) {
+            const weapon = this.getActiveWeapon(unit);
+            const baseDmg = weapon ? (weapon.baseDamage || 5) : 5;
+            // damageMod of 1.0 → 2× weapon damage
+            const damage = Math.round(baseDmg * (1 + (mnvr.effect.damageMod || 1)));
+
+            const partId = selectTargetPartWeighted(target, this.targeting);
+            const partName = PART_NAMES[partId] || partId.toUpperCase();
+            const dmgResult = CombatUtils.applyDamage(target, partId, damage);
+
+            const destroyTag = dmgResult.destroyed ? ` ⚠ ${partName} DESTROYED!` : '';
+            this.combatLog.push(`▶ STRIKE → ${partName} on ${target.name} [${damage} dmg]${destroyTag}`);
+
+            // Heat cost
+            if (mnvr.effect?.heatGen) {
+                const chassis = this.state.items[unit.chassisId];
+                const heatCap = chassis ? chassis.heatCap : 100;
+                unit.heat = Math.min(heatCap, (unit.heat || 0) + mnvr.effect.heatGen);
+            }
+        }
+
+        return true; // action was consumed by maneuver
     }
 }

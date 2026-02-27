@@ -31,6 +31,7 @@ const _combatState = reactive({
     equippedManeuvers: [],
     stance: 'balanced',
     targeting: 'auto',
+    position: 'fighter',
 });
 
 /**
@@ -1740,6 +1741,7 @@ const Game = {
         _combatState.mission = cr.mission;
         _combatState.stance = cr.stance;
         _combatState.targeting = cr.targeting;
+        _combatState.position = cr.position;
 
         // Force array reference changes so Vue reactivity triggers updates
         _combatState.equippedManeuvers = [...(cr.equippedManeuvers || [])];
@@ -1767,6 +1769,14 @@ const Game = {
                 }
             });
         }
+    },
+
+    equipManeuvers(list) {
+        this.combatRunner.setManeuvers(list);
+    },
+
+    setPosition(pos) {
+        this.combatRunner.setPosition(pos);
     },
 
     buyManeuver(id) {
