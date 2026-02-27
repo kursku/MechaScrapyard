@@ -80,18 +80,50 @@
     {
         "id": "evt_debt_notice",
         "name": "Father's Debt",
-        "speaker": "system",
+        "speaker": "ironjaw_enforcer",
         "require": "",
         "seen": false,
-        "desc": "The enforcer drops a dataslate on the workbench without a word. The number on it is not small. 'Your old man borrowed from us. You're his blood. Figure it out.' He walks. The door doesn't close all the way."
+        "desc": "The enforcer drops a dataslate on the workbench without a word. The number is not small. 'Your old man borrowed from us. You're his blood. You figure it out.' He walks out. The door doesn't close all the way.",
+        "choices": [
+            {
+                "id": "pay_it_down",
+                "label": "Pay what you can",
+                "desc": "Buy time. Compliance now, options later.",
+                "effect": { "creds": -50 },
+                "log": "You hand over what you have. The clock keeps ticking."
+            },
+            {
+                "id": "refuse_the_debt",
+                "label": "Refuse — it's not your debt",
+                "desc": "Stand your ground. Escalation is likely.",
+                "effect": { "glory": 2 },
+                "log": "You close the door they left open. The Ironjaw won't forget."
+            }
+        ]
     },
     {
         "id": "evt_covenant_approach",
         "name": "The Covenant Extends a Hand",
-        "speaker": "system",
+        "speaker": "covenant_liaison",
         "require": "",
         "seen": false,
-        "desc": "A message arrives through an Underground contact. No name, just a frequency and a time. 'We've watched your work. The Steel Covenant has resources. You have potential. This doesn't have to be difficult.' Someone is paying attention."
+        "desc": "A message arrives through an Underground contact. No sender. Just a frequency and a time window. 'We've observed your operational profile. The Steel Covenant has infrastructure. You have potential. This arrangement benefits both parties.' Someone with resources is paying attention.",
+        "choices": [
+            {
+                "id": "hear_them_out",
+                "label": "Hear them out",
+                "desc": "Information is leverage. Learn what they want.",
+                "effect": { "creds": 20 },
+                "log": "You acknowledge the contact. The Covenant notes your response."
+            },
+            {
+                "id": "refuse_contact",
+                "label": "Refuse contact",
+                "desc": "Keep distance. Some hands you don't shake.",
+                "effect": { "glory": 1 },
+                "log": "You drop the frequency. Autonomy maintained — for now."
+            }
+        ]
     },
     {
         "id": "evt_nephilim_spotted",
@@ -99,6 +131,6 @@
         "speaker": "kenji",
         "require": "",
         "seen": false,
-        "desc": "They weren't just salvaging. The scan patterns, the sectors they focused on — someone hired them to look for something specific. Something Grandpa left behind. Something they already know exists."
+        "desc": "They weren't just salvaging. I've seen scan patterns like that before — systematic, targeted. Someone hired them to look for something specific. Something in this yard. Something they already know exists. We need to figure out what before they come back with more."
     }
 ]

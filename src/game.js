@@ -1792,8 +1792,12 @@ const Game = {
         if (event.desc) {
             Log.add(`◆ ${event.name}: ${event.desc}`, 'narrative');
         }
-        const speaker = event.speaker || 'system';
-        this.showDialogue(speaker, [event.desc]);
+        if (event.choices && event.choices.length) {
+            this.presentChoice(event);
+        } else {
+            const speaker = event.speaker || 'system';
+            this.showDialogue(speaker, [event.desc]);
+        }
     },
 
     /**
