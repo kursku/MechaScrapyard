@@ -127,6 +127,16 @@ export const TOKEN_DEFS = {
     },
 };
 
+// Default turn duration for each token type (turns remaining when applied/refreshed)
+const TOKEN_DURATION = {
+    BREACH: 3,
+    BURN: 4,
+    ERROR: 3,
+    SLOW: 3,
+    TARGET_LOCK: 1,
+    SUPPRESS: 2,
+};
+
 // ─── Weapon Constants (§3.3) ──────────────────────────────────────────────────
 export const DICE_VALUES = {
     d4: { sides: 4, supplyPerUse: 0.33 },
@@ -220,10 +230,13 @@ export default class CombatRunner {
 
         if (!frame.tokens) frame.tokens = [];
 
+        const duration = TOKEN_DURATION[tokenType];
         const existing = frame.tokens.find(t => t.type === tokenType);
         if (existing) {
             const before = existing.stacks;
             existing.stacks = Math.min(existing.stacks + stacks, def.maxStacks);
+            // Refresh duration on reapply
+            if (duration !== undefined) existing.turns = duration;
             return existing.stacks - before;
         }
 
@@ -231,7 +244,9 @@ export default class CombatRunner {
         if (frame.tokens.length >= 6) return 0;
 
         const applied = Math.min(stacks, def.maxStacks);
-        frame.tokens.push({ type: tokenType, stacks: applied });
+        const token = { type: tokenType, stacks: applied };
+        if (duration !== undefined) token.turns = duration;
+        frame.tokens.push(token);
         return applied;
     }
 
@@ -314,8 +329,21 @@ export default class CombatRunner {
             }
         }
 
-        // Clean up 0 stacks
-        frame.tokens = frame.tokens.filter(t => t.stacks > 0);
+        // Decay turns for all tokens (deterministic per-turn lifetime)
+        for (const token of frame.tokens) {
+            if (token.turns !== undefined) {
+                token.turns--;
+            }
+        }
+
+        // Log expired tokens before removing
+        const expired = frame.tokens.filter(t => t.turns !== undefined && t.turns <= 0);
+        if (expired.length > 0) {
+            this.combatLog.push(`  ⏱ ${frameName}: ${expired.map(t => TOKEN_DEFS[t.type]?.name || t.type).join(', ')} expired.`);
+        }
+
+        // Clean up 0 stacks or expired turns
+        frame.tokens = frame.tokens.filter(t => t.stacks > 0 && (t.turns === undefined || t.turns > 0));
     }
 
     // ─── Stance & Targeting setters (locked during combat) ───────────────────
@@ -686,11 +714,12 @@ export default class CombatRunner {
             if (weapon && weapon.dice) damage += this.rollWeaponDice(weapon.dice);
             if (result.critical) damage *= 2;
 
-            // ── Token Effects: TARGET_LOCK (Bonus Dice) ──────────────────────
+            // ── Token Effects: TARGET_LOCK (Bonus Dice — consumed on use) ────
             let bonusDiceCount = 1;
             if (this.getTokenStacks(defender, 'TARGET_LOCK') > 0) {
                 bonusDiceCount += 1;
                 this.combatLog.push(`${TOKEN_DEFS.TARGET_LOCK.icon} Target Locked! +1 Bonus Die`);
+                this.removeToken(defender, 'TARGET_LOCK', 1); // consume on use
             }
 
             const bonusDice = rollBonusPool(bonusDiceCount);
@@ -735,6 +764,18 @@ export default class CombatRunner {
                         if (this.applyToken(defender, type, stacks || 1) > 0) {
                             const def = TOKEN_DEFS[type];
                             this.combatLog.push(`${def.icon} ${wpnName} applied ${def.name}!`);
+                        }
+                    }
+                }
+            }
+
+            // Enemy faction token-on-hit (combat identity pass)
+            if (!isPlayer && attacker.tokenOnHit) {
+                for (const { type, chance, stacks } of attacker.tokenOnHit) {
+                    if (Math.random() < chance) {
+                        if (this.applyToken(defender, type, stacks || 1) > 0) {
+                            const tokenDef = TOKEN_DEFS[type];
+                            this.combatLog.push(`${tokenDef.icon} ${attacker.name} applied ${tokenDef.name}!`);
                         }
                     }
                 }

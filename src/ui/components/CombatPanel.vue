@@ -379,11 +379,11 @@ export default {
                     
                     <div class="token-bar" v-if="playerFrame.tokens && playerFrame.tokens.length > 0">
                         <span class="token-label">TOKENS:</span>
-                        <span v-for="t in playerFrame.tokens" :key="t.type" 
-                              class="token-badge" 
+                        <span v-for="t in playerFrame.tokens" :key="t.type"
+                              class="token-badge"
                               :style="{ color: tokenDef(t.type).color }"
-                              :title="tokenDef(t.type).desc">
-                            {{ tokenDef(t.type).icon }}×{{ t.stacks }}
+                              :title="`${tokenDef(t.type).desc}${t.turns ? ` (${t.turns} turns)` : ''}`">
+                            {{ tokenDef(t.type).icon }}×{{ t.stacks }}<small v-if="t.turns"> ({{ t.turns }}t)</small>
                         </span>
                     </div>
 
@@ -426,11 +426,11 @@ export default {
                     
                     <div class="token-bar" v-if="enemy.tokens && enemy.tokens.length > 0">
                         <span class="token-label">TOKENS:</span>
-                        <span v-for="t in enemy.tokens" :key="t.type" 
-                              class="token-badge" 
+                        <span v-for="t in enemy.tokens" :key="t.type"
+                              class="token-badge"
                               :style="{ color: tokenDef(t.type).color }"
-                              :title="tokenDef(t.type).desc">
-                            {{ tokenDef(t.type).icon }}×{{ t.stacks }}
+                              :title="`${tokenDef(t.type).desc}${t.turns ? ` (${t.turns} turns)` : ''}`">
+                            {{ tokenDef(t.type).icon }}×{{ t.stacks }}<small v-if="t.turns"> ({{ t.turns }}t)</small>
                         </span>
                     </div>
 

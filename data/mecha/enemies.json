@@ -132,6 +132,9 @@
             "enr": 45,
             "cor": 6
         },
+        "tokenOnHit": [
+            { "type": "BREACH", "chance": 0.3, "stacks": 1 }
+        ],
         "parts": {
             "torso": {
                 "name": "Salvage Frame",
@@ -214,6 +217,10 @@
             "enr": 40,
             "cor": 8
         },
+        "tokenOnHit": [
+            { "type": "BREACH", "chance": 0.45, "stacks": 1 },
+            { "type": "SUPPRESS", "chance": 0.25, "stacks": 1 }
+        ],
         "parts": {
             "torso": {
                 "name": "Enforcer Chassis",
@@ -255,6 +262,10 @@
             "enr": 35,
             "cor": 10
         },
+        "tokenOnHit": [
+            { "type": "TARGET_LOCK", "chance": 0.35, "stacks": 1 },
+            { "type": "SLOW", "chance": 0.3, "stacks": 1 }
+        ],
         "parts": {
             "torso": {
                 "name": "Covenant Core",
@@ -296,6 +307,10 @@
             "enr": 55,
             "cor": 12
         },
+        "tokenOnHit": [
+            { "type": "ERROR", "chance": 0.35, "stacks": 1 },
+            { "type": "BURN", "chance": 0.3, "stacks": 1 }
+        ],
         "parts": {
             "torso": {
                 "name": "Nephilim Frame",
