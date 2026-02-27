@@ -17,6 +17,7 @@ export default {
         return {
             renderTick: 0,
             selectedInventoryTab: 'frames',
+            filterPartSlot: null,
             _pauseRenderTick: false,
             _dismantleTarget: null,
         };
@@ -51,7 +52,30 @@ export default {
             const knownSlots = new Set(slotOrder);
             const others = (this.state.player.partsInventory || []).filter(p => !knownSlots.has(p.slot));
             if (others.length > 0) groups['other'] = { label: 'OTHER', parts: others };
+            if (this.filterPartSlot) {
+                const filtered = {};
+                if (groups[this.filterPartSlot]) filtered[this.filterPartSlot] = groups[this.filterPartSlot];
+                return filtered;
+            }
             return groups;
+        },
+        slotLayout() {
+            const defs = [
+                { id: 'torso',     label: 'TORSO',     gridArea: 'torso' },
+                { id: 'left_arm',  label: 'LEFT ARM',  gridArea: 'larm'  },
+                { id: 'right_arm', label: 'RIGHT ARM', gridArea: 'rarm'  },
+                { id: 'legs',      label: 'LEGS',      gridArea: 'legs'  },
+            ];
+            return defs.map(d => ({
+                ...d,
+                part: this.frame?.parts?.[d.id] || null,
+            }));
+        },
+        mountSlots() {
+            this.renderTick;
+            const chassis = this.state.get(this.frame?.chassisId);
+            if (!chassis?.equipSlots) return [];
+            return Object.keys(chassis.equipSlots).map(k => ({ id: k }));
         },
         installedWeaponIds() {
             const equip = this.frame?.installedEquip || {};
@@ -68,6 +92,12 @@ export default {
         itemOverPart(e, part) {
             const installed = this.getInstalledPartForSlot(part.slot);
             RollOver(e, part, { compare: installed });
+        },
+
+        // --- Slot grid ---
+        jumpToPartSlot(slotId) {
+            this.selectedInventoryTab = 'parts';
+            this.filterPartSlot = slotId;
         },
 
         // --- Equipment ---
@@ -201,53 +231,40 @@ export default {
                 <span class="hint-text">[ regenerates passively ]</span>
             </div>
 
-            <!-- Hardware Config Table -->
-            <div class="hardware-table" v-if="frame && frame.parts">
-                <div class="table-header">
-                    <div class="col-mount">MOUNT_POINT</div>
-                    <div class="col-status">DIAGNOSTICS</div>
-                    <div class="col-int">INT</div>
-                    <div class="col-equip">INSTALLED_MODULE</div>
+            <!-- Rig Slot Grid -->
+            <div class="rig-grid" v-if="frame">
+                <div v-for="slot in slotLayout" :key="slot.id"
+                     class="rig-cell" :style="{ gridArea: slot.gridArea }">
+                    <div class="rig-cell-label">{{ slot.label }}</div>
+                    <template v-if="slot.part">
+                        <div class="rig-part-name">{{ slot.part.name.toUpperCase() }}</div>
+                        <div class="rig-part-hp" :class="{ 'text-danger': slot.part.hp < slot.part.maxHp * 0.3 }">
+                            HP {{ renderBar(slot.part.hp, slot.part.maxHp, 8) }}
+                        </div>
+                        <div class="rig-part-cnd" :class="{ 'text-warning': slot.part.condition < 0.5 }">
+                            CND {{ Math.round((slot.part.condition || 0) * 100) }}%
+                        </div>
+                        <button class="hud-btn micro" @click="jumpToPartSlot(slot.id)">SWAP</button>
+                    </template>
+                    <div v-else class="rig-cell-empty">-- EMPTY --</div>
                 </div>
-                
-                <div v-for="(p, slotId) in frame.parts" :key="slotId" class="equip-row">
-                    <div class="col-mount">
-                        > {{ slotId.replace('_', ' ').toUpperCase() }}
-                        <div class="mount-part-name">{{ p.name }}</div>
-                    </div>
-                    <div class="col-status">
-                        <span class="slot-hp" :class="{ 'text-danger': p.hp < p.maxHp * 0.3 }">
-                            HP: {{ renderBar ? renderBar(p.hp, p.maxHp, 10) : p.hp + '/' + p.maxHp }}
-                        </span>
-                        <span class="slot-cnd" :class="{ 'text-warning': p.condition < 0.5 }">
-                            CND: {{ Math.round((p.condition || 0) * 100) }}%
-                        </span>
-                    </div>
-                    <div class="col-int">x{{ p.integrity || 0 }}</div>
-                    <div class="col-equip">
-                        <template v-if="getLinkedEquipSlots(slotId).length">
-                            <div class="mount-slot-list">
-                                <div v-for="equipSlotId in getLinkedEquipSlots(slotId)" :key="equipSlotId" class="mount-slot-item">
-                                    <div class="mount-slot-label">
-                                        MOUNT: {{ equipSlotId.replace('_', ' ').toUpperCase() }}
-                                    </div>
-                                    <select class="hud-select"
-                                            :value="frame.installedEquip && frame.installedEquip[equipSlotId] ? frame.installedEquip[equipSlotId] : ''"
-                                            @focus="onMountSelectFocus"
-                                            @blur="onMountSelectBlur"
-                                            @change="onMountSelectChange(equipSlotId, $event)">
-                                        <option value="">[ EMPTY_SLOT ]</option>
-                                        <template v-if="getValidWeapons">
-                                            <option v-for="w in getValidWeapons(equipSlotId)" :key="w.id" :value="w.id">
-                                                {{ w.name ? w.name.toUpperCase() : w.id }}
-                                            </option>
-                                        </template>
-                                    </select>
-                                </div>
-                            </div>
-                        </template>
-                        <span v-else class="text-dim no-mount-label">-- NO MOUNT --</span>
-                    </div>
+            </div>
+
+            <!-- Mount Points -->
+            <div class="mount-points" v-if="frame && mountSlots.length">
+                <div class="table-header"><div>MOUNT_POINTS</div></div>
+                <div v-for="ms in mountSlots" :key="ms.id" class="mount-slot-row">
+                    <div class="mount-slot-label">MOUNT: {{ ms.id.replace(/_/g, ' ').toUpperCase() }}</div>
+                    <select class="hud-select"
+                            :value="frame.installedEquip?.[ms.id] || ''"
+                            @focus="onMountSelectFocus"
+                            @blur="onMountSelectBlur"
+                            @change="onMountSelectChange(ms.id, $event)">
+                        <option value="">[ EMPTY_SLOT ]</option>
+                        <option v-for="w in getValidWeapons(ms.id)" :key="w.id" :value="w.id">
+                            {{ w.name ? w.name.toUpperCase() : w.id }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -301,6 +318,10 @@ export default {
 
             <!-- PARTS TAB -->
             <div v-else-if="selectedInventoryTab === 'parts'" class="inventory-grid">
+                <div v-if="filterPartSlot" class="slot-filter-bar">
+                    SHOWING: {{ filterPartSlot.replace(/_/g, ' ').toUpperCase() }} PARTS ONLY
+                    <button class="hud-btn micro" @click="filterPartSlot = null">SHOW ALL</button>
+                </div>
                 <div v-if="!state.player.partsInventory || state.player.partsInventory.length === 0" class="empty-state">NO PARTS IN STORAGE</div>
                 <template v-for="(group, slotKey) in partsBySlot" :key="slotKey">
                     <div v-if="group.parts.length > 0" class="slot-group-header">
@@ -422,5 +443,92 @@ export default {
 .salvage-hint.installed {
     color: var(--primary);
     opacity: 0.6;
+}
+
+/* Rig slot grid */
+.rig-grid {
+    display: grid;
+    grid-template-areas:
+        "larm torso rarm"
+        ". legs .";
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.rig-cell {
+    border: 1px solid var(--border-dim);
+    padding: 8px;
+    font-size: 11px;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rig-cell-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.rig-part-name {
+    color: var(--text-bright, #fff);
+    font-size: 11px;
+}
+
+.rig-part-hp,
+.rig-part-cnd {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: var(--font-mono, monospace);
+}
+
+.rig-cell-empty {
+    color: var(--text-dim);
+    font-size: 10px;
+    font-style: italic;
+}
+
+.hud-btn.micro {
+    font-size: 9px;
+    padding: 2px 6px;
+    margin-top: auto;
+    align-self: flex-start;
+    letter-spacing: 1px;
+}
+
+/* Mount points section */
+.mount-points {
+    margin-top: 4px;
+}
+
+.mount-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-dim);
+    font-size: 11px;
+}
+
+.mount-slot-row .mount-slot-label {
+    min-width: 140px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+/* PARTS tab slot filter bar */
+.slot-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10px;
+    color: var(--secondary, #ff0);
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border: 1px solid rgba(255, 220, 0, 0.3);
+    margin-bottom: 8px;
 }
 </style>
