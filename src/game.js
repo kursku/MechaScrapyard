@@ -1575,8 +1575,55 @@ const Game = {
 
         Log.add(`[RECOVERY] Heat normalized. Stress reduced to ${Math.floor(frame.stress)}.`, 'system');
 
+        // Degrade part condition based on HP lost this combat
+        this._degradePartCondition();
+
         // Stat growth from combat
         this._onCombatStatGrowth(result);
+    },
+
+    /**
+     * Degrade part condition after combat based on HP lost this fight.
+     * Condition is stored as 0.0–1.0 (1.0 = Pristine).
+     */
+    _degradePartCondition() {
+        const frame = this.state.player.frame;
+        const slots = ['torso', 'left_arm', 'right_arm', 'legs'];
+        // Compute total HP lost across all parts
+        let totalDmg = 0;
+        for (const slotId of slots) {
+            const part = frame.parts?.[slotId];
+            if (part) totalDmg += Math.max(0, (part.maxHp || 0) - (part.hp || 0));
+        }
+        if (totalDmg === 0) return;
+        for (const slotId of slots) {
+            const part = frame.parts?.[slotId];
+            if (!part) continue;
+            const degrade = (totalDmg / 300) * 0.01; // ~1% per 300 total damage
+            part.condition = Math.max(0, (part.condition ?? 1.0) - degrade);
+        }
+        this.state.recalculateFrameStats();
+    },
+
+    /**
+     * Returns the active manufacturer synergy for the current rig, or null if none.
+     * Used by the UI to display the synergy badge in MechaPanel.
+     * @returns {{ mfr: string, level: 'partial'|'full', count: number } | null}
+     */
+    _getManufacturerSynergy() {
+        const frame = this.state.player.frame;
+        if (!frame?.installedParts) return null;
+        const mfrCounts = {};
+        for (const partId of Object.values(frame.installedParts)) {
+            const mfr = this.state.items[partId]?.mfr;
+            if (mfr) mfrCounts[mfr] = (mfrCounts[mfr] || 0) + 1;
+        }
+        let synMfr = null, synCount = 0;
+        for (const [mfr, count] of Object.entries(mfrCounts)) {
+            if (count > synCount) { synCount = count; synMfr = mfr; }
+        }
+        if (!synMfr || synCount < 3) return null;
+        return { mfr: synMfr, level: synCount >= 4 ? 'full' : 'partial', count: synCount };
     },
 
     /**

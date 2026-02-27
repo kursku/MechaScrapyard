@@ -81,6 +81,10 @@ export default {
             const equip = this.frame?.installedEquip || {};
             return new Set(Object.values(equip).filter(Boolean));
         },
+        activeSynergy() {
+            this.renderTick;
+            return Game._getManufacturerSynergy ? Game._getManufacturerSynergy() : null;
+        },
     },
     methods: {
         renderBar,
@@ -264,6 +268,12 @@ export default {
                     </template>
                     <div v-else class="rig-cell-empty">-- EMPTY --</div>
                 </div>
+            </div>
+
+            <!-- Manufacturer Synergy Badge -->
+            <div v-if="activeSynergy" class="synergy-badge">
+                <span>◈ {{ activeSynergy.mfr.replace(/_/g, ' ').toUpperCase() }} SYNERGY</span>
+                <span class="synergy-level">{{ activeSynergy.level.toUpperCase() }} ({{ activeSynergy.count }}/4)</span>
             </div>
 
             <!-- Mount Points -->
@@ -510,6 +520,24 @@ export default {
     color: var(--text-dim);
     font-size: 10px;
     font-style: italic;
+}
+
+.synergy-badge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    background: rgba(255, 200, 50, 0.08);
+    border: 1px solid rgba(255, 200, 50, 0.35);
+    color: #ffc832;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+}
+
+.synergy-level {
+    font-size: 9px;
+    color: rgba(255, 200, 50, 0.65);
 }
 
 .hud-btn.micro {

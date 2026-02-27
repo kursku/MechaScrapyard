@@ -4,6 +4,21 @@ import BipolarStat from '@/values/BipolarStat';
 import { getCanonicalAliases, resolveItemId } from '@/schema/idAliases';
 
 /**
+ * Manufacturer synergy bonuses — applied in recalculateFrameStats() when
+ * 3 (partial) or 4 (full) equipped parts share the same manufacturer.
+ * Values are stat multipliers stacked after condition penalties.
+ */
+const SYNERGY_BONUSES = {
+    kz_industrial:   { partial: { def: 1.05 },              full: { def: 1.10, atk: 1.05 } },
+    sora_motor:      { partial: { enr: 1.05 },              full: { enr: 1.10, atk: 1.03 } },
+    aegis_tac:       { partial: { def: 1.03, atk: 1.03 },  full: { def: 1.05, atk: 1.05 } },
+    kuroda_heavy:    { partial: { atk: 1.08 },              full: { atk: 1.12, def: 1.05 } },
+    phantom_works:   { partial: { enr: 1.08 },              full: { enr: 1.10, atk: 1.10 } },
+    hayabusa_eng:    { partial: { atk: 1.05, enr: 1.03 },  full: { atk: 1.10, enr: 1.05 } },
+    daewon_dynamics: { partial: { enr: 1.08 },              full: { enr: 1.12, atk: 1.03 } },
+};
+
+/**
  * GameState — central reactive state for all game data.
  *
  * Follows Arcanum's pattern: all game items are accessible via
@@ -352,6 +367,47 @@ export default class GameState {
         }
 
         attributes.def += totalArmor;
+
+        // Condition penalties — worst part drives the penalty (weakest link).
+        // HP is already affected by the per-part condition multiplier above.
+        // These penalties apply to aggregate ATK/DEF/ENR.
+        const conditionValues = Object.values(frame.parts)
+            .filter(p => p)
+            .map(p => Math.round((p.condition ?? 1.0) * 100));
+        if (conditionValues.length > 0) {
+            const minCond = Math.min(...conditionValues);
+            if (minCond < 10) {
+                // Broken: part provides no benefit — zero out its contribution (treat as 0.3× all)
+                attributes.def *= 0.80; attributes.atk *= 0.80; attributes.enr *= 0.80;
+            } else if (minCond < 30) {
+                // Critical: –20% all stats
+                attributes.def *= 0.80; attributes.atk *= 0.80; attributes.enr *= 0.80;
+            } else if (minCond < 50) {
+                // Damaged: –8% DEF, –5% ATK
+                attributes.def *= 0.92; attributes.atk *= 0.95;
+            } else if (minCond < 70) {
+                // Worn: –3% DEF
+                attributes.def *= 0.97;
+            }
+        }
+
+        // Manufacturer synergy — 3+ (partial) or 4 (full) same-mfr parts grant bonuses.
+        const mfrCounts = {};
+        for (const partId of Object.values(frame.installedParts)) {
+            const mfr = this.items[partId]?.mfr;
+            if (mfr) mfrCounts[mfr] = (mfrCounts[mfr] || 0) + 1;
+        }
+        let synMfr = null, synCount = 0;
+        for (const [mfr, count] of Object.entries(mfrCounts)) {
+            if (count > synCount) { synCount = count; synMfr = mfr; }
+        }
+        if (synMfr && synCount >= 3) {
+            const level = synCount >= 4 ? 'full' : 'partial';
+            const b = SYNERGY_BONUSES[synMfr]?.[level] || {};
+            if (b.atk) attributes.atk *= b.atk;
+            if (b.def) attributes.def *= b.def;
+            if (b.enr) attributes.enr *= b.enr;
+        }
 
         // Skill combat bonus (frame_atk_bonus synthetic stat, set by _applySkillMods)
         attributes.atk += this.items['frame_atk_bonus']?.val || 0;
