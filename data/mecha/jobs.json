@@ -14,6 +14,7 @@
         "tiers": [
             {
                 "tier": 1,
+                "promotionEventId": "evt_police_promo_1",
                 "high": {
                     "title": "Rookie Officer",
                     "desc": "Walking a beat. Learning the system from inside.",
@@ -43,6 +44,7 @@
             },
             {
                 "tier": 2,
+                "promotionEventId": "evt_police_promo_2",
                 "high": {
                     "title": "Detective",
                     "desc": "Your father's old desk is gathering dust in the precinct. Now it's yours.",
@@ -123,6 +125,7 @@
         "tiers": [
             {
                 "tier": 1,
+                "promotionEventId": "evt_trader_promo_1",
                 "high": {
                     "title": "Apprentice",
                     "desc": "Learning the trade honestly. Fair prices, repeat customers.",
@@ -153,6 +156,7 @@
             },
             {
                 "tier": 2,
+                "promotionEventId": "evt_trader_promo_2",
                 "high": {
                     "title": "Shop Owner",
                     "desc": "A legitimate storefront. People come to YOU now.",
@@ -232,6 +236,7 @@
         "tiers": [
             {
                 "tier": 1,
+                "promotionEventId": "evt_netrunner_promo_1",
                 "high": {
                     "title": "White Hat Script Kiddie",
                     "desc": "Testing security systems. Finding vulnerabilities before the bad guys do.",
@@ -263,6 +268,7 @@
             },
             {
                 "tier": 2,
+                "promotionEventId": "evt_netrunner_promo_2",
                 "high": {
                     "title": "Data Analyst",
                     "desc": "Corporate security consultant. Legal access to illegal-grade tools.",
@@ -342,6 +348,7 @@
         "tiers": [
             {
                 "tier": 1,
+                "promotionEventId": "evt_arena_promo_1",
                 "high": {
                     "title": "Exhibition Fighter",
                     "desc": "Clean fights. No killing. The crowd loves a hero.",
@@ -373,6 +380,7 @@
             },
             {
                 "tier": 2,
+                "promotionEventId": "evt_arena_promo_2",
                 "high": {
                     "title": "Ranked Challenger",
                     "desc": "Your name is on the board. People buy tickets to see you.",

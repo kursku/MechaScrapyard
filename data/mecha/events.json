@@ -166,5 +166,193 @@
         "require": "",
         "seen": false,
         "desc": "They weren't just salvaging. I've seen scan patterns like that before — systematic, targeted. Someone hired them to look for something specific. Something in this yard. Something they already know exists. We need to figure out what before they come back with more."
+    },
+
+    {
+        "id": "evt_police_promo_1",
+        "name": "Moving Up the Ranks",
+        "require": "",
+        "seen": false,
+        "desc": "Lieutenant Reyes calls you in. 'You've got instincts. I can push your promotion through — but there's a condition. We've got a suspect in holding. Probably guilty. But probably isn't enough for a warrant. You want to move up or not?'",
+        "choices": [
+            {
+                "id": "by_the_book",
+                "label": "Wait for a proper warrant",
+                "morality": 10,
+                "effect": {},
+                "log": "Reyes nods slowly. 'I respect that. Promotion approved — the slow way.' You move up clean."
+            },
+            {
+                "id": "bend_the_rules",
+                "label": "Sign the papers",
+                "morality": -10,
+                "effect": { "creds": 50 },
+                "log": "Reyes slides the papers across. 'Welcome to the next rung. Try not to think about it too hard.'"
+            }
+        ]
+    },
+    {
+        "id": "evt_police_promo_2",
+        "name": "The Taeyang File",
+        "require": "",
+        "seen": false,
+        "desc": "A junior officer hands you a drive. 'Someone left this. Taeyang Corp financials — routed through precinct accounts.' Your superior is in the building. This could end careers. Including yours.",
+        "choices": [
+            {
+                "id": "report_it",
+                "label": "Report it to Internal Affairs",
+                "morality": 20,
+                "effect": { "rep_taeyang_corp": -30 },
+                "log": "You make the call. By morning, three officers are on leave. Reyes looks at you differently now. So does the city."
+            },
+            {
+                "id": "bury_it",
+                "label": "Destroy the drive",
+                "morality": -20,
+                "effect": { "creds": 200, "rep_taeyang_corp": 15 },
+                "log": "The drive goes in the furnace. Two days later, an envelope arrives. No return address. Full of creds."
+            }
+        ]
+    },
+
+    {
+        "id": "evt_trader_promo_1",
+        "name": "The Supplier's Offer",
+        "require": "",
+        "seen": false,
+        "desc": "A supplier offers you a side arrangement: take overstock off their hands at half price, sell it at full to the refugee camp upriver. 'They need it. You profit. Everyone wins.' Except you'd be the one setting the price.",
+        "choices": [
+            {
+                "id": "fair_price",
+                "label": "Sell it at cost — just cover the transport",
+                "morality": 10,
+                "effect": {},
+                "log": "Word spreads. The camp remembers. A few weeks later, three new regular customers show up at your stand. The supplier seems confused but doesn't complain."
+            },
+            {
+                "id": "market_rate",
+                "label": "Sell at full market rate — they're not your problem",
+                "morality": -10,
+                "effect": { "creds": 80 },
+                "log": "You profit. The camp pays. You don't lose any sleep over it. You tell yourself this is correct. Mostly you believe it."
+            }
+        ]
+    },
+    {
+        "id": "evt_trader_promo_2",
+        "name": "The Taeyang Supply Contract",
+        "require": "",
+        "seen": false,
+        "desc": "Taeyang Corp needs a distribution partner for a new product line. The contract is worth more than your current year's income. The product: behavioral modification hardware, labeled as 'therapeutic wellness devices.'",
+        "choices": [
+            {
+                "id": "refuse_contract",
+                "label": "Turn it down",
+                "morality": 15,
+                "effect": { "rep_taeyang_corp": -20 },
+                "log": "Taeyang marks you 'uncooperative.' Your other clients notice you turned down the big contract. Some respect it. One increases their order."
+            },
+            {
+                "id": "take_contract",
+                "label": "Take the contract — business is business",
+                "morality": -15,
+                "effect": { "creds": 300, "rep_taeyang_corp": 20 },
+                "log": "The creds clear. The product ships. You don't open the crates. You decide not to ask what's in them."
+            }
+        ]
+    },
+
+    {
+        "id": "evt_netrunner_promo_1",
+        "name": "The Corporate Leak",
+        "require": "",
+        "seen": false,
+        "desc": "You've found something during a routine security audit: a trove of Taeyang Corp internal communications. Nothing illegal in having them. Very illegal in how they were obtained. A journalist will pay well. So will Taeyang.",
+        "choices": [
+            {
+                "id": "leak_to_press",
+                "label": "Send it to the district's independent feed",
+                "morality": 15,
+                "effect": { "data_chips": 10, "rep_taeyang_corp": -15 },
+                "log": "The story runs for three days. Taeyang issues a denial. The denial is less convincing than the data. You don't collect much money. You collect something else."
+            },
+            {
+                "id": "sell_to_taeyang",
+                "label": "Sell it back to Taeyang — let them bury it",
+                "morality": -15,
+                "effect": { "creds": 250, "rep_taeyang_corp": 10 },
+                "log": "Taeyang pays promptly. The story never runs. A contact sends you one message: 'I know it was you.' They don't elaborate. They don't have to."
+            }
+        ]
+    },
+    {
+        "id": "evt_netrunner_promo_2",
+        "name": "The Recruitment",
+        "require": "",
+        "seen": false,
+        "desc": "A message arrives through channels that shouldn't exist. 'We know what you can do. We have resources you don't. The alternative is we make your current clients aware of your methods.' Taeyang's digital warfare division is recruiting.",
+        "choices": [
+            {
+                "id": "refuse_recruitment",
+                "label": "Refuse — and start covering your tracks",
+                "morality": 10,
+                "effect": { "data_chips": 5 },
+                "log": "You spend three days rebuilding your anonymity architecture. It costs time and creds. When you're done, the silence from Taeyang is either acceptance or a longer game. You decide it doesn't matter."
+            },
+            {
+                "id": "accept_recruitment",
+                "label": "Accept — the resources are real",
+                "morality": -20,
+                "effect": { "creds": 400, "rep_taeyang_corp": 25 },
+                "log": "The first briefing arrives. The work is clean — for now. You tell yourself you'll know when to walk away. You've said that before."
+            }
+        ]
+    },
+
+    {
+        "id": "evt_arena_promo_1",
+        "name": "The Dive",
+        "require": "",
+        "seen": false,
+        "desc": "An intermediary approaches after training. 'Next match — we need you to lose in round two. Not badly. Believably. The syndicate has money on your opponent.' The number they quote is real money.",
+        "choices": [
+            {
+                "id": "fight_clean",
+                "label": "Fight clean — no dive",
+                "morality": 10,
+                "effect": { "glory": 15 },
+                "log": "You win. The crowd goes louder than expected. The intermediary doesn't approach you again. You're told the syndicate had a backup plan. You don't ask what it was."
+            },
+            {
+                "id": "take_the_dive",
+                "label": "Take the money — lose the fight",
+                "morality": -15,
+                "effect": { "creds": 150 },
+                "log": "You go down in round two. Convincing. The crowd boos. The money arrives. You tell yourself it's one fight. It's always just one fight."
+            }
+        ]
+    },
+    {
+        "id": "evt_arena_promo_2",
+        "name": "The Corporate Ringer",
+        "require": "",
+        "seen": false,
+        "desc": "The next ranked opponent is a Taeyang-sponsored fighter with corporate-grade hardware. Your handler pulls you aside: 'There's a buyout on the table. Walk away from the championship circuit, take the payout, let them own the rank.' The number is generous.",
+        "choices": [
+            {
+                "id": "fight_the_ringer",
+                "label": "Get in the ring — win or die trying",
+                "morality": 15,
+                "effect": { "glory": 30 },
+                "log": "The fight runs long. The crowd is silent for most of it. You win on points, barely. Taeyang withdraws their fighter. The circuit is yours — for now."
+            },
+            {
+                "id": "take_the_buyout",
+                "label": "Take the payout — the number is real",
+                "morality": -15,
+                "effect": { "creds": 500 },
+                "log": "You sign the agreement. The rank goes to the ringer by default. You have money and no title. Hayashi doesn't call for two weeks."
+            }
+        ]
     }
 ]

@@ -57,6 +57,9 @@ const Game = {
     /** @type {Timer} */
     timer: null,
 
+    /** Pending job promotion — set when a promotion event fires, cleared after choice resolves */
+    _pendingPromotion: null,
+
     /** @type {number|null} */
     _interval: null,
 
@@ -1968,6 +1971,13 @@ const Game = {
         // Mark event as completed
         event.completed = (event.completed || 0) + 1;
         event.locked = true;
+
+        // Handle pending job promotion (fires after moral choice may shift morality)
+        if (this._pendingPromotion) {
+            const job = this.state.items[this._pendingPromotion];
+            if (job) this._advanceJobTier(job);
+            this._pendingPromotion = null;
+        }
     },
 
     /**
@@ -2466,6 +2476,12 @@ const Game = {
         Log.add(`  ${tierData.flavor}`, 'flavor');
         this._unlockJobMissions(tierData.unlocks || []);
 
+        // First-enrollment story beat
+        if (!this.state.g.ever_had_job) {
+            this.state.g.ever_had_job = 1;
+            Log.add(`${job.name}. You've done work like this before — sort of. But this time it goes in a file. This time it matters.`, 'story');
+        }
+
         return true;
     },
 
@@ -2486,10 +2502,11 @@ const Game = {
         const job = this.getActiveJob();
         if (!job || job.currentTier >= 3) return false;
 
-        const nextTierIndex = job.currentTier; // 0-indexed
+        const nextTierIndex = job.currentTier; // 0-indexed (tier 1 is at index 0, so next tier is at index 1)
         const nextTierData = job.tiers[nextTierIndex];
         if (!nextTierData) return false;
 
+        // Validate against next-tier requirements using current morality path
         const morality = this.state.morality.value;
         const path = morality >= 30 ? 'high' : morality <= -30 ? 'low' : (morality >= 0 ? 'high' : 'low');
         const tierInfo = nextTierData[path];
@@ -2507,7 +2524,35 @@ const Game = {
             return false;
         }
 
+        // Fire promotion event if defined — actual tier advance happens after choice resolves
+        if (nextTierData.promotionEventId) {
+            const evt = this.state.items[nextTierData.promotionEventId];
+            if (evt && !evt.completed) {
+                this._pendingPromotion = job.id;
+                this.presentChoice(evt);
+                return true;
+            }
+        }
+
+        // No event defined — advance directly
+        this._advanceJobTier(job);
+        return true;
+    },
+
+    /**
+     * Advance job to next tier. Called directly or after promotion event resolves.
+     * Re-evaluates morality path at promotion time.
+     */
+    _advanceJobTier(job) {
+        const morality = this.state.morality.value;
+        const path = morality >= 30 ? 'high' : morality <= -30 ? 'low' : (morality >= 0 ? 'high' : 'low');
+        const nextTierIndex = job.currentTier; // 0-indexed
+        const nextTierData = job.tiers[nextTierIndex];
+        if (!nextTierData) return;
+
+        const tierInfo = nextTierData[path];
         const oldPath = job.currentPath;
+
         job.currentTier += 1;
         job.currentPath = path;
 
@@ -2518,8 +2563,6 @@ const Game = {
         Log.add(`★ Promoted: ${tierInfo.title}`, 'story');
         Log.add(`  ${tierInfo.flavor}`, 'flavor');
         this._unlockJobMissions(tierInfo.unlocks || []);
-
-        return true;
     },
 
     getActiveJob() {
@@ -2545,6 +2588,17 @@ const Game = {
                 Log.add(`  → New mission available: ${mission.name || mId}`, 'info');
             }
         }
+    },
+
+    /** Thin wrapper so UI components can evaluate require expressions without importing techTree directly */
+    evalRequire(expr) {
+        if (!expr) return true;
+        return this.techTree.evaluate(expr);
+    },
+
+    /** Fire a patron message to the log with the patron log type */
+    _firePatronMessage(patronHandle, message) {
+        Log.add(`[ ${patronHandle} ] ${message}`, 'patron');
     },
 
     _loadEnemies(data) {

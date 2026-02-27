@@ -50,6 +50,38 @@ export default {
             const path = morality >= 30 ? 'high' : morality <= -30 ? 'low' : (morality >= 0 ? 'high' : 'low');
             return nextTier[path];
         },
+        canPromote() {
+            this.renderTick;
+            const job = this.activeJob;
+            if (!job || job.currentTier >= 3) return false;
+            const nextIdx = job.currentTier;
+            const nextTier = job.tiers[nextIdx];
+            if (!nextTier) return false;
+            const morality = this.state.morality?.value || 0;
+            const path = morality >= 30 ? 'high' : morality <= -30 ? 'low' : (morality >= 0 ? 'high' : 'low');
+            const info = nextTier[path];
+            if (!info) return false;
+            if (info.require && !Game.evalRequire(info.require)) return false;
+            if (info.moralityMin !== undefined && morality < info.moralityMin) return false;
+            if (info.moralityMax !== undefined && morality > info.moralityMax) return false;
+            return true;
+        },
+        promoteBlockedReason() {
+            this.renderTick;
+            const job = this.activeJob;
+            if (!job || job.currentTier >= 3) return null;
+            const nextIdx = job.currentTier;
+            const nextTier = job.tiers[nextIdx];
+            if (!nextTier) return null;
+            const morality = this.state.morality?.value || 0;
+            const path = morality >= 30 ? 'high' : morality <= -30 ? 'low' : (morality >= 0 ? 'high' : 'low');
+            const info = nextTier[path];
+            if (!info) return null;
+            if (info.moralityMin !== undefined && morality < info.moralityMin) return `Alignment too low (need ≥${info.moralityMin} morality)`;
+            if (info.moralityMax !== undefined && morality > info.moralityMax) return `Alignment too high (need ≤${info.moralityMax} morality)`;
+            if (info.require && !Game.evalRequire(info.require)) return `Requirements: ${info.require}`;
+            return null;
+        },
     },
     methods: {
         enrollJob(id) {
@@ -97,10 +129,10 @@ export default {
 
                 <div v-if="activeJob.currentTier < 3" class="promotion-section">
                     <div class="promote-header">NEXT TIER: {{ nextTierInfo ? nextTierInfo.title : '???' }}</div>
-                    <div v-if="nextTierInfo && nextTierInfo.require" class="promote-req">
-                        Requirements: {{ nextTierInfo.require }}
+                    <div v-if="promoteBlockedReason" class="promote-blocked">
+                        ✗ {{ promoteBlockedReason }}
                     </div>
-                    <button class="hud-btn-cta" @click="promoteJob()">&#x25B2; PROMOTE</button>
+                    <button v-if="canPromote" class="hud-btn-cta" @click="promoteJob()">&#x25B2; SEEK PROMOTION</button>
                 </div>
                 <div v-else class="job-max-tier">&#x2605; MAXIMUM TIER REACHED</div>
 
@@ -135,3 +167,11 @@ export default {
         </div>
     </section>
 </template>
+
+<style scoped>
+.promote-blocked {
+    color: var(--error, #f55);
+    font-size: 0.85em;
+    margin-bottom: 4px;
+}
+</style>

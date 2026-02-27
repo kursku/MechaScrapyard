@@ -583,6 +583,14 @@ body {
     padding-left: 5px;
 }
 
+.log-entry--patron {
+    color: #a0c8ff;
+    font-style: italic;
+    border-left: 2px solid #4080c0;
+    padding-left: 6px;
+    opacity: 0.9;
+}
+
 /* ── Tooltip ──────────────────────────────── */
 .tooltip {
     position: fixed;
