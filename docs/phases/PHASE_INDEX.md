@@ -82,6 +82,28 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 
 ---
 
+## Phase 4 — Character & Systems Depth
+
+**Status:** `🔄 IN PROGRESS`
+**Goal:** Pilot stats matter in combat. Skill trees shape playstyle. K.I.T.A. automates the scrapyard. Jobs build identity. Faction choices have consequences. Phase 4 story missions deliver the corporate conspiracy arc.
+**Estimated effort:** ~4–5 weeks
+**Spec folder:** `docs/phases/phase4/`
+
+| # | Spec | Area | Status | Commit |
+|---|------|------|--------|--------|
+| 1 | `SPEC_pilot_stats.md` | Combat / Stats | ✅ complete | `ce6bf05` |
+| 2 | `SPEC_skill_trees.md` | Skills / UI | ⬜ not started | — |
+| 3 | `SPEC_maneuvers.md` | Combat / Maneuvers | ⬜ not started | — |
+| 4 | `SPEC_android_companion.md` | Scrapyard / K.I.T.A. | ⬜ not started | — |
+| 5 | `SPEC_jobs_system.md` | Career / Jobs | ⬜ not started | — |
+| 6 | `SPEC_faction_alliances.md` | Factions / Vendors | ⬜ not started | — |
+| 7 | `SPEC_parts_flavor.md` | Data / Parts | ✅ complete | `989a9e6` |
+| 8 | `SPEC_scrapyard_phase4.md` | Scrapyard / Structures | ⬜ not started | — |
+| 9 | `SPEC_phase4_missions.md` | Content / Missions | ⬜ not started | — |
+| 10 | `SPEC_prestige_foundation.md` | Prestige / Glory | ⬜ not started | — |
+
+---
+
 ## Status Key
 
 | Symbol | Meaning |
