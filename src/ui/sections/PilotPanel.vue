@@ -67,6 +67,15 @@ export default {
         renderBar,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
+        statTier(val) {
+            if (val >= 90) return 'LEGEND';
+            if (val >= 70) return 'MASTER';
+            if (val >= 50) return 'ELITE';
+            if (val >= 30) return 'VETERAN';
+            if (val >= 20) return 'SKILLED';
+            if (val >= 10) return 'TRAINED';
+            return 'RAW';
+        },
         
         tryItem(it) {
             Game.tryItem(it);
@@ -99,7 +108,10 @@ export default {
                      @mouseleave="itemOut">
                     <div class="stat-meta">
                         <span :style="{ color: stat.color }">{{ stat.icon }} {{ stat.name.toUpperCase() }}</span>
-                        <span>{{ Math.floor(stat.val) }}</span>
+                        <span>
+                            {{ Math.floor(stat.val) }}
+                            <span class="stat-tier-label">{{ statTier(stat.val) }}</span>
+                        </span>
                     </div>
                     <div class="hud-bar-bg">
                         <div class="hud-bar-fill" :style="{ width: (stat.val / (stat.max || 100) * 100) + '%', backgroundColor: stat.color }"></div>

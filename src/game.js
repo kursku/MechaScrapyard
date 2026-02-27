@@ -1540,6 +1540,39 @@ const Game = {
         frame.stress = (frame.stress || 0) * 0.5;
 
         Log.add(`[RECOVERY] Heat normalized. Stress reduced to ${Math.floor(frame.stress)}.`, 'system');
+
+        // Stat growth from combat
+        this._onCombatStatGrowth(result);
+    },
+
+    /**
+     * Grow pilot stats based on combat outcome.
+     * Victory builds offensive attributes; defeat builds resilience.
+     */
+    _onCombatStatGrowth(result) {
+        if (result === 'victory') {
+            this._growStat('muscle', 0.5);
+            this._growStat('reflex', 0.3);
+            this._growStat('grit',   0.2);
+        } else if (result === 'defeat') {
+            this._growStat('grit',   0.5); // Survived a loss — hardened
+            this._growStat('reflex', 0.2);
+        }
+    },
+
+    /**
+     * Grow a pilot stat by amount, with logarithmic scaling so high stats
+     * grow slower. At val=50 the effective rate is half of val=1.
+     * @param {string} statId - e.g. 'muscle', 'reflex', 'focus'
+     * @param {number} amount - base growth before scaling
+     */
+    _growStat(statId, amount) {
+        const stat = this.state.items[statId];
+        if (!stat || stat.type !== 'player_stat') return;
+        const scale = 1 / (1 + stat.val / 50);
+        stat.val = Math.min(stat.max || 100, stat.val + amount * scale);
+        // Recalc frame so ATK/DEF update immediately
+        this.state.recalculateFrameStats();
     },
 
     /**

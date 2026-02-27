@@ -1078,6 +1078,7 @@ body {
 .skill-lvl { color: var(--primary); font-family: var(--font-mono); font-size: var(--font-size-xs); }
 .hud-stat-widget { margin-bottom: 10px; }
 .stat-meta { display: flex; justify-content: space-between; font-size: var(--font-size-base); margin-bottom: 6px; }
+.stat-tier-label { font-size: 9px; opacity: 0.5; margin-left: 5px; letter-spacing: 0.05em; font-family: var(--font-mono); }
 .hud-bar-bg { height: 2px; background: #000; }
 .hud-bar-fill { height: 100%; box-shadow: 0 0 5px currentColor; }
 .morality-widget { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-dim); }
