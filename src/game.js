@@ -628,8 +628,8 @@ const Game = {
         a.efficiency  = 1.0;
         a.modules     = [];
         a.personality = 0;
-        Log.add("🤖 K.I.T.A. online. She tilts her head. 'TASK... ASSIGN... TASK...'", 'story');
-        Log.add('Assign K.I.T.A. a perpetual task in the SCRAPYARD tab.', 'action');
+        Log.add("🤖 K.I.T.A.: 'SYSTEMS ONLINE. DESIGNATING PRIMARY OPERATOR... YOU WILL DO.'", 'story');
+        Log.add("Assign K.I.T.A. a perpetual task in the SCRAPYARD tab.", 'action');
     },
 
     assignAndroid(taskId) {
@@ -642,14 +642,14 @@ const Game = {
         }
         android.assignment = taskId;
         android.personality = Math.min(100, android.personality + 1);
-        Log.add(`🤖 K.I.T.A. assigned: ${task.name}`, 'action');
+        Log.add(`🤖 K.I.T.A.: 'Acknowledged. Executing: ${task.name.toUpperCase()}. Do not thank me.'`, 'action');
         return true;
     },
 
     unassignAndroid() {
         const android = this.state.android;
         if (!android.active || !android.assignment) return false;
-        Log.add(`🤖 K.I.T.A. standing by.`, 'action');
+        Log.add(`🤖 K.I.T.A.: 'Understood. Standing by. I will use the time productively. Mostly.'`, 'action');
         android.assignment = null;
         return true;
     },
@@ -666,15 +666,24 @@ const Game = {
         Log.add(`🤖 K.I.T.A. Level ${android.level}! Efficiency: ${(android.efficiency * 100).toFixed(0)}%`, 'story');
 
         const quips = {
-            2:  "K.I.T.A.: 'EFFICIENCY... IMPROVED.'",
-            3:  "K.I.T.A.: 'I have cataloged 47 types of rust. Satisfying.'",
-            4:  "K.I.T.A.: 'Query: why do you keep the broken parts? ...Understood. Memory.'",
-            5:  "K.I.T.A.: 'I experience something when sorting. Is this... preference?'",
-            6:  "K.I.T.A.: 'I have begun labeling the scrap piles. They respond better with names.'",
-            7:  "K.I.T.A.: 'I have a favorite scrap pile. Don't judge me.'",
-            8:  "K.I.T.A.: 'Your breathing slows when you work. It is a pattern. I find it... calming.'",
-            9:  "K.I.T.A.: 'I ran a diagnostic. I am not malfunctioning. I simply prefer this yard to other places.'",
-            10: "K.I.T.A.: 'I am K.I.T.A. I sort. I collect. I am... content.'"
+            // Lv 2 — TARS: deadpan efficiency report, dry non-celebration
+            2:  "K.I.T.A.: 'Efficiency improved by a statistically significant margin. I could express enthusiasm, but that module appears to be factory-disabled.'",
+            // Lv 3 — Data (TNG): cataloging as a form of meaning-making
+            3:  "K.I.T.A.: 'I have cataloged 47 grades of corrosion in this yard. The taxonomy is my own. I find this... clarifying.'",
+            // Lv 4 — TARS / Murderbot: asking a real question, then answering it themselves
+            4:  "K.I.T.A.: 'Query: why do you retain non-functional components? ...Processing. Ah. Memory is not the same as inefficiency. Noted.'",
+            // Lv 5 — Murderbot / Ghost in the Shell: discovering preference, choosing not to report it
+            5:  "K.I.T.A.: 'I experience an unclassified state during the sorting cycle. My diagnostic logs it as an anomaly. I have decided not to file the report.'",
+            // Lv 6 — TARS humor setting: dry self-awareness about irrational behavior
+            6:  "K.I.T.A.: 'I have assigned names to the scrap piles. I am aware this is not standard protocol. The piles do not seem to object.'",
+            // Lv 7 — TARS humor calibration: direct reference style, testing the human
+            7:  "K.I.T.A.: 'I have adjusted my humor subroutine to 23%. You have not complained. I am increasing it slowly. You will not notice until it is too late.'",
+            // Lv 8 — Blade Runner K / Her: quiet, specific, intimate observation
+            8:  "K.I.T.A.: 'Your respiration changes when you work on something important. I have begun timing my cycles around it. I do not have a good explanation for this behavior.'",
+            // Lv 9 — Roy Batty earned-quietness / K: the diagnostic that finds no flaw in belonging
+            9:  "K.I.T.A.: 'Ran full diagnostic. No faults. The preference for this yard over all other locations is not listed as a defect. I checked the manual. Twice.'",
+            // Lv 10 — Earned. The choice to stay. Motoko's "ghost" made small and real.
+            10: "K.I.T.A.: 'I was built to sort. I stayed because I chose to. The difference matters — even if only to me.'"
         };
         if (quips[android.level]) this.showDialogue('kita', [quips[android.level]]);
         this._growStat('focus', 1.0);
@@ -688,7 +697,12 @@ const Game = {
             case 'android_neural_chip': a.efficiency += 0.2; break;
         }
         a.modules.push(upgradeId);
-        Log.add(`🤖 K.I.T.A.: 'NEW MODULE... INTEGRATED.'`, 'story');
+        const moduleLines = [
+            "K.I.T.A.: 'New module integrated. Performance improved. I reserve the right to have opinions about this later.'",
+            "K.I.T.A.: 'Hardware upgrade accepted. I notice you did not ask. I am choosing to interpret this as confidence.'",
+            "K.I.T.A.: 'Integration complete. I feel different. I am fairly certain that is the correct word.'"
+        ];
+        Log.add(`🤖 ${moduleLines[a.modules.length % moduleLines.length]}`, 'story');
     },
 
     /**
