@@ -85,22 +85,43 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ## Phase 4 — Character & Systems Depth
 
 **Status:** `🔄 IN PROGRESS`
-**Goal:** Pilot stats matter in combat. Skill trees shape playstyle. K.I.T.A. automates the scrapyard. Jobs build identity. Faction choices have consequences. Phase 4 story missions deliver the corporate conspiracy arc.
-**Estimated effort:** ~4–5 weeks
+**Goal:** Pilot stats matter in combat. Skill trees shape playstyle. K.I.T.A. automates the scrapyard. Jobs build identity. Faction choices have consequences. Phase 4 story missions deliver the corporate conspiracy arc. DTL and street cred make the city react to the player.
+**Estimated effort:** ~5–6 weeks
 **Spec folder:** `docs/phases/phase4/`
 
 | # | Spec | Area | Status | Commit |
-|---|------|------|--------|--------|
+| --- | --- | --- | --- | --- |
 | 1 | `SPEC_pilot_stats.md` | Combat / Stats | ✅ complete | `ce6bf05` |
 | 2 | `SPEC_skill_trees.md` | Skills / UI | ⬜ not started | — |
 | 3 | `SPEC_maneuvers.md` | Combat / Maneuvers | ⬜ not started | — |
-| 4 | `SPEC_android_companion.md` | Scrapyard / K.I.T.A. | ⬜ not started | — |
-| 5 | `SPEC_jobs_system.md` | Career / Jobs | ⬜ not started | — |
-| 6 | `SPEC_faction_alliances.md` | Factions / Vendors | ⬜ not started | — |
+| 4 | `SPEC_android_companion.md` | Scrapyard / K.I.T.A. | ✅ complete | `189b916` |
+| 5 | `SPEC_jobs_system.md` | Career / Jobs + Fixer Voice | ⬜ not started | — |
+| 6 | `SPEC_faction_alliances.md` | Factions / Vendors + Contacts | ⬜ not started | — |
 | 7 | `SPEC_parts_flavor.md` | Data / Parts | ✅ complete | `989a9e6` |
 | 8 | `SPEC_scrapyard_phase4.md` | Scrapyard / Structures | ⬜ not started | — |
-| 9 | `SPEC_phase4_missions.md` | Content / Missions | ⬜ not started | — |
+| 9 | `SPEC_phase4_missions.md` | Content / Missions + Intel | ⬜ not started | — |
 | 10 | `SPEC_prestige_foundation.md` | Prestige / Glory | ⬜ not started | — |
+| 11 | `SPEC_district_threat.md` | World / DTL system | ⬜ not started | — |
+| 12 | `SPEC_street_credibility.md` | Reputation / Street Cred | ⬜ not started | — |
+
+---
+
+## Phase 5 — The Confrontation
+
+**Status:** `📋 PLANNED`
+**Goal:** Phase 4 built the pilot. Phase 5 tests what they built against what they were built for. Five story missions, VOSS, K.I.T.A.'s arc resolution, memory fragments, full prestige, district defense, and five endings.
+**Estimated effort:** ~4 weeks
+**Spec folder:** `docs/phases/phase5/`
+
+| # | Spec | Area | Status | Commit |
+| --- | --- | --- | --- | --- |
+| 1 | `SPEC_taeyang_confrontation.md` | Story / Missions | ⬜ not started | — |
+| 2 | `SPEC_voss_android.md` | Combat / Narrative | ⬜ not started | — |
+| 3 | `SPEC_kita_arc_completion.md` | Companion / Narrative | ⬜ not started | — |
+| 4 | `SPEC_memory_fragments.md` | Collectibles / Story | ⬜ not started | — |
+| 5 | `SPEC_prestige_full.md` | Meta / Prestige | ⬜ not started | — |
+| 6 | `SPEC_district_endgame.md` | World / Defense | ⬜ not started | — |
+| 7 | `SPEC_endings.md` | Narrative / Endings | ⬜ not started | — |
 
 ---
 
