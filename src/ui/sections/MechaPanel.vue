@@ -86,6 +86,22 @@ export default {
         renderBar,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
+        conditionLabel(cnd) {
+            const v = Math.round((cnd || 0) * 100);
+            if (v >= 90) return 'PRISTINE';
+            if (v >= 70) return 'GOOD';
+            if (v >= 50) return 'WORN';
+            if (v >= 30) return 'DAMAGED';
+            if (v >= 10) return 'CRITICAL';
+            return 'BROKEN';
+        },
+        conditionClass(cnd) {
+            const v = Math.round((cnd || 0) * 100);
+            if (v >= 70) return 'cnd-good';
+            if (v >= 50) return 'cnd-worn';
+            if (v >= 30) return 'cnd-damaged';
+            return 'cnd-critical';
+        },
         getInstalledPartForSlot(slot) {
             return this.frame?.parts?.[slot] || null;
         },
@@ -241,8 +257,8 @@ export default {
                         <div class="rig-part-hp" :class="{ 'text-danger': slot.part.hp < slot.part.maxHp * 0.3 }">
                             HP {{ renderBar(slot.part.hp, slot.part.maxHp, 8) }}
                         </div>
-                        <div class="rig-part-cnd" :class="{ 'text-warning': slot.part.condition < 0.5 }">
-                            CND {{ Math.round((slot.part.condition || 0) * 100) }}%
+                        <div class="rig-part-cnd" :class="conditionClass(slot.part.condition)">
+                            {{ conditionLabel(slot.part.condition) }}
                         </div>
                         <button class="hud-btn micro" @click="jumpToPartSlot(slot.id)">SWAP</button>
                     </template>
@@ -338,7 +354,7 @@ export default {
                         <div class="salvage-meta" style="justify-content: space-between;">
                             <span>[{{ part.slot.toUpperCase() }}]</span>
                             <span class="mfr-tag" v-if="getPartMfrName(part)" :style="{ color: getPartMfrColor(part) }">{{ getPartMfrName(part) }}</span>
-                            <span :class="{ worn: part.condition < 0.5 }">{{ Math.round(part.condition * 100) }}% CND</span>
+                            <span :class="conditionClass(part.condition)">{{ conditionLabel(part.condition) }}</span>
                         </div>
                         <div class="hud-card-actions" style="margin-top: 8px; display: flex; gap: 5px; align-items: center;">
                             <button class="hud-btn small" @click="equipPart(part.slot, part)">EQUIP</button>
@@ -484,6 +500,11 @@ export default {
     color: var(--text-dim);
     font-family: var(--font-mono, monospace);
 }
+
+.cnd-good    { color: var(--secondary, #5f5); }
+.cnd-worn    { color: #fa0; }
+.cnd-damaged { color: #f55; }
+.cnd-critical { color: #f55; animation: pulse 1.2s infinite; }
 
 .rig-cell-empty {
     color: var(--text-dim);
