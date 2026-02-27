@@ -16,6 +16,7 @@ export default {
     data() {
         return {
             renderTick: 0,
+            activeTree: 'combat',
         };
     },
     mounted() {
@@ -32,6 +33,21 @@ export default {
         skills() {
             this.renderTick;
             return Object.values(this.state.items).filter(i => i.type === 'skill' && !i.locked);
+        },
+        skillTrees() {
+            return [
+                { id: 'combat',      label: 'COMBAT',      parentId: 'skill_combat' },
+                { id: 'hacking',     label: 'HACKING',     parentId: 'skill_hacking' },
+                { id: 'engineering', label: 'ENGINEERING', parentId: 'skill_mecha_tech' },
+                { id: 'athletics',   label: 'ATHLETICS',   parentId: 'skill_gathering' },
+                { id: 'negotiation', label: 'NEGOTIATION', parentId: 'skill_social' },
+                { id: 'medicine',    label: 'MEDICINE',    parentId: 'skill_investigation' },
+                { id: 'piloting',    label: 'PILOTING',    parentId: 'skill_crafting' },
+            ];
+        },
+        skillPoints() {
+            this.renderTick;
+            return Math.floor(this.state.items['skill_points']?.val || 0);
         },
         moralRes() {
             this.renderTick;
@@ -79,6 +95,25 @@ export default {
         
         tryItem(it) {
             Game.tryItem(it);
+        },
+        treeSubSkills(treeId, tier) {
+            return Object.values(this.state.items)
+                .filter(i => i.type === 'sub_skill' && i.tree === treeId && i.tier === tier)
+                .sort((a, b) => a.id.localeCompare(b.id));
+        },
+        ownedInTree(treeId) {
+            return Object.values(this.state.items)
+                .filter(i => i.type === 'sub_skill' && i.tree === treeId && i.owned).length;
+        },
+        canBuy(sk) {
+            if (sk.owned) return false;
+            if (this.skillPoints < sk.cost) return false;
+            if (sk.require && !Game.evalRequire(sk.require)) return false;
+            return true;
+        },
+        buySubSkill(sk) {
+            Game.buySubSkill(sk.id);
+            this.renderTick++;
         },
         isRunning(task) {
             return Game.runner.activeTask === task;
@@ -162,17 +197,78 @@ export default {
 
         <div class="skills-deck">
             <h3 class="hud-section-title">> NEURAL SKILLS</h3>
+            <!-- Parent skill levels (training progress) -->
             <div class="skills-list">
-                <div v-for="skill in skills" :key="skill.id" 
+                <div v-for="skill in skills" :key="skill.id"
                      class="hud-skill-item"
                      @mouseover="itemOver($event, skill)"
                      @mouseleave="itemOut">
                     <div class="flex-between">
                         <span class="skill-name">{{ skill.icon || '●' }} {{ skill.name }}</span>
-                        <span class="skill-lvl">LVL {{ Math.floor(skill.val) }}</span>
+                        <span class="skill-lvl">LVL {{ Math.floor(skill.val) }}/{{ skill.max || 20 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Tree -->
+            <h3 class="hud-section-title" style="margin-top:14px;">> SKILL TREE</h3>
+            <div class="sp-row">★ <strong>{{ skillPoints }}</strong> Skill Points available</div>
+
+            <div class="tree-selector">
+                <button v-for="tree in skillTrees" :key="tree.id"
+                        :class="['tree-tab', { active: activeTree === tree.id }]"
+                        @click="activeTree = tree.id">
+                    {{ tree.label }}
+                    <span class="tree-progress">{{ ownedInTree(tree.id) }}/10</span>
+                </button>
+            </div>
+
+            <div class="skill-tree-panel">
+                <div v-for="tier in [1,2,3,4]" :key="tier" class="tree-tier">
+                    <div class="tier-label">TIER {{ tier }}</div>
+                    <div class="tier-skills">
+                        <div v-for="sk in treeSubSkills(activeTree, tier)" :key="sk.id"
+                             :class="['sub-skill', {
+                                 owned: sk.owned,
+                                 available: canBuy(sk),
+                                 locked: !canBuy(sk) && !sk.owned
+                             }]"
+                             @click="buySubSkill(sk)">
+                            <div class="sk-name">{{ sk.name }}</div>
+                            <div class="sk-desc">{{ sk.desc }}</div>
+                            <div class="sk-cost" v-if="!sk.owned">{{ sk.cost }} SP</div>
+                            <div class="sk-owned" v-else>✓ OWNED</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </template>
+
+<style scoped>
+.sp-row { font-size: 11px; color: var(--secondary, #5f5); margin: 4px 0 8px; }
+.tree-selector { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
+.tree-tab {
+    padding: 3px 7px; font-size: 9px; letter-spacing: 0.06em;
+    border: 1px solid var(--border-dim, #444); background: transparent;
+    color: var(--text-dim, #888); cursor: pointer; display: flex; gap: 4px; align-items: center;
+}
+.tree-tab.active { border-color: var(--secondary, #5f5); color: var(--secondary, #5f5); }
+.tree-progress { font-size: 8px; color: var(--text-dim2, #666); }
+.skill-tree-panel { padding-bottom: 8px; }
+.tree-tier { margin-bottom: 10px; }
+.tier-label { font-size: 8px; letter-spacing: 0.1em; color: var(--text-dim, #888); margin-bottom: 4px; }
+.tier-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+.sub-skill {
+    border: 1px solid var(--border-dim, #444); padding: 5px 7px; width: 130px;
+    cursor: pointer; background: var(--bg2, #111); font-family: var(--font-mono, monospace);
+}
+.sub-skill.available { border-color: var(--secondary, #5f5); cursor: pointer; }
+.sub-skill.owned { border-color: var(--secondary, #5f5); opacity: 0.6; cursor: default; }
+.sub-skill.locked { opacity: 0.35; cursor: not-allowed; }
+.sk-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; color: var(--text-bright, #eee); }
+.sk-desc { font-size: 9px; color: var(--text-dim, #888); margin-bottom: 4px; line-height: 1.3; }
+.sk-cost { font-size: 9px; color: var(--secondary, #5f5); }
+.sk-owned { font-size: 9px; color: var(--secondary, #5f5); }
+</style>

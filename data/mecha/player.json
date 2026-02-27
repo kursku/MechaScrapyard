@@ -1,5 +1,12 @@
 [
     {
+        "id": "skill_points",
+        "name": "Skill Points",
+        "val": 0,
+        "max": 99,
+        "hidden": false
+    },
+    {
         "id": "level",
         "name": "Pilot Level",
         "val": 1,

@@ -87,7 +87,7 @@ const Game = {
         this.state = new GameState();
         this.techTree = new TechTree(this.state);
         this.runner = new Runner(this.state);
-        this.combatRunner = new CombatRunner(this.state);
+        this.combatRunner = new CombatRunner(this.state, this);
         this.timer = new Timer();
         // Wire the module-level reactive object so the UI can access it via Game.combatState
         this.combatState = _combatState;
@@ -1580,6 +1580,26 @@ const Game = {
 
         // Stat growth from combat
         this._onCombatStatGrowth(result);
+
+        // Train skill_combat after each fight (0.3 per victory, 0.1 per defeat)
+        const combatSkill = this.state.items['skill_combat'];
+        if (combatSkill && !combatSkill.locked) {
+            const oldVal = combatSkill.val;
+            const gain = result === 'victory' ? 0.3 : 0.1;
+            combatSkill.val = Math.min(combatSkill.max || 20, combatSkill.val + gain);
+            this.runner._checkSkillPointThresholds(combatSkill, oldVal);
+        }
+
+        // Post-fight HP restoration from medicine sub-skills
+        const hpRestore = this.getSkillBonus('post_fight_hp_restore');
+        if (hpRestore > 0) {
+            const pframe = this.state.player.frame;
+            for (const part of Object.values(pframe.parts || {})) {
+                if (part && part.hp !== undefined) {
+                    part.hp = Math.min(part.maxHp || part.hp, part.hp + hpRestore);
+                }
+            }
+        }
     },
 
     /**
@@ -2412,6 +2432,15 @@ const Game = {
 
     _loadSkills(data) {
         for (const item of data) {
+            // Sub-skills (type already set) use owned/effect — skip parent-skill init
+            if (item.type === 'sub_skill') {
+                item.owned = item.owned ?? 0;
+                const rItem = reactive(item);
+                this.state.register(rItem);
+                // Not registered with techTree — canBuy() uses evalRequire directly
+                continue;
+            }
+
             item.val = item.val ?? 0;
             item.max = item.max ?? 20;
             item.locked = item.locked ?? (item.require ? true : false);
@@ -2642,6 +2671,39 @@ const Game = {
     evalRequire(expr) {
         if (!expr) return true;
         return this.techTree.evaluate(expr);
+    },
+
+    /**
+     * Returns the sum of all owned sub-skill effect values for a given key.
+     * e.g. getSkillBonus('combat_first_dmg_bonus') → 0.05 if firstblood owned.
+     * @param {string} key - Effect key to sum
+     * @returns {number}
+     */
+    getSkillBonus(key) {
+        let total = 0;
+        for (const item of Object.values(this.state.items)) {
+            if (item.type === 'sub_skill' && item.owned && item.effect?.[key] !== undefined) {
+                total += item.effect[key];
+            }
+        }
+        return total;
+    },
+
+    /**
+     * Purchase a sub-skill by ID, deducting skill points.
+     * Called from PilotPanel tree UI.
+     * @param {string} skId - Sub-skill item id
+     */
+    buySubSkill(skId) {
+        const sk = this.state.items[skId];
+        if (!sk || sk.type !== 'sub_skill') return;
+        if (sk.owned) return;
+        const sp = this.state.items['skill_points'];
+        if (!sp || sp.val < sk.cost) return;
+        if (sk.require && !this.evalRequire(sk.require)) return;
+        sp.val -= sk.cost;
+        sk.owned = 1;
+        Log.add(`★ ${sk.name} unlocked.`, 'reward');
     },
 
     /** Fire a patron message to the log with the patron log type */

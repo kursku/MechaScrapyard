@@ -281,12 +281,19 @@ export default class Runner {
     _handleSkillExp(task, dt) {
         if (!task.tags) return;
 
-        // Mapping tags to skills
+        // Mapping tags to skills (tag → primary skill trained)
         const tagMap = {
-            't_scrapyard': 'skill_gathering',
-            't_income': 'skill_social',
+            't_scrapyard':   'skill_gathering',
+            't_income':      'skill_social',
             't_exploration': 'skill_investigation',
-            't_recipe': 'skill_crafting'
+            't_recipe':      'skill_crafting',
+            // Secondary mappings: scrapyard repair builds mecha tech; exploration builds hacking
+            // Additional entries below are handled separately to allow multi-skill from one tag
+        };
+        // Secondary skill training (same tag, different skill, half rate)
+        const tagMapSecondary = {
+            't_scrapyard':   'skill_mecha_tech',
+            't_exploration': 'skill_hacking',
         };
 
         const trainSpeed = 1 + (this.state.items['skill_train_speed']?.val || 0);
@@ -294,9 +301,40 @@ export default class Runner {
             if (task.tags.includes(tag)) {
                 const skill = this.state.items[skillId];
                 if (skill && !skill.locked) {
+                    const oldVal = skill.val;
                     // Skills grow slowly. 0.01 per second, boosted by pilot_sim (skill_train_speed).
                     skill.val = clamp(skill.val + 0.01 * trainSpeed * dt, 0, skill.max);
+                    this._checkSkillPointThresholds(skill, oldVal);
                 }
+            }
+        }
+        // Secondary skills train at half rate from the same tags
+        for (const [tag, skillId] of Object.entries(tagMapSecondary)) {
+            if (task.tags.includes(tag)) {
+                const skill = this.state.items[skillId];
+                if (skill && !skill.locked) {
+                    const oldVal = skill.val;
+                    skill.val = clamp(skill.val + 0.005 * trainSpeed * dt, 0, skill.max);
+                    this._checkSkillPointThresholds(skill, oldVal);
+                }
+            }
+        }
+    }
+
+    /**
+     * Award skill points when a parent skill crosses a threshold value.
+     * Thresholds at 4, 8, 12, 16, 20 (5 points per skill, 35 total across 7 skills).
+     * @param {Object} skill - The skill item whose val just changed
+     * @param {number} oldVal - Value before the increment
+     */
+    _checkSkillPointThresholds(skill, oldVal) {
+        const thresholds = [4, 8, 12, 16, 20];
+        const sp = this.state.items['skill_points'];
+        if (!sp) return;
+        for (const t of thresholds) {
+            if (oldVal < t && skill.val >= t) {
+                sp.val = Math.min(sp.max || 99, sp.val + 1);
+                Log.add(`★ Skill Point earned! (${skill.name} reached ${t})`, 'reward');
             }
         }
     }

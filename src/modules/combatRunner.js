@@ -200,8 +200,10 @@ function selectTargetPartWeighted(targetFrame, policyId = 'auto') {
  * Follows the Runner pattern from the implementation plan.
  */
 export default class CombatRunner {
-    constructor(state) {
+    constructor(state, game = null) {
         this.state = state;
+        /** @type {import('@/game').default|null} Reference to Game for skill bonus queries */
+        this.game = game;
 
         // Active encounter state
         this.active = false;
@@ -732,6 +734,12 @@ export default class CombatRunner {
             if (isPlayer) damage = Math.round(damage * (1 + stanceDef.atkMod));
             damage *= modifiers.damageMult || 1;
 
+            // Sub-skill: First Blood — +% damage on first attack of the fight
+            if (isPlayer && this.turnNumber === 1 && this.game) {
+                const firstBlood = this.game.getSkillBonus('combat_first_dmg_bonus');
+                if (firstBlood > 0) damage = Math.round(damage * (1 + firstBlood));
+            }
+
             const breachStacks = this.getTokenStacks(defender, 'BREACH');
             if (breachStacks > 0) damage += breachStacks;
 
@@ -791,7 +799,13 @@ export default class CombatRunner {
                 if (supply) supply.val = Math.max(0, supply.val - wpnSupply);
             }
 
-            attacker.heat = Math.min(heatCap, (attacker.heat || 0) + wpnHeat * (chassis ? chassis.heatGenMod : 1));
+            // Sub-skill: Heat Mgmt — reduce heat generation
+            let heatMult = chassis ? chassis.heatGenMod : 1;
+            if (isPlayer && this.game) {
+                const heatRed = this.game.getSkillBonus('heat_gen_reduction');
+                if (heatRed > 0) heatMult *= (1 - heatRed);
+            }
+            attacker.heat = Math.min(heatCap, (attacker.heat || 0) + wpnHeat * heatMult);
             this.activeModifiers = { damageMult: 1, accuracyBonus: 0 };
             return true;
         }
@@ -804,8 +818,13 @@ export default class CombatRunner {
 
         const chassisMiss = isPlayer ? this.state.items[attacker.chassisId] : null;
         const heatCapMiss = chassisMiss ? chassisMiss.heatCap : 100;
+        let heatMultMiss = chassisMiss ? chassisMiss.heatGenMod : 1;
+        if (isPlayer && this.game) {
+            const heatRed = this.game.getSkillBonus('heat_gen_reduction');
+            if (heatRed > 0) heatMultMiss *= (1 - heatRed);
+        }
 
-        attacker.heat = Math.min(heatCapMiss, (attacker.heat || 0) + Math.ceil(wpnHeat / 2) * (chassisMiss ? chassisMiss.heatGenMod : 1));
+        attacker.heat = Math.min(heatCapMiss, (attacker.heat || 0) + Math.ceil(wpnHeat / 2) * heatMultMiss);
         this.activeModifiers = { damageMult: 1, accuracyBonus: 0 };
         return false;
     }
