@@ -1655,9 +1655,11 @@ const Game = {
             this._growStat('muscle', 0.5);
             this._growStat('reflex', 0.3);
             this._growStat('grit',   0.2);
+            this._growStat('neuro',  0.1); // Tactical analysis during combat
         } else if (result === 'defeat') {
             this._growStat('grit',   0.5); // Survived a loss — hardened
             this._growStat('reflex', 0.2);
+            this._growStat('neuro',  0.15); // Defeat forces deeper analysis
         }
     },
 

@@ -319,6 +319,24 @@ export default class Runner {
                 }
             }
         }
+
+        // Pilot stat growth from task activity (slow, logarithmic scaling)
+        // These stats are otherwise unreachable outside combat, giving every
+        // play style a path to the T4 sub-skills that gate on them.
+        const statTrainMap = {
+            't_income':      'charisma',  // Dealmaking builds social aptitude
+            't_recipe':      'focus',     // Crafting precision builds focus
+            't_exploration': 'neuro',     // Exploration rewards lateral thinking
+        };
+        for (const [tag, statId] of Object.entries(statTrainMap)) {
+            if (task.tags.includes(tag)) {
+                const stat = this.state.items[statId];
+                if (stat && stat.type === 'player_stat') {
+                    const scale = 1 / (1 + stat.val / 50);
+                    stat.val = Math.min(stat.max || 100, stat.val + 0.001 * trainSpeed * dt * scale);
+                }
+            }
+        }
     }
 
     /**
