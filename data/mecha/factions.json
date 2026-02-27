@@ -8,6 +8,7 @@
     "repId": "rep_police",
     "icon": "🛡️",
     "color": "#68f",
+    "rivalries": { "faction_taeyang_syndicate": 0.4, "faction_underground": 0.2 },
     "alignment": "lawful",
     "manufacturers": [
       "aegis_tac"
@@ -146,6 +147,7 @@
     "repId": "rep_military",
     "icon": "⚔️",
     "color": "#f44",
+    "rivalries": { "faction_phantom_collective": 0.5, "faction_underground": 0.3 },
     "alignment": "authoritarian",
     "manufacturers": [
       "kuroda_heavy"
@@ -276,6 +278,7 @@
     "repId": "rep_underground",
     "icon": "🔧",
     "color": "#ca6",
+    "rivalries": { "faction_kuroda_command": 0.3 },
     "alignment": "neutral",
     "manufacturers": [
       "red_creek",
@@ -420,6 +423,7 @@
     "repId": "rep_corporate",
     "icon": "🔥",
     "color": "#f86",
+    "rivalries": { "faction_ntpd": 0.4, "faction_phantom_collective": 0.5 },
     "alignment": "corporate",
     "manufacturers": [
       "taeyang_forge"
@@ -546,6 +550,7 @@
     "repId": "rep_exile",
     "icon": "👁️",
     "color": "#c8f",
+    "rivalries": { "faction_taeyang_syndicate": 0.6, "faction_kuroda_command": 0.4 },
     "alignment": "revolutionary",
     "manufacturers": [
       "phantom_works",

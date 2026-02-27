@@ -1,0 +1,110 @@
+[
+  {
+    "id": "contact_doc_rivas",
+    "name": "Doc Rivas",
+    "faction": "none",
+    "specialty": "repair",
+    "desc": "Runs an unlicensed repair bay in Sub-Level 3. Doesn't ask about the damage.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "workshop_lv2>0",
+    "benefit": {
+      "threshold": 5,
+      "effect": "Part repairs at 25% reduced resource cost"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "Emergency field repair available once per mission"
+    }
+  },
+  {
+    "id": "contact_fen",
+    "name": "Fen",
+    "faction": "faction_underground",
+    "specialty": "intel",
+    "desc": "Information broker. Neon Bazaar sub-level. Moves product and secrets with equal indifference.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "search_neon_bazaar>0",
+    "benefit": {
+      "threshold": 5,
+      "effect": "Intel Level 1 costs 0 data_chips (Fen covers it)"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "Advance warning before DTL increases — 1 cycle heads-up"
+    }
+  },
+  {
+    "id": "contact_kohl",
+    "name": "Sgt. Kohl",
+    "faction": "faction_ntpd",
+    "specialty": "heat_reduction",
+    "desc": "Precinct 9 veteran. Looks the other way when it costs him nothing. Costs him more than he admits.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "rep_police>=20",
+    "benefit": {
+      "threshold": 5,
+      "effect": "Reduces District Threat Level by 1 once per 3 cycles"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "Can call off a Taeyang-coordinated patrol event once (consumed)"
+    }
+  },
+  {
+    "id": "contact_mira",
+    "name": "Mira",
+    "faction": "faction_underground",
+    "specialty": "salvage",
+    "desc": "Rust King adjacent. She moves parts. Nobody asks where they came from. That's the deal.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "rep_underground>0",
+    "benefit": {
+      "threshold": 5,
+      "effect": "Rare part availability windows last 2 extra cycles"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "One salvage tip per cycle — a part type currently available somewhere in the city"
+    }
+  },
+  {
+    "id": "contact_hayashi_arena",
+    "name": "Hayashi",
+    "faction": "none",
+    "specialty": "glory",
+    "desc": "Arena matchmaker. Seen a hundred pilots come through those gates. Remembers the ones worth remembering.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "msn_arena_debut>=1",
+    "benefit": {
+      "threshold": 5,
+      "effect": "+10% Glory from all arena combat"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "Access to a restricted bracket once per prestige run — higher stakes, higher Glory Pool reward"
+    }
+  },
+  {
+    "id": "contact_cipher",
+    "name": "Cipher",
+    "faction": "faction_phantom_collective",
+    "specialty": "taeyang_intel",
+    "desc": "No face. No address. Only shows up when she has something Taeyang doesn't want you to know.",
+    "loyalty": 0,
+    "loyaltyMax": 10,
+    "unlockRequire": "flag_found_surveillance>0",
+    "benefit": {
+      "threshold": 5,
+      "effect": "Phase 4 mission intel surfaces one objective early"
+    },
+    "highLoyaltyBenefit": {
+      "threshold": 8,
+      "effect": "Provides the real objective of Phase 5 missions before entry — full intel free"
+    }
+  }
+]

@@ -22,7 +22,8 @@
         "jobs",
         "zones",
         "blueprints",
-        "combat_config"
+        "combat_config",
+        "contacts"
     ],
     "modules": []
 }

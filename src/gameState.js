@@ -388,6 +388,11 @@ export default class GameState {
                 saved.explored = item.explored;
                 saved.status = item.status;
             }
+            // Contact-specific fields
+            if (item.type === 'contact') {
+                saved.loyalty = item.loyalty;
+                saved._benefitNotified = item._benefitNotified;
+            }
             data[id] = saved;
         }
         return {
@@ -468,6 +473,11 @@ export default class GameState {
                 item.discovered = saved.discovered;
                 item.explored = saved.explored || 0;
                 if (saved.status) item.status = saved.status;
+            }
+            // Contact-specific fields
+            if (item.type === 'contact' && saved.loyalty !== undefined) {
+                item.loyalty = saved.loyalty;
+                item._benefitNotified = saved._benefitNotified || false;
             }
         }
         if (json.player) {

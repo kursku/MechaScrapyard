@@ -151,6 +151,11 @@ export default {
                     return { ...f, repValue, currentTier, nextTier, progressPct, allianceLabel: getAllianceLabel(repValue) };
                 });
         },
+        contacts() {
+            this.renderTick;
+            return Object.values(this.state.items)
+                .filter(i => i.type === 'contact' && Game.evalRequire(i.unlockRequire));
+        },
         currentHome() {
             this.renderTick;
             return Object.values(this.state.items).find(i => i.type === 'home' && i.owned > 0);
@@ -260,6 +265,7 @@ export default {
 
                 <FactionsPanel v-else-if="selectedCategory === 'factions'"
                     :factions="factions"
+                    :contacts="contacts"
                     :state="state"
                     @vendor-buy="renderTick++" />
 

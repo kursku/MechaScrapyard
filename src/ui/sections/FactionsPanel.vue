@@ -11,6 +11,8 @@ export default {
     props: {
         /** @type {Array} Pre-computed faction objects from parent */
         factions: { type: Array, required: true },
+        /** @type {Array} Unlocked contact objects */
+        contacts: { type: Array, default: () => [] },
         /** @type {Object} Game state for item/vendor lookups */
         state: { type: Object, required: true },
     },
@@ -133,5 +135,79 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- CONTACTS -->
+        <div v-if="contacts.length > 0" class="contacts-section">
+            <h3 class="hud-section-title">> CONTACT NETWORK</h3>
+            <div v-for="c in contacts" :key="c.id" class="contact-row">
+                <div class="contact-header">
+                    <span class="contact-name">{{ c.name }}</span>
+                    <span class="contact-spec">{{ c.specialty.replace(/_/g, ' ').toUpperCase() }}</span>
+                </div>
+                <div class="contact-desc">{{ c.desc }}</div>
+                <div class="contact-loyalty-wrap">
+                    <div class="contact-loyalty-bar">
+                        <div class="loyalty-fill"
+                            :class="{ active: c.loyalty >= c.benefit.threshold }"
+                            :style="{ width: (c.loyalty / c.loyaltyMax * 100) + '%' }">
+                        </div>
+                    </div>
+                    <span class="contact-loyalty-num">{{ c.loyalty }}/{{ c.loyaltyMax }}</span>
+                </div>
+                <div class="contact-benefit"
+                    :class="{ 'contact-benefit--active': c.loyalty >= c.benefit.threshold }">
+                    {{ c.loyalty >= c.benefit.threshold ? '◈ ' + c.benefit.effect : 'Build loyalty to unlock' }}
+                </div>
+                <div v-if="c.loyalty >= c.highLoyaltyBenefit.threshold" class="contact-benefit contact-benefit--high">
+                    ◈◈ {{ c.highLoyaltyBenefit.effect }}
+                </div>
+            </div>
+        </div>
     </section>
 </template>
+
+<style scoped>
+.contacts-section {
+    margin-top: 16px;
+    border-top: 1px solid var(--c-border);
+    padding-top: 8px;
+}
+.contact-row {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--c-border);
+}
+.contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+}
+.contact-name { font-size: 12px; font-weight: bold; color: var(--c-text); }
+.contact-spec { font-size: 9px; letter-spacing: 0.1em; color: var(--c-dim); }
+.contact-desc { font-size: 10px; color: var(--c-dim2); margin-bottom: 6px; }
+.contact-loyalty-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+.contact-loyalty-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--c-bg3);
+    position: relative;
+}
+.loyalty-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--c-dim);
+    transition: width 0.3s;
+}
+.loyalty-fill.active { background: var(--c-accent); }
+.contact-loyalty-num { font-size: 9px; color: var(--c-dim); white-space: nowrap; }
+.contact-benefit { font-size: 10px; color: var(--c-dim2); }
+.contact-benefit--active { color: var(--c-accent); }
+.contact-benefit--high { color: #4af; margin-top: 2px; }
+</style>

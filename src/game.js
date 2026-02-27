@@ -111,6 +111,7 @@ const Game = {
         this._setCombatConfig(rawData.combat_config || null);
         this._loadManufacturers(rawData.manufacturers || []);
         this._loadFactions(rawData.factions || []);
+        this._loadContacts(rawData.contacts || []);
         this._loadBlueprints(rawData.blueprints || []);
         this._loadJobs(rawData.jobs || []);
         this._loadZones(rawData.zones || []);
@@ -2700,7 +2701,40 @@ const Game = {
             item._lastKnownTier = 0; // Track tier transitions
             const rItem = reactive(item);
             this.state.register(rItem);
+            // Expose as g.<factionId>_rep for use in require strings
+            const fid = item.id;
+            const repId = item.repId;
+            Object.defineProperty(this.state.g, fid + '_rep', {
+                get: () => Math.floor(this.state.items[repId]?.val || 0),
+                configurable: true,
+            });
         }
+    },
+
+    _loadContacts(data) {
+        for (const item of data) {
+            item.type = 'contact';
+            item.group = 'contact';
+            item._benefitNotified = false;
+            const rItem = reactive(item);
+            this.state.register(rItem);
+        }
+    },
+
+    buildContactLoyalty(contactId, amount) {
+        const c = this.state.items[contactId];
+        if (!c || c.type !== 'contact') return;
+        c.loyalty = Math.min(c.loyaltyMax, c.loyalty + amount);
+        if (c.loyalty >= c.benefit.threshold && !c._benefitNotified) {
+            c._benefitNotified = true;
+            Log.add(`◈ ${c.name}: loyalty reached. ${c.benefit.effect}`, 'faction');
+        }
+    },
+
+    loseContactLoyalty(contactId, amount) {
+        const c = this.state.items[contactId];
+        if (!c || c.type !== 'contact') return;
+        c.loyalty = Math.max(0, c.loyalty - amount);
     },
 
     _loadBlueprints(data) {
