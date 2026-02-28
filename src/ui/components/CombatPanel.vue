@@ -589,13 +589,13 @@ export default {
     background: rgba(0, 255, 65, 0.05);
 }
 .mission-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.mission-name { font-weight: bold; color: var(--secondary); font-size: 14px; }
+.mission-name { font-weight: bold; color: var(--secondary); font-size: var(--font-size-sm); }
 .mission-difficulty { color: #f5c542; letter-spacing: 2px; }
-.mission-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.35; }
-.mission-footer { display: flex; gap: 20px; font-size: 11px; font-weight: bold; }
+.mission-desc { font-size: var(--font-size-xs); color: var(--text-dim); margin-bottom: 8px; line-height: 1.35; }
+.mission-footer { display: flex; gap: 20px; font-size: var(--font-size-xxs); font-weight: bold; }
 .cost { color: var(--error); }
 .rewards { color: var(--primary); }
-.empty-msg { font-size: 12px; color: var(--text-dim); padding: 10px 0; }
+.empty-msg { font-size: var(--font-size-xs); color: var(--text-dim); padding: 10px 0; }
 
 .mission-tags {
     display: flex;
@@ -604,7 +604,7 @@ export default {
     flex-wrap: wrap;
 }
 .zone-tag, .story-tag, .patrol-tag, .completed-tag {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     padding: 1px 5px;
     border: 1px solid;
     letter-spacing: 1px;
@@ -615,7 +615,7 @@ export default {
 .completed-tag { border-color: var(--primary); color: var(--primary); }
 
 .mission-flavor {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: #6a7a8a;
     font-style: italic;
     margin-bottom: 8px;
@@ -632,7 +632,7 @@ export default {
 .rep-reward { color: #8af; }
 
 .result-mission {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-dim);
     letter-spacing: 2px;
     margin-top: -8px;
@@ -645,7 +645,7 @@ export default {
     margin: 5px 0;
 }
 .reward-item {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: var(--primary);
     padding: 2px 6px;
     border: 1px solid rgba(0, 255, 65, 0.2);
@@ -657,7 +657,7 @@ export default {
 
 .config-label {
     color: var(--primary);
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 2px;
     margin: 6px 0 5px;
     opacity: 0.8;
@@ -676,7 +676,7 @@ export default {
     padding: 7px 9px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -693,13 +693,13 @@ export default {
     background: rgba(0, 255, 170, 0.14);
     box-shadow: 0 0 8px rgba(0, 255, 170, 0.25);
 }
-.config-icon { font-size: 15px; }
-.config-name { font-weight: bold; font-size: 11px; letter-spacing: 1px; }
-.config-stat { font-size: 10px; color: rgba(0, 255, 170, 0.55); }
+.config-icon { font-size: var(--font-size-sm); }
+.config-name { font-weight: bold; font-size: var(--font-size-xxs); letter-spacing: 1px; }
+.config-stat { font-size: var(--font-size-xxs); color: rgba(0, 255, 170, 0.55); }
 .config-stat.atk { color: #f5c542; }
 .config-stat.def { color: #00aaff; }
 .config-stat.heat { color: #ff9900; }
-.config-desc { font-size: 10px; color: rgba(0, 255, 170, 0.45); text-align: center; line-height: 1.25; }
+.config-desc { font-size: var(--font-size-xxs); color: rgba(0, 255, 170, 0.45); text-align: center; line-height: 1.25; }
 
 /* ── Loadout & shop ─────────────────────────────────────────────────────── */
 .loadout-section { margin-bottom: 16px; }
@@ -712,7 +712,7 @@ export default {
     margin-bottom: 10px;
 }
 .damage-alert {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: #f66;
     font-weight: bold;
     letter-spacing: 1px;
@@ -728,7 +728,7 @@ export default {
     color: #4a5;
     padding: 4px 6px;
     font-family: inherit;
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     cursor: pointer;
     letter-spacing: 0.5px;
     transition: all 0.15s;
@@ -754,14 +754,14 @@ export default {
     content: "EQUIPPED";
     position: absolute;
     top: 5px; right: 8px;
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     color: var(--primary);
     font-weight: bold;
 }
 .mnvr-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.mnvr-name { font-size: 12px; font-weight: bold; color: var(--text); }
-.mnvr-type { font-size: 10px; color: var(--text-dim); }
-.mnvr-desc { font-size: 11px; color: var(--text-dim); line-height: 1.3; }
+.mnvr-name { font-size: var(--font-size-xs); font-weight: bold; color: var(--text); }
+.mnvr-type { font-size: var(--font-size-xxs); color: var(--text-dim); }
+.mnvr-desc { font-size: var(--font-size-xxs); color: var(--text-dim); line-height: 1.3; }
 
 .shop-item { border-style: dashed; }
 .btn-buy {
@@ -770,7 +770,7 @@ export default {
     background: transparent;
     border: 1px solid var(--primary);
     color: var(--primary);
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     padding: 4px;
     cursor: pointer;
     font-family: inherit;
@@ -778,7 +778,7 @@ export default {
 .btn-buy:hover { background: var(--primary); color: #000; }
 
 .shop-locked-msg {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: var(--text-dim);
     padding: 10px;
     border: 1px dashed rgba(0, 255, 170, 0.15);
@@ -787,7 +787,7 @@ export default {
 .shop-locked-hint {
     display: block;
     margin-top: 4px;
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     opacity: 0.6;
     letter-spacing: 0;
 }
@@ -808,14 +808,14 @@ export default {
     padding: 5px 10px;
     background: rgba(0, 255, 170, 0.06);
     border: 1px solid rgba(0, 255, 170, 0.2);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 .config-indicator {
     color: var(--primary);
     font-weight: bold;
     letter-spacing: 1px;
 }
-.config-indicator.sm { font-size: 11px; opacity: 0.7; }
+.config-indicator.sm { font-size: var(--font-size-xxs); opacity: 0.7; }
 .position-badge { color: #ffd; letter-spacing: 1.5px; }
 .config-sep { color: var(--border-dim); }
 .turn-badge {
@@ -823,7 +823,7 @@ export default {
     color: var(--secondary);
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 /* Frame grid */
@@ -842,7 +842,7 @@ export default {
 .enemy-side  { border-color: rgba(255, 60, 60, 0.3); }
 
 .frame-header {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--secondary);
     border-bottom: 1px solid var(--border-dim);
     padding-bottom: 5px;
@@ -850,7 +850,7 @@ export default {
     letter-spacing: 1px;
 }
 .enemy-title {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     color: var(--text-dim);
     margin-top: 2px;
     letter-spacing: 1px;
@@ -861,27 +861,27 @@ export default {
     align-items: center;
     gap: 6px;
     margin-bottom: 8px;
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     background: rgba(0,0,0,0.3);
     padding: 2px 5px;
 }
 .token-label {
     color: rgba(255, 255, 255, 0.4);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 1px;
 }
 .token-badge {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     cursor: help;
 }
 
-.part-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12px; }
+.part-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: var(--font-size-xs); }
 .part-label { width: 70px; }
 .part-integrity { display: flex; gap: 2px; width: 30px; }
 .dot { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
 .part-hp-bar { flex: 1; height: 6px; background: #000; border: 1px solid #333; }
 .hp-fill { height: 100%; transition: width 0.3s; }
-.part-val { width: 50px; text-align: right; font-size: 11px; color: var(--text-dim); }
+.part-val { width: 50px; text-align: right; font-size: var(--font-size-xxs); color: var(--text-dim); }
 .destroyed { opacity: 0.35; filter: grayscale(1); }
 
 .vitals-row {
@@ -891,8 +891,8 @@ export default {
     display: flex;
     gap: 20px;
 }
-.vital { flex: 1; font-size: 11px; }
-.vital label { display: block; margin-bottom: 3px; color: var(--text-dim); font-size: 10px; }
+.vital { flex: 1; font-size: var(--font-size-xxs); }
+.vital label { display: block; margin-bottom: 3px; color: var(--text-dim); font-size: var(--font-size-xxs); }
 .vital-bar { height: 4px; background: #000; margin-bottom: 3px; }
 .vital-fill { height: 100%; transition: width 0.3s; }
 
@@ -902,7 +902,7 @@ export default {
     border: 1px solid var(--border-dim);
     background: #000;
     padding: 8px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--primary);
     overflow-y: auto;
     display: flex;
@@ -938,7 +938,7 @@ export default {
     color: var(--error);
     padding: 5px 16px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.15s;
@@ -971,7 +971,7 @@ export default {
 .result-overlay.defeat .result-title { color: var(--error); }
 
 .result-sub {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-dim);
     text-align: center;
     max-width: 480px;
@@ -984,7 +984,7 @@ export default {
     color: var(--primary);
     padding: 6px 20px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     cursor: pointer;
     letter-spacing: 2px;
     transition: all 0.15s;
@@ -999,7 +999,7 @@ export default {
     padding: 6px 8px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--border-dim);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
 }
 .token-legend-entry {
     display: flex;
@@ -1009,19 +1009,19 @@ export default {
     border-left: 2px solid;
     line-height: 1.3;
 }
-.tl-icon { font-size: 12px; }
+.tl-icon { font-size: var(--font-size-xs); }
 .tl-name { font-weight: bold; color: var(--text); letter-spacing: 0.5px; }
 .tl-desc { color: var(--text-dim); }
 
 /* Mid-combat stance switching */
 .footer-stances { display: flex; align-items: center; gap: 5px; }
-.footer-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-right: 3px; }
+.footer-label { font-size: var(--font-size-xxs); color: var(--text-dim); letter-spacing: 1px; margin-right: 3px; }
 .stance-mini-btn {
     background: transparent;
     border: 1px solid var(--border-dim);
     color: var(--text-dim);
     font-family: inherit;
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     padding: 3px 7px;
     cursor: pointer;
     transition: all 0.15s;
@@ -1031,7 +1031,7 @@ export default {
 .stance-mini-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* Power indicator */
-.power-indicator { font-size: 10px; font-weight: bold; letter-spacing: 0.5px; }
+.power-indicator { font-size: var(--font-size-xxs); font-weight: bold; letter-spacing: 0.5px; }
 .power-safe  { color: var(--primary); }
 .power-ok    { color: #f5c542; }
 .power-risky { color: var(--error); }

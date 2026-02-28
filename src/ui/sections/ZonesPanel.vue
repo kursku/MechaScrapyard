@@ -146,7 +146,7 @@ export default {
 <style scoped>
 .zone-status-badge {
     display: inline-block;
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 1px;
     padding: 2px 6px;
     margin: 4px 0;
@@ -171,14 +171,14 @@ export default {
 }
 
 .zone-unlock-desc {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: #888;
     font-family: var(--font-mono);
     margin-bottom: 8px;
 }
 
 .zone-unlock-cost {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: var(--secondary, #ff0);
     font-family: var(--font-mono);
     letter-spacing: 1px;
@@ -187,7 +187,7 @@ export default {
 
 .unlock-btn {
     width: 100%;
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     padding: 6px 12px;
     letter-spacing: 2px;
     border: 1px solid var(--secondary, #ff0);

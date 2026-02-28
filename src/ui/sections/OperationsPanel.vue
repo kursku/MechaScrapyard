@@ -95,7 +95,7 @@ export default {
                 </div>
                 
                 <!-- ACTION BUTTON FOOTER -->
-                <div v-if="!task.choices || !isRunning(task)" style="font-size: 11px; margin-top: 10px; font-weight: bold;">
+                <div v-if="!task.choices || !isRunning(task)" style="font-size: var(--font-size-xxs); margin-top: 10px; font-weight: bold;">
                     <span v-if="isRunning(task)" style="color: var(--color-danger)">[ ABORT OPERATION ]</span>
                     <span v-else style="color: var(--text-dim)">[ INITIATE ]</span>
                 </div>

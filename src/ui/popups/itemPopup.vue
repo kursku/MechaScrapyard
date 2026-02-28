@@ -214,7 +214,7 @@ export default {
 
 .popup-mfr-banner {
     padding: 5px 12px;
-    font-size: 0.7rem;
+    font-size: var(--font-size-xxs);
     font-weight: bold;
     letter-spacing: 1px;
     display: flex;
@@ -224,19 +224,19 @@ export default {
 }
 
 .mfr-icon {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
 }
 
 .popup-header {
     font-weight: bold;
-    font-size: 0.95rem;
+    font-size: var(--font-size-sm);
     padding: 8px 12px 4px 12px;
     letter-spacing: 1px;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .popup-desc {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     color: var(--text-muted);
     padding: 0 12px 8px 12px;
     margin-bottom: 6px;
@@ -251,7 +251,7 @@ export default {
 }
 
 .section-label {
-    font-size: 0.72rem;
+    font-size: var(--font-size-xxs);
     color: var(--secondary);
     margin-bottom: 4px;
 }
@@ -259,7 +259,7 @@ export default {
 .cost-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     color: var(--text-dim);
     margin-bottom: 3px;
     gap: 10px;
@@ -270,14 +270,14 @@ export default {
 
 .popup-flavor {
     margin-top: 6px;
-    font-size: 0.78rem;
+    font-size: var(--font-size-xs);
     font-style: italic;
     color: var(--text-faint);
     padding: 0 12px 10px;
 }
 
 .compare-section { border-top-color: rgba(0, 255, 170, 0.2); }
-.compare-hint { color: var(--text-dim); opacity: 0.5; font-size: 0.68rem; }
-.delta-pos { color: #4f8; font-size: 0.75rem; }
-.delta-neg { color: #f44; font-size: 0.75rem; }
+.compare-hint { color: var(--text-dim); opacity: 0.5; font-size: var(--font-size-xxs); }
+.delta-pos { color: #4f8; font-size: var(--font-size-xxs); }
+.delta-neg { color: #f44; font-size: var(--font-size-xxs); }
 </style>

@@ -262,8 +262,8 @@ export default {
                             &#x23F1; {{ getTaskTimeRemaining(task) }}s
                         </div>
                     </div>
-                    <div v-if="isRunning(task)" style="font-size: 9px; margin-top: 6px; font-weight: bold; color: var(--color-danger)">[ ABORT ]</div>
-                    <div v-else style="font-size: 9px; margin-top: 6px; font-weight: bold; color: var(--text-dim)">[ INITIATE ]</div>
+                    <div v-if="isRunning(task)" style="font-size: var(--font-size-xxs); margin-top: 6px; font-weight: bold; color: var(--color-danger)">[ ABORT ]</div>
+                    <div v-else style="font-size: var(--font-size-xxs); margin-top: 6px; font-weight: bold; color: var(--text-dim)">[ INITIATE ]</div>
                 </div>
             </div>
         </div>
@@ -340,40 +340,40 @@ export default {
 <style scoped>
 .prestige-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
 .alignment-badge {
-    font-size: 9px; font-weight: bold; letter-spacing: 0.1em;
+    font-size: var(--font-size-xxs); font-weight: bold; letter-spacing: 0.1em;
     border: 1px solid; padding: 2px 7px; font-family: var(--font-mono, monospace);
 }
 .glory-pool-hud {
-    font-size: 10px; color: #fc5; font-family: var(--font-mono, monospace); font-weight: bold;
+    font-size: var(--font-size-xxs); color: #fc5; font-family: var(--font-mono, monospace); font-weight: bold;
 }
 .glory-shop-deck { margin-top: 16px; }
-.glory-pool-balance { font-size: 11px; color: #fc5; margin: 4px 0 10px; font-family: var(--font-mono, monospace); }
+.glory-pool-balance { font-size: var(--font-size-xxs); color: #fc5; margin: 4px 0 10px; font-family: var(--font-mono, monospace); }
 .glory-shop-grid { display: flex; flex-wrap: wrap; gap: 6px; }
 .glory-item {
     border: 1px solid #654; background: #1a1200; padding: 7px 9px; width: 160px;
     font-family: var(--font-mono, monospace);
 }
-.glory-item-name { font-size: 10px; font-weight: bold; color: #fc5; margin-bottom: 3px; }
-.glory-item-desc { font-size: 9px; color: var(--text-dim, #888); margin-bottom: 5px; line-height: 1.3; }
-.glory-item-owned { font-size: 9px; color: var(--text-dim2, #666); margin-bottom: 4px; }
+.glory-item-name { font-size: var(--font-size-xxs); font-weight: bold; color: #fc5; margin-bottom: 3px; }
+.glory-item-desc { font-size: var(--font-size-xxs); color: var(--text-dim, #888); margin-bottom: 5px; line-height: 1.3; }
+.glory-item-owned { font-size: var(--font-size-xxs); color: var(--text-dim2, #666); margin-bottom: 4px; }
 .glory-buy-btn {
-    font-size: 9px; padding: 2px 7px; cursor: pointer;
+    font-size: var(--font-size-xxs); padding: 2px 7px; cursor: pointer;
     border: 1px solid #fc5; background: transparent; color: #fc5;
     font-family: var(--font-mono, monospace); letter-spacing: 0.05em;
 }
 .glory-buy-btn:disabled { border-color: #444; color: #555; cursor: not-allowed; }
-.sp-row { font-size: 11px; color: var(--secondary, #5f5); margin: 4px 0 8px; }
+.sp-row { font-size: var(--font-size-xxs); color: var(--secondary, #5f5); margin: 4px 0 8px; }
 .tree-selector { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
 .tree-tab {
-    padding: 3px 7px; font-size: 9px; letter-spacing: 0.06em;
+    padding: 3px 7px; font-size: var(--font-size-xxs); letter-spacing: 0.06em;
     border: 1px solid var(--border-dim, #444); background: transparent;
     color: var(--text-dim, #888); cursor: pointer; display: flex; gap: 4px; align-items: center;
 }
 .tree-tab.active { border-color: var(--secondary, #5f5); color: var(--secondary, #5f5); }
-.tree-progress { font-size: 8px; color: var(--text-dim2, #666); }
+.tree-progress { font-size: var(--font-size-xxs); color: var(--text-dim2, #666); }
 .skill-tree-panel { padding-bottom: 8px; }
 .tree-tier { margin-bottom: 10px; }
-.tier-label { font-size: 8px; letter-spacing: 0.1em; color: var(--text-dim, #888); margin-bottom: 4px; }
+.tier-label { font-size: var(--font-size-xxs); letter-spacing: 0.1em; color: var(--text-dim, #888); margin-bottom: 4px; }
 .tier-skills { display: flex; flex-wrap: wrap; gap: 5px; }
 .sub-skill {
     border: 1px solid var(--border-dim, #444); padding: 5px 7px; width: 130px;
@@ -382,10 +382,10 @@ export default {
 .sub-skill.available { border-color: var(--secondary, #5f5); cursor: pointer; }
 .sub-skill.owned { border-color: var(--secondary, #5f5); opacity: 0.6; cursor: default; }
 .sub-skill.locked { opacity: 0.35; cursor: not-allowed; }
-.sk-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; color: var(--text-bright, #eee); }
-.sk-desc { font-size: 9px; color: var(--text-dim, #888); margin-bottom: 4px; line-height: 1.3; }
-.sk-cost { font-size: 9px; color: var(--secondary, #5f5); }
-.sk-owned { font-size: 9px; color: var(--secondary, #5f5); }
+.sk-name { font-size: var(--font-size-xxs); font-weight: bold; margin-bottom: 2px; color: var(--text-bright, #eee); }
+.sk-desc { font-size: var(--font-size-xxs); color: var(--text-dim, #888); margin-bottom: 4px; line-height: 1.3; }
+.sk-cost { font-size: var(--font-size-xxs); color: var(--secondary, #5f5); }
+.sk-owned { font-size: var(--font-size-xxs); color: var(--secondary, #5f5); }
 
 /* Street Cred */
 .cred-widget {

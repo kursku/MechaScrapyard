@@ -232,7 +232,7 @@ export default {
 .speaker-name {
   font-family: var(--font-mono);
   font-weight: 900;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   letter-spacing: 2px;
 }
 
@@ -254,7 +254,7 @@ export default {
 
 .dialogue-text {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   color: #e2e8f0;
   text-shadow: 0 0 2px rgba(226, 232, 240, 0.2);
@@ -281,7 +281,7 @@ export default {
   border: none;
   color: #64748b;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   padding: 5px 10px;
   transition: all 0.2s;
@@ -294,7 +294,7 @@ export default {
 
 .skip-hint {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--font-size-xxs);
   color: #334155;
   font-style: italic;
 }
@@ -328,12 +328,12 @@ export default {
   color: var(--primary, #0f0);
   font-family: var(--font-mono);
   font-weight: bold;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 .choice-desc {
   display: block;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   opacity: 0.6;
   margin-top: 3px;
   color: #94a3b8;

@@ -21,6 +21,33 @@ import PilotPanel from "./sections/PilotPanel.vue";
 import OperationsPanel from "./sections/OperationsPanel.vue";
 import ResourceMonitor from "./sections/ResourceMonitor.vue";
 
+// Tab group definitions — maps primary tab IDs to their sub-tab children
+const TAB_GROUPS = {
+    base: {
+        label: 'BASE',
+        children: ['scrapyard', 'income', 'exploration', 'refinery'],
+        // Which child categories are task-groups (use OperationsPanel)
+        taskGroupChildren: ['income', 'exploration', 'refinery'],
+    },
+    world: {
+        label: 'WORLD',
+        children: ['zones', 'factions', 'career'],
+    },
+};
+
+// Flat set of all children for quick lookup
+const ALL_GROUP_CHILDREN = new Set(
+    Object.values(TAB_GROUPS).flatMap(g => g.children)
+);
+
+// Map child → parent for reverse lookup
+const CHILD_TO_PARENT = {};
+for (const [parentId, group] of Object.entries(TAB_GROUPS)) {
+    for (const child of group.children) {
+        CHILD_TO_PARENT[child] = parentId;
+    }
+}
+
 export default {
     components: { 
         itemPopup, CombatPanel, ResourceBufferBadge, DialogueModal, 
@@ -31,11 +58,12 @@ export default {
     props: ['state'],
     data() {
         return {
-            selectedCategory: 'scrapyard',
+            selectedCategory: 'base',
+            selectedSubTab: { base: 'scrapyard', world: 'zones' },
             renderTick: 0,
             _renderInterval: null,
             _pauseRenderTick: false,
-            _seenCategories: new Set(['pilot', 'scrapyard']),
+            _seenCategories: new Set(['pilot', 'scrapyard', 'base']),
             _showPrestigeModal: false,
             _prestigeBreakdown: null,
         };
@@ -45,9 +73,26 @@ export default {
             this.renderTick;
             return !this._seenCategories.has(cat);
         },
+        isNewGroup(groupId) {
+            // A group tab shows NEW if any of its children are new
+            this.renderTick;
+            const group = TAB_GROUPS[groupId];
+            if (!group) return this.isNewTab(groupId);
+            return group.children.some(child => this.isNewTab(child));
+        },
         setCategory(cat) {
             this.selectedCategory = cat;
             this._seenCategories.add(cat);
+            // If selecting a group tab, also mark the default sub-tab as seen
+            if (TAB_GROUPS[cat]) {
+                const defaultChild = this.selectedSubTab[cat] || TAB_GROUPS[cat].children[0];
+                this._seenCategories.add(defaultChild);
+            }
+            this.itemOut();
+        },
+        setSubTab(parentId, childId) {
+            this.selectedSubTab[parentId] = childId;
+            this._seenCategories.add(childId);
             this.itemOut();
         },
         itemOut() {
@@ -84,40 +129,109 @@ export default {
         }
     },
     computed: {
-        categories() {
+        // All unlocked leaf categories (flat Set)
+        _allLeafCategories() {
             this.renderTick;
-            const groups = new Set(Object.values(this.state.items)
+            const cats = new Set(Object.values(this.state.items)
                 .filter(i => i.type === 'task' && !i.locked && i.group)
                 .map(i => i.group));
             
-            const hasMissions = Object.values(this.state.items).some(i => i.type === 'mission' && !i.locked);
-            if (hasMissions) groups.add('combat');
+            // Pilot is always available
+            cats.add('pilot');
 
-            const list = Array.from(groups).filter(g => g !== 'pilot');
-            list.unshift('pilot');
-            if (this.frame && this.chassis) list.splice(1, 0, 'mecha');
+            // Mecha available when frame is equipped
+            if (this.frame && this.chassis) cats.add('mecha');
+            
+            const hasMissions = Object.values(this.state.items).some(i => i.type === 'mission' && !i.locked);
+            if (hasMissions) cats.add('combat');
             
             const hasFactions = this.factions && this.factions.length > 0;
-            if (hasFactions) list.push('factions');
+            if (hasFactions) cats.add('factions');
 
             const hasJobs = Object.values(this.state.items).some(i => i.type === 'job' && !i.locked);
-            if (hasJobs) list.push('career');
+            if (hasJobs) cats.add('career');
             
             const hasBlueprints = Object.values(this.state.items).some(i => i.type === 'blueprint' && !i.locked);
-            if (hasBlueprints) list.push('workshop');
+            if (hasBlueprints) cats.add('workshop');
 
             const hasZones = Object.values(this.state.items).some(i => i.type === 'zone' && i.discovered);
-            if (hasZones) list.push('zones');
+            if (hasZones) cats.add('zones');
             
-            return list;
+            return cats;
+        },
+        // Primary tabs — groups replace their children
+        primaryTabs() {
+            const leafSet = this._allLeafCategories;
+            const tabs = [];
+            const added = new Set();
+
+            // Fixed order: pilot, mecha, base, combat, world, workshop
+            const order = ['pilot', 'mecha', 'base', 'combat', 'world', 'workshop'];
+
+            for (const id of order) {
+                if (TAB_GROUPS[id]) {
+                    // Group tab — show if ANY child is unlocked
+                    const group = TAB_GROUPS[id];
+                    const hasAnyChild = group.children.some(c => leafSet.has(c));
+                    if (hasAnyChild) {
+                        tabs.push({ id, label: group.label, isGroup: true });
+                        added.add(id);
+                    }
+                } else if (leafSet.has(id)) {
+                    const label = id === 'pilot' ? 'PROFILE' : id.toUpperCase();
+                    tabs.push({ id, label, isGroup: false });
+                    added.add(id);
+                }
+            }
+            return tabs;
+        },
+        // Sub-tabs for the currently selected group (empty if not a group)
+        activeSubTabs() {
+            const group = TAB_GROUPS[this.selectedCategory];
+            if (!group) return [];
+            const leafSet = this._allLeafCategories;
+            return group.children
+                .filter(c => leafSet.has(c))
+                .map(c => ({
+                    id: c,
+                    label: c.toUpperCase(),
+                }));
+        },
+        // The actual resolved category for panel routing
+        activeCategory() {
+            const group = TAB_GROUPS[this.selectedCategory];
+            if (group) {
+                return this.selectedSubTab[this.selectedCategory] || group.children[0];
+            }
+            return this.selectedCategory;
+        },
+        // Keep old name for backward compat in template
+        categories() {
+            return this.primaryTabs.map(t => t.id);
+        },
+        currentDirective() {
+            this.renderTick;
+            const items = this.state.items;
+            const directives = [
+                { id: 'gather_scrap', text: 'Scavenge scrap from the piles.', condition: () => (items.scrap?.val || 0) >= 30, progress: () => Math.floor(items.scrap?.val || 0), target: 30 },
+                { id: 'earn_creds', text: 'Earn Creds from Odd Jobs.', condition: () => (items.creds?.val || 0) >= 15, progress: () => Math.floor(items.creds?.val || 0), target: 15 },
+                { id: 'build_sorting', text: 'Build the Sorting Station.', condition: () => (this.state.get('sorting_station')?.owned || 0) > 0, progress: () => ((this.state.get('sorting_station')?.owned || 0) > 0 ? 1 : 0), target: 1 },
+                { id: 'upgrade_workshop', text: 'Upgrade the Workshop.', condition: () => (this.state.get('workshop_lv2')?.owned || 0) > 0, progress: () => ((this.state.get('workshop_lv2')?.owned || 0) > 0 ? 1 : 0), target: 1 },
+                { id: 'restore_garage', text: 'Restore the Garage.', condition: () => (this.state.get('garage')?.owned || 0) > 0, progress: () => ((this.state.get('garage')?.owned || 0) > 0 ? 1 : 0), target: 1 },
+            ];
+            for (const d of directives) {
+                if (!d.condition()) return d;
+            }
+            return null;
         },
         tasks() {
             this.renderTick;
+            const cat = this.activeCategory;
             const allTasks = Object.values(this.state.items).filter(i => i.type === 'task');
-            if (this.selectedCategory === 'pilot') {
+            if (cat === 'pilot') {
                 return allTasks.filter(t => !t.locked && t.group === 'pilot');
             }
-            return allTasks.filter(t => !t.locked && t.group === this.selectedCategory);
+            return allTasks.filter(t => !t.locked && t.group === cat);
         },
         factions() {
             this.renderTick;
@@ -236,6 +350,14 @@ export default {
                 <span class="sector-phase-tag">[ PHASE: {{ currentHome ? currentHome.id.split('_')[1].toUpperCase() : '0' }} ]</span>
                 [ PLT: PILOT_01 ]
             </div>
+            <div v-if="currentDirective" class="header-directive">
+                <span class="directive-icon">▶</span>
+                <span class="directive-label">{{ currentDirective.text }}</span>
+                <span class="directive-progress-inline">[{{ currentDirective.progress() }}/{{ currentDirective.target }}]</span>
+                <div class="directive-bar-inline">
+                    <div class="directive-fill-inline" :style="{ width: Math.min(100, (currentDirective.progress() / currentDirective.target) * 100) + '%' }"></div>
+                </div>
+            </div>
         </header>
 
         <!-- RESOURCE MONITOR (Left Sidebar) -->
@@ -243,55 +365,66 @@ export default {
 
         <!-- MAIN CONSOLE (Central Fragment) -->
         <main class="terminal-main-content hud-panel main-panel">
+            <!-- PRIMARY TABS -->
             <nav class="terminal-category-tabs">
-                <button v-for="cat in categories" :key="cat"
-                        :class="['hud-tab-btn', { active: selectedCategory === cat }]"
-                        @click="setCategory(cat)">
+                <button v-for="tab in primaryTabs" :key="tab.id"
+                        :class="['hud-tab-btn', { active: selectedCategory === tab.id }]"
+                        @click="setCategory(tab.id)">
                     <span class="tab-indicator"></span>
-                    {{ cat === 'pilot' ? 'PROFILE' : cat.toUpperCase() }}
-                    <span v-if="isNewTab(cat)" class="tab-new-badge">NEW</span>
+                    {{ tab.label }}
+                    <span v-if="isNewGroup(tab.id)" class="tab-new-badge">NEW</span>
+                </button>
+            </nav>
+
+            <!-- SUB-TABS (shown only when a group tab is selected) -->
+            <nav v-if="activeSubTabs.length > 0" class="sub-tab-bar">
+                <button v-for="sub in activeSubTabs" :key="sub.id"
+                        :class="['sub-tab-btn', { active: activeCategory === sub.id }]"
+                        @click="setSubTab(selectedCategory, sub.id)">
+                    {{ sub.label }}
+                    <span v-if="isNewTab(sub.id)" class="tab-new-badge">NEW</span>
                 </button>
             </nav>
 
             <div class="console-body">
                 <!-- COMBAT AREA -->
-                <section v-if="selectedCategory === 'combat'">
+                <section v-if="activeCategory === 'combat'">
                     <CombatPanel :state="state" :combatRunner="combatRunner" />
                 </section>
 
-                <MechaPanel v-else-if="selectedCategory === 'mecha'"
+                <MechaPanel v-else-if="activeCategory === 'mecha'"
                     :state="state"
                     @action="renderTick++" />
 
-                <FactionsPanel v-else-if="selectedCategory === 'factions'"
+                <FactionsPanel v-else-if="activeCategory === 'factions'"
                     :factions="factions"
                     :contacts="contacts"
                     :state="state"
                     @vendor-buy="renderTick++" />
 
-                <WorkshopPanel v-else-if="selectedCategory === 'workshop'"
+                <WorkshopPanel v-else-if="activeCategory === 'workshop'"
                     :state="state"
                     @action="renderTick++" />
 
-                <ScrapyardPanel v-else-if="selectedCategory === 'scrapyard'"
+                <ScrapyardPanel v-else-if="activeCategory === 'scrapyard'"
                     :state="state"
                     :tasks="tasks" />
 
-                <ZonesPanel v-else-if="selectedCategory === 'zones'"
+                <ZonesPanel v-else-if="activeCategory === 'zones'"
                     :state="state" />
 
-                <CareerPanel v-else-if="selectedCategory === 'career'"
+                <CareerPanel v-else-if="activeCategory === 'career'"
                     :state="state"
                     @action="renderTick++" />
 
-                <PilotPanel v-else-if="selectedCategory === 'pilot'"
+                <PilotPanel v-else-if="activeCategory === 'pilot'"
                     :state="state"
                     :tasks="tasks" />
 
                 <OperationsPanel v-else
                     :state="state"
                     :tasks="tasks"
-                    :selectedCategory="selectedCategory" />
+                    :selectedCategory="activeCategory" />
             </div>
         </main>
 
@@ -360,7 +493,7 @@ export default {
 /* -- HUD GRID SYSTEM ------------------------ */
 .hud-grid {
     display: grid;
-    grid-template-columns: minmax(220px, 260px) 1fr;
+    grid-template-columns: clamp(260px, 18vw, 360px) 1fr;
     grid-template-rows: auto 1fr auto;
     grid-template-areas: 
         "head head"
@@ -394,8 +527,54 @@ export default {
     grid-area: head; 
     border-left: 4px solid var(--primary); 
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Header Directive Tracker */
+.header-directive {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+    margin-top: 6px;
+    border-top: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+}
+.directive-icon {
+    color: var(--primary);
+    font-size: var(--font-size-xs);
+}
+.directive-label {
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 40%;
+}
+.directive-progress-inline {
+    color: var(--primary);
+    font-weight: bold;
+    white-space: nowrap;
+}
+.directive-bar-inline {
+    flex: 1;
+    height: 4px;
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid rgba(0, 255, 65, 0.15);
+    min-width: 60px;
+    max-width: 200px;
+}
+.directive-fill-inline {
+    height: 100%;
+    background: var(--primary);
+    box-shadow: 0 0 6px var(--primary);
+    transition: width 0.3s ease;
 }
 
 .main-panel { 
@@ -476,10 +655,49 @@ export default {
 }
 
 .tab-new-badge {
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     color: var(--color-success);
     margin-left: 4px;
     animation: pulse-new 1.5s ease-in-out infinite;
+}
+
+/* -- SUB-TAB NAVIGATION ---------------------- */
+.sub-tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-dim);
+    background: rgba(0, 0, 0, 0.2);
+    margin: 0 -15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.sub-tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    padding: 4px 12px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: var(--font-size-sm, 11px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 1px;
+}
+
+.sub-tab-btn:hover {
+    color: var(--secondary, #fdc);
+    border-bottom-color: var(--secondary, #fdc);
+}
+
+.sub-tab-btn.active {
+    color: var(--secondary, #fdc);
+    border-bottom: 2px solid var(--secondary, #fdc);
+    background: rgba(255, 220, 0, 0.05);
 }
 
 @keyframes pulse-new {
@@ -499,15 +717,15 @@ export default {
 }
 .prestige-title { color: var(--primary); text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
 .prestige-section { background: rgba(0,0,0,0.3); padding: 15px; margin-bottom: 20px; border: 1px solid #1a1a1a; }
-.prestige-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 14px; margin-bottom: 8px; }
+.prestige-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: var(--font-size-sm); margin-bottom: 8px; }
 .prestige-divider { height: 1px; background: #333; margin: 10px 0; }
-.prestige-total { font-weight: bold; color: var(--primary); font-size: 18px; margin-top: 10px; }
+.prestige-total { font-weight: bold; color: var(--primary); font-size: var(--font-size-lg); margin-top: 10px; }
 .prestige-highlight { color: var(--color-success); font-weight: bold; }
 .prestige-actions { display: flex; gap: 15px; margin-top: 25px; }
 .prestige-btn { flex: 1; font-family: var(--font-mono); font-weight: bold; padding: 12px; cursor: pointer; border: 1px solid; }
 .prestige-btn.confirm { background: var(--primary); color: #000; border-color: var(--primary); }
 .prestige-btn.cancel { background: transparent; color: var(--text-dim); border-color: #333; }
-.prestige-warning { margin-top: 15px; font-size: 10px; color: var(--text-faint); text-align: center; text-transform: uppercase; }
+.prestige-warning { margin-top: 15px; font-size: var(--font-size-xxs); color: var(--text-faint); text-align: center; text-transform: uppercase; }
 
 /* -- GLOBAL UTILS -------------------------- */
 .blink { animation: blink 1s infinite; }

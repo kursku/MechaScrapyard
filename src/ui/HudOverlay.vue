@@ -106,7 +106,7 @@ export default {
     position: absolute;
     top: 12px;
     right: 28px;
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 2px;
     color: var(--primary);
     opacity: 0.7;
@@ -119,7 +119,7 @@ export default {
     bottom: 36px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 1px;
     color: var(--error, #ff4444);
     border: 1px solid var(--error, #ff4444);

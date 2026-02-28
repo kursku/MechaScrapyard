@@ -242,7 +242,7 @@ export default {
                     <span class="list-card__name">{{ task.name.toUpperCase() }}</span>
                     <span v-if="isRunning(task)" class="task-active-label">&#x25B6; ACTIVE</span>
                 </div>
-                <div class="list-card__desc" style="font-size: 11px; color: #888; font-family: var(--font-mono); line-height: 1.3; margin-bottom: 10px;">{{ task.desc }}</div>
+                <div class="list-card__desc" style="font-size: var(--font-size-xxs); color: #888; font-family: var(--font-mono); line-height: 1.3; margin-bottom: 10px;">{{ task.desc }}</div>
                 <div class="list-card__bottom">
                     <div v-if="isRunning(task)">
                         <div class="hud-ascii-bar" style="color: var(--primary)">
@@ -251,11 +251,11 @@ export default {
                         <div v-if="task.length" style="font-size: 13px; font-weight: bold; font-family: var(--font-mono); color: var(--primary); text-align: right; margin-top: 4px;">
                             &#x23F1; {{ getTaskTimeRemaining(task) }}s
                         </div>
-                        <div style="font-size: 11px; margin-top: 8px; font-weight: bold; color: var(--color-danger)">[ ABORT OPERATION ]</div>
+                        <div style="font-size: var(--font-size-xxs); margin-top: 8px; font-weight: bold; color: var(--color-danger)">[ ABORT OPERATION ]</div>
                     </div>
                     <div v-else>
                         <div class="hud-ascii-bar" style="color: var(--border-light)">[...............]</div>
-                        <div style="font-size: 11px; margin-top: 8px; font-weight: bold; color: var(--text-dim)">[ INITIATE ]</div>
+                        <div style="font-size: var(--font-size-xxs); margin-top: 8px; font-weight: bold; color: var(--text-dim)">[ INITIATE ]</div>
                     </div>
                     
                 </div>
@@ -281,7 +281,7 @@ export default {
                     </div>
                     <div class="list-card__desc" style="font-size: 11px; color: #888; font-family: var(--font-mono); line-height: 1.3; margin-bottom: 10px;">{{ upg.desc }}</div>
                     
-                    <div v-if="upg.mod" class="upgrade-mods" style="margin-bottom: 10px; font-size: 9px; color: var(--secondary); display: flex; flex-wrap: wrap; gap: 4px;">
+                    <div v-if="upg.mod" class="upgrade-mods" style="margin-bottom: 10px; font-size: var(--font-size-xxs); color: var(--secondary); display: flex; flex-wrap: wrap; gap: 4px;">
                         <span v-for="(val, k) in upg.mod" :key="k" style="background: rgba(0, 255, 65, 0.05); padding: 3px 6px; border: 1px solid rgba(0, 255, 65, 0.2);">
                             +{{ val }} {{ formatModKey(k) }}
                         </span>
@@ -294,7 +294,7 @@ export default {
                                 {{ resourceIcon(id) }} {{ Math.floor(amt * Math.pow(upg.costScale || 1, upg.owned || 0)) }} <span class="cost-name">{{ formatName(id).toUpperCase() }}</span>
                             </span>
                         </div>
-                        <div v-else class="list-card__cost" style="color: var(--text-dim); font-size: 10px;">CLICK TO BUILD</div>
+                        <div v-else class="list-card__cost" style="color: var(--text-dim); font-size: var(--font-size-xxs);">CLICK TO BUILD</div>
                     </div>
                 </div>
             </div>
@@ -344,7 +344,7 @@ export default {
 }
 
 .task-label {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     color: var(--primary);
     letter-spacing: 1px;
     white-space: nowrap;
@@ -378,7 +378,7 @@ export default {
 }
 
 .kita-level-badge {
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     font-family: var(--font-mono);
     color: rgba(0, 255, 170, 0.9);
     background: rgba(0, 255, 170, 0.08);
@@ -397,7 +397,7 @@ export default {
 }
 
 .kita-stat-label {
-    font-size: 8px;
+    font-size: var(--font-size-xxs);
     font-family: var(--font-mono);
     color: var(--text-dim);
     letter-spacing: 1px;
@@ -425,14 +425,14 @@ export default {
 }
 
 .kita-stat-val {
-    font-size: 8px;
+    font-size: var(--font-size-xxs);
     font-family: var(--font-mono);
     color: var(--text-dim);
     white-space: nowrap;
 }
 
 .task-perpetual-tag {
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     color: var(--text-dim);
     letter-spacing: 1px;
 }
@@ -450,13 +450,13 @@ export default {
     border: 1px solid var(--border);
     color: var(--text);
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     padding: 3px 6px;
     letter-spacing: 1px;
 }
 
 .hud-btn.small {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     padding: 3px 8px;
     letter-spacing: 1px;
     border: 1px solid var(--primary);
@@ -548,7 +548,7 @@ export default {
 }
 
 .dtl-label-text {
-    font-size: 8px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 0.12em;
     opacity: 0.7;
 }
@@ -571,13 +571,13 @@ export default {
 }
 
 .dtl-status-text {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     font-weight: bold;
     letter-spacing: 0.1em;
 }
 
 .dtl-points-text {
-    font-size: 9px;
+    font-size: var(--font-size-xxs);
     opacity: 0.5;
     margin-left: auto;
 }
@@ -604,7 +604,7 @@ export default {
     border: 1px solid currentColor;
     color: currentColor;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 0.08em;
     padding: 4px 8px;
     cursor: pointer;

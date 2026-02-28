@@ -27,7 +27,7 @@ export default {
 }
 
 .resource-buffer-label {
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     letter-spacing: 1px;
     color: var(--text-dim);
 }

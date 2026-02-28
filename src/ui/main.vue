@@ -18,16 +18,16 @@
             <div v-for="r in visibleResources" :key="r.id" class="resource-chip"
                  :class="{ 'resource-chip--warning': pct(r.val, r.max) > 90 }"
                  :title="r.desc">
-                <span :style="{ color: groupColor(r.group), width: '80px', display: 'inline-block', fontSize: '10px' }">
+                <span :style="{ color: groupColor(r.group), width: '80px', display: 'inline-block' }" class="resource-chip__name">
                     {{ resourceIcon(r.id) }} {{ r.name }}
                 </span>
                 <span class="ascii-bar ascii-bar--thin" :style="{ color: pct(r.val, r.max) > 0.15 ? groupColor(r.group) : '#333' }">
                     {{ asciiBar(r.val, r.max, 10) }}
                 </span>
-                <span style="color:#999;font-size:9px;width:55px;text-align:right">
+                <span class="resource-chip__value">
                     {{ fmt(r.val) }}/{{ fmt(r.max) }}
                 </span>
-                <span v-if="r.rate !== 0" :style="{ color: r.rate > 0 ? '#3a7' : '#a44', fontSize: '8px' }">
+                <span v-if="r.rate !== 0" :style="{ color: r.rate > 0 ? '#3a7' : '#a44' }" class="resource-chip__rate">
                     {{ r.rate > 0 ? '▲' : '▼' }}{{ fmt(Math.abs(r.rate)) }}/s
                 </span>
             </div>
@@ -54,7 +54,7 @@
                         <!-- Active task panel -->
                         <div v-if="runner.activeTask" class="active-task">
                             <div class="flex-between" style="margin-bottom:4px">
-                                <span style="color:#0fa;font-size:12px">▶ {{ runner.activeTask.name }}</span>
+                                <span class="active-task__name">▶ {{ runner.activeTask.name }}</span>
                                 <button class="btn btn--stop" @click="stopTask">■ STOP</button>
                             </div>
                             <div v-if="!runner.activeTask.perpetual && runner.activeTask.length" style="margin-bottom:3px">
@@ -63,7 +63,7 @@
                                         <div class="progress-bar__fill progress-bar__fill--task"
                                              :style="{ width: pct(runner.taskProgress, runner.activeTask.length) + '%' }"></div>
                                     </div>
-                                    <span style="color:#6a8;font-size:9px;width:40px;text-align:right">
+                                    <span class="active-task__timer">
                                         {{ Math.ceil(runner.activeTask.length - runner.taskProgress) }}s
                                     </span>
                                 </div>
@@ -141,7 +141,7 @@
                     <template v-if="tab === 'refinery'">
                         <!-- Active recipe -->
                         <div v-if="runner.activeRecipe" class="active-recipe">
-                            <div style="color:#f0a;font-size:11px;margin-bottom:4px">
+                            <div class="active-recipe__name">
                                 ◈ {{ runner.activeRecipe.name.replace('Refine: ', '') }}
                             </div>
                             <div class="flex-center gap-6">
@@ -149,7 +149,7 @@
                                     <div class="progress-bar__fill progress-bar__fill--recipe"
                                          :style="{ width: pct(runner.recipeProgress, runner.activeRecipe.length) + '%' }"></div>
                                 </div>
-                                <span style="color:#a68;font-size:9px;width:30px">
+                                <span class="active-recipe__timer">
                                     {{ Math.ceil(runner.activeRecipe.length - runner.recipeProgress) }}s
                                 </span>
                             </div>
@@ -458,11 +458,50 @@ export default {
 
 <style scoped>
 .list-subrow {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: #94a3b8;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.resource-chip__name {
+    font-size: var(--font-size-xxs);
+}
+
+.resource-chip__value {
+    color: #999;
+    font-size: var(--font-size-xxs);
+    width: 55px;
+    text-align: right;
+}
+
+.resource-chip__rate {
+    font-size: var(--font-size-xxs);
+}
+
+.active-task__name {
+    color: #0fa;
+    font-size: var(--font-size-xs);
+}
+
+.active-task__timer {
+    color: #6a8;
+    font-size: var(--font-size-xxs);
+    width: 40px;
+    text-align: right;
+}
+
+.active-recipe__name {
+    color: #f0a;
+    font-size: var(--font-size-xs);
+    margin-bottom: 4px;
+}
+
+.active-recipe__timer {
+    color: #a68;
+    font-size: var(--font-size-xxs);
+    width: 30px;
 }
 
 .list-subrow__item {

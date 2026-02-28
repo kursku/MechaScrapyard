@@ -124,11 +124,11 @@ export default {
 
 .list-card__lead {
   color: #00ff41;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 .list-card__name {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: #e6edf3;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -146,7 +146,7 @@ export default {
 .list-card__cost {
   width: 190px; /* fixed column for alignment */
   text-align: right;
-  font-size: 11px;
+  font-size: var(--font-size-xxs);
 }
 
 .list-card__cost-item {
@@ -155,19 +155,19 @@ export default {
 }
 
 .list-card__meta {
-  font-size: 11px;
+  font-size: var(--font-size-xxs);
   color: #94a3b8;
   white-space: nowrap;
 }
 
 .list-card__desc {
-  font-size: 11px;
+  font-size: var(--font-size-xxs);
   color: #94a3b8;
   margin-top: 4px;
 }
 
 .list-card__flavor {
-  font-size: 11px;
+  font-size: var(--font-size-xxs);
   color: #6a8a6a;
   font-style: italic;
   margin-top: 2px;
@@ -184,7 +184,7 @@ export default {
 
 .btn--xs {
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: var(--font-size-xxs);
   border: 1px solid #008f11;
   background: transparent;
   color: #00ff41;
