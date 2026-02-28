@@ -114,5 +114,30 @@
         "locked": false,
         "hide": false,
         "icon": "🌟"
+    },
+    {
+        "id": "grandpa_trust",
+        "name": "Grandpa's Trust",
+        "desc": "How much Grandpa trusts your judgment. Grows as you uncover the truth about Kazuo.",
+        "val": 0,
+        "max": 10,
+        "hide": true
+    },
+    {
+        "id": "intel_tokens",
+        "name": "Intel Tokens",
+        "desc": "Research leads gathered by K.I.T.A. Used for pre-mission intelligence.",
+        "val": 0,
+        "max": 50,
+        "hide": true
+    },
+    {
+        "id": "rep_refugee",
+        "name": "Refugee Council Rep",
+        "desc": "Standing with the displaced communities of the outer districts.",
+        "val": 0,
+        "min": -100,
+        "max": 200,
+        "hide": true
     }
 ]

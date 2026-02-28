@@ -1564,6 +1564,14 @@ const Game = {
             this.queueEvent(missionData.onComplete.event);
         }
 
+        // Story processing for Phase 4+ missions
+        if (result === 'victory' && missionData) {
+            this._processRewardFlags(missionData);
+            this._processStoryBeats(missionData, 'on_complete');
+            this._processDebrief(missionData);
+            this._processEnemyLoot();
+        }
+
         // --- Check for faction rep tier transitions ---
         this._checkRepTierTransitions();
 
@@ -1935,6 +1943,71 @@ const Game = {
         this.state.salvage.options = [];
     },
 
+    // ── STORY FLAG SYSTEM ────────────────────────────────────
+
+    /**
+     * Create or set a story flag in the g.* namespace.
+     * Flags gate Phase 4 mission requirements and track narrative progress.
+     */
+    _setFlag(flagId) {
+        const existing = this.state.items[flagId];
+        if (existing) {
+            existing.val = 1;
+        } else {
+            const flagItem = reactive({ id: flagId, val: 1, type: 'flag' });
+            this.state.items[flagId] = flagItem;
+            this.state.register(flagItem);
+        }
+        this.techTree.check();
+        Log.add(`◈ ${flagId.replace(/flag_/g, '').replace(/_/g, ' ')}`, 'story');
+    },
+
+    /**
+     * Process rewards.flags array — set each as a story flag.
+     */
+    _processRewardFlags(mission) {
+        const flags = mission?.rewards?.flags;
+        if (!Array.isArray(flags)) return;
+        for (const flagId of flags) {
+            this._setFlag(flagId);
+        }
+    },
+
+    /**
+     * Fire storyBeats matching the given trigger from a mission definition.
+     */
+    _processStoryBeats(mission, trigger) {
+        if (!Array.isArray(mission?.storyBeats)) return;
+        for (const beat of mission.storyBeats) {
+            if (beat.trigger === trigger) {
+                Log.add(beat.log, 'story');
+            }
+        }
+    },
+
+    /**
+     * Output the structured post-mission debrief (Gibson/Patlabor register).
+     */
+    _processDebrief(mission) {
+        if (!Array.isArray(mission?.debrief)) return;
+        Log.add('─────────────────────────────────────', 'system');
+        for (const line of mission.debrief) {
+            Log.add(line, 'story');
+        }
+        Log.add('─────────────────────────────────────', 'system');
+    },
+
+    /**
+     * Award loot from all defeated enemies (Phase 4 enemies carry loot objects).
+     */
+    _processEnemyLoot() {
+        for (const enemy of this.combatRunner.enemies || []) {
+            if (enemy?.loot && typeof enemy.loot === 'object') {
+                this._routeFactionRepFromRewards(enemy.loot, `enemy_loot:${enemy.id || 'unknown'}`);
+            }
+        }
+    },
+
     craftBlueprint(bp) {
         if (!bp || bp.locked) return false;
 
@@ -2181,6 +2254,11 @@ const Game = {
         // Log result
         if (chosen.log) {
             Log.add(chosen.log, 'story');
+        }
+
+        // Set story flag if choice carries one
+        if (chosen.flag) {
+            this._setFlag(chosen.flag);
         }
 
         if (event.id === 'evt_android_discovery') {

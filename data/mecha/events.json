@@ -78,6 +78,34 @@
         "desc": "The sorting station runs. The refinery hums. The scrapyard does what it was built to do. You keep working. It's what he would have wanted."
     },
     {
+        "id": "evt_taeyang_contract_choice",
+        "name": "The Crate",
+        "speaker": "kenji",
+        "require": "",
+        "seen": false,
+        "desc": "The Taeyang facility is ahead. The crate is sealed. You could deliver it — or open it. Whatever's inside, once you know, you can't unknow.",
+        "choices": [
+            {
+                "id": "deliver",
+                "label": "Complete the delivery",
+                "desc": "Take the money. Stay clean. Don't ask what's inside.",
+                "morality": -5,
+                "effect": { "creds": 400, "rep_corporate": 15 },
+                "flag": "flag_delivered_taeyang_cargo",
+                "log": "The crate is logged. A corporate rep nods. You have been useful. You try not to think about what that means."
+            },
+            {
+                "id": "open_and_report",
+                "label": "Break the seal and document everything",
+                "desc": "You lose the payment. You gain the truth. And Taeyang gains a very specific enemy.",
+                "morality": 15,
+                "effect": { "rep_corporate": -40, "rep_police": 20, "data_chips": 10 },
+                "flag": "flag_documented_taeyang_chips",
+                "log": "Control chips. Behavioral modifiers. Designed for population-dense zones. You photograph every serial number. Taeyang will know within the hour."
+            }
+        ]
+    },
+    {
         "id": "evt_debt_notice",
         "name": "Father's Debt",
         "speaker": "ironjaw_enforcer",

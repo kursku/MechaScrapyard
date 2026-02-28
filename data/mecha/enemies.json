@@ -298,6 +298,178 @@
         }
     },
     {
+        "id": "enemy_taeyang_drone",
+        "name": "Taeyang Surveillance Drone",
+        "desc": "Compact, fast, and very much not supposed to be here.",
+        "attributes": { "atk": 12, "def": 6, "enr": 32, "cor": 0 },
+        "tokenOnHit": [
+            { "type": "ERROR", "chance": 0.15, "stacks": 1 }
+        ],
+        "loot": { "electronic_scrap": 3, "data_chips": 2 },
+        "parts": {
+            "torso": { "name": "Sensor Core", "integrity": 1, "hp": 45, "maxHp": 45, "status": "operational" },
+            "left_arm": { "name": "Scan Array L", "integrity": 1, "hp": 18, "maxHp": 18, "status": "operational" },
+            "right_arm": { "name": "Scan Array R", "integrity": 1, "hp": 18, "maxHp": 18, "status": "operational" },
+            "legs": { "name": "Hover Thrusters", "integrity": 1, "hp": 20, "maxHp": 20, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_taeyang_guard_mk1",
+        "name": "Taeyang Corp Security Unit",
+        "desc": "Standard corporate security. Their insignia has been painted over.",
+        "attributes": { "atk": 18, "def": 12, "enr": 20, "cor": 6 },
+        "loot": { "ferrous_scrap": 5, "polymer_scrap": 3, "creds": 25 },
+        "parts": {
+            "torso": { "name": "Guard Frame", "integrity": 2, "hp": 80, "maxHp": 80, "status": "operational" },
+            "left_arm": { "name": "Shield Arm", "integrity": 2, "hp": 32, "maxHp": 32, "status": "operational" },
+            "right_arm": { "name": "Taser Baton", "integrity": 2, "hp": 32, "maxHp": 32, "status": "operational" },
+            "legs": { "name": "Patrol Legs", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_bounty_hunter",
+        "name": "Mercenary Hunter",
+        "desc": "Professional. Cold. Someone paid top cred for this.",
+        "attributes": { "atk": 22, "def": 15, "enr": 28, "cor": 8 },
+        "tokenOnHit": [
+            { "type": "TARGET_LOCK", "chance": 0.25, "stacks": 1 },
+            { "type": "SUPPRESS", "chance": 0.2, "stacks": 1 }
+        ],
+        "loot": { "creds": 80, "nano_infra": 3, "ferrous_scrap": 8 },
+        "parts": {
+            "torso": { "name": "Hunter Frame", "integrity": 3, "hp": 120, "maxHp": 120, "status": "operational" },
+            "left_arm": { "name": "Tracking System", "integrity": 2, "hp": 48, "maxHp": 48, "status": "operational" },
+            "right_arm": { "name": "Bounty Arm", "integrity": 2, "hp": 48, "maxHp": 48, "status": "operational" },
+            "legs": { "name": "Pursuit Legs", "integrity": 3, "hp": 54, "maxHp": 54, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_taeyang_guard_mk2",
+        "name": "Taeyang Security MK.II",
+        "desc": "Upgraded armor. They learned from the first encounter.",
+        "attributes": { "atk": 20, "def": 18, "enr": 20, "cor": 4 },
+        "tokenOnHit": [
+            { "type": "SUPPRESS", "chance": 0.2, "stacks": 1 }
+        ],
+        "loot": { "ferrous_scrap": 6, "nano_infra": 2, "creds": 35 },
+        "parts": {
+            "torso": { "name": "Reinforced Guard Frame", "integrity": 2, "hp": 110, "maxHp": 110, "status": "operational" },
+            "left_arm": { "name": "Heavy Shield Arm", "integrity": 2, "hp": 44, "maxHp": 44, "status": "operational" },
+            "right_arm": { "name": "Riot Cannon", "integrity": 2, "hp": 44, "maxHp": 44, "status": "operational" },
+            "legs": { "name": "Heavy Patrol Legs", "integrity": 2, "hp": 50, "maxHp": 50, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_taeyang_enforcer",
+        "name": "Taeyang Enforcer Unit",
+        "desc": "Corporate-grade military hardware. This unit has a name patch: SIGMA-7.",
+        "isBoss": true,
+        "attributes": { "atk": 28, "def": 20, "enr": 16, "cor": 10 },
+        "tokenOnHit": [
+            { "type": "BREACH", "chance": 0.35, "stacks": 1 },
+            { "type": "BURN", "chance": 0.25, "stacks": 1 }
+        ],
+        "loot": { "creds": 100, "data_chips": 5 },
+        "narrative": {
+            "defeat": "SIGMA-7 falls. The emblem on its chest — a stylized T — flickers and goes dark.",
+            "player_defeat": "SIGMA-7 stands over you. It doesn't speak. It doesn't need to."
+        },
+        "parts": {
+            "torso": { "name": "Enforcer Core", "integrity": 3, "hp": 160, "maxHp": 160, "status": "operational" },
+            "left_arm": { "name": "SIGMA Cannon", "integrity": 3, "hp": 64, "maxHp": 64, "status": "operational" },
+            "right_arm": { "name": "SIGMA Blade", "integrity": 3, "hp": 64, "maxHp": 64, "status": "operational" },
+            "legs": { "name": "Combat Striders", "integrity": 3, "hp": 72, "maxHp": 72, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_rust_king_scout",
+        "name": "Rust King Scout",
+        "desc": "Fast, light, and first to run when things go wrong.",
+        "attributes": { "atk": 10, "def": 5, "enr": 36, "cor": 0 },
+        "loot": { "ferrous_scrap": 2, "scrap": 3 },
+        "parts": {
+            "torso": { "name": "Scout Frame", "integrity": 1, "hp": 50, "maxHp": 50, "status": "operational" },
+            "left_arm": { "name": "Scrap Arm L", "integrity": 1, "hp": 20, "maxHp": 20, "status": "operational" },
+            "right_arm": { "name": "Scrap Arm R", "integrity": 1, "hp": 20, "maxHp": 20, "status": "operational" },
+            "legs": { "name": "Sprint Legs", "integrity": 1, "hp": 22, "maxHp": 22, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_rust_king_fighter",
+        "name": "Rust King Fighter",
+        "desc": "Street-hardened brawler. Their mech is half welded together and still dangerous.",
+        "attributes": { "atk": 16, "def": 8, "enr": 24, "cor": 2 },
+        "tokenOnHit": [
+            { "type": "BREACH", "chance": 0.2, "stacks": 1 }
+        ],
+        "loot": { "ferrous_scrap": 5, "creds": 20 },
+        "parts": {
+            "torso": { "name": "Gang Frame", "integrity": 2, "hp": 80, "maxHp": 80, "status": "operational" },
+            "left_arm": { "name": "Chain Arm", "integrity": 2, "hp": 32, "maxHp": 32, "status": "operational" },
+            "right_arm": { "name": "Bludgeon Arm", "integrity": 2, "hp": 32, "maxHp": 32, "status": "operational" },
+            "legs": { "name": "Scrap Legs", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_rust_king_ambush",
+        "name": "Rust King Ambush Unit",
+        "desc": "They were waiting. They're always waiting.",
+        "attributes": { "atk": 18, "def": 10, "enr": 32, "cor": 2 },
+        "tokenOnHit": [
+            { "type": "SUPPRESS", "chance": 0.3, "stacks": 1 },
+            { "type": "BREACH", "chance": 0.2, "stacks": 1 }
+        ],
+        "loot": { "ferrous_scrap": 4, "scrap": 5, "creds": 30 },
+        "parts": {
+            "torso": { "name": "Ambush Frame", "integrity": 2, "hp": 90, "maxHp": 90, "status": "operational" },
+            "left_arm": { "name": "Strike Arm L", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" },
+            "right_arm": { "name": "Strike Arm R", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" },
+            "legs": { "name": "Ambush Legs", "integrity": 2, "hp": 40, "maxHp": 40, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_rust_king_raider",
+        "name": "Rust King Raider",
+        "desc": "They take what they need. From whoever has it.",
+        "attributes": { "atk": 14, "def": 7, "enr": 28, "cor": 0 },
+        "loot": { "scrap": 5, "polymer_scrap": 2 },
+        "parts": {
+            "torso": { "name": "Raider Frame", "integrity": 2, "hp": 70, "maxHp": 70, "status": "operational" },
+            "left_arm": { "name": "Grab Arm", "integrity": 2, "hp": 28, "maxHp": 28, "status": "operational" },
+            "right_arm": { "name": "Slash Arm", "integrity": 2, "hp": 28, "maxHp": 28, "status": "operational" },
+            "legs": { "name": "Raider Legs", "integrity": 2, "hp": 32, "maxHp": 32, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_arena_qualifier",
+        "name": "Arena Qualifier",
+        "desc": "A scrapper who made it this far. Don't underestimate them.",
+        "attributes": { "atk": 16, "def": 10, "enr": 28, "cor": 3 },
+        "loot": { "creds": 50 },
+        "parts": {
+            "torso": { "name": "Arena Frame", "integrity": 2, "hp": 90, "maxHp": 90, "status": "operational" },
+            "left_arm": { "name": "Combat Arm L", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" },
+            "right_arm": { "name": "Combat Arm R", "integrity": 2, "hp": 36, "maxHp": 36, "status": "operational" },
+            "legs": { "name": "Arena Legs", "integrity": 2, "hp": 40, "maxHp": 40, "status": "operational" }
+        }
+    },
+    {
+        "id": "enemy_arena_contender",
+        "name": "Arena Contender",
+        "desc": "Third time in the bracket. They've learned something from losing.",
+        "attributes": { "atk": 22, "def": 14, "enr": 24, "cor": 5 },
+        "tokenOnHit": [
+            { "type": "TARGET_LOCK", "chance": 0.25, "stacks": 1 }
+        ],
+        "loot": { "creds": 80, "ferrous_scrap": 5 },
+        "parts": {
+            "torso": { "name": "Contender Frame", "integrity": 3, "hp": 130, "maxHp": 130, "status": "operational" },
+            "left_arm": { "name": "Pro Arm L", "integrity": 2, "hp": 52, "maxHp": 52, "status": "operational" },
+            "right_arm": { "name": "Pro Arm R", "integrity": 2, "hp": 52, "maxHp": 52, "status": "operational" },
+            "legs": { "name": "Arena Striders", "integrity": 3, "hp": 58, "maxHp": 58, "status": "operational" }
+        }
+    },
+    {
         "id": "nephilim_operator",
         "name": "Nephilim Operator",
         "desc": "Nephilim Corp salvage unit. Light, fast, and equipped with corporate-grade scanning tech.",

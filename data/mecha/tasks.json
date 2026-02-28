@@ -286,6 +286,25 @@
         }
     },
     {
+        "id": "task_research",
+        "name": "Intel Gathering",
+        "verb": "researching",
+        "desc": "Assign K.I.T.A. to scan local networks and compile mission intelligence.",
+        "flavor": "She does this quietly. You try not to think too hard about how.",
+        "tips": "Generates Intel Tokens over time. Intel Tokens can be spent for pre-mission preparation.",
+        "require": "g.android_active>0",
+        "androidEligible": true,
+        "perpetual": true,
+        "group": "pilot",
+        "tags": "t_exploration",
+        "run": {
+            "energy": 0.1
+        },
+        "effect": {
+            "intel_tokens": 0.004
+        }
+    },
+    {
         "id": "repair_frame",
         "name": "Repair Frame",
         "verb": "repairing",

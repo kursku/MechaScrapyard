@@ -238,6 +238,307 @@
         }
     },
     {
+        "id": "mission_beyond_perimeter",
+        "name": "Beyond the Perimeter",
+        "missionType": "story",
+        "phase": 4,
+        "require": "g.level>=6&&g.garage>0",
+        "desc": "Surveillance tech has been sighted past the eastern patrol boundary. Who put it there? Why? Your mech can reach it. Maybe you should.",
+        "flavor": "The map says 'uncharted.' The sensor pings say otherwise.",
+        "cost": { "energy": 30 },
+        "enemies": ["enemy_taeyang_drone", "enemy_taeyang_guard_mk1"],
+        "turnLimit": 30,
+        "rewards": {
+            "creds": 120,
+            "data_chips": 5,
+            "xp": 80,
+            "grandpa_trust": 1,
+            "flags": ["flag_found_surveillance"]
+        },
+        "failRewards": { "xp": 40 },
+        "firstClearBonus": { "glory": 5, "reputation": 3 },
+        "storyBeats": [
+            {
+                "trigger": "on_complete",
+                "log": "The array bears a Taeyang Corp serial number. Corporate surveillance — here, in the wastes. Who are they watching?"
+            }
+        ],
+        "debrief": [
+            "The array was looking for something specific.",
+            "Taeyang knew to place it here. That means someone told them where to look.",
+            "You have their serial number. That's a thread."
+        ],
+        "narrative": {
+            "speaker": "kenji",
+            "briefing_pages": [
+                "There's a sensor cluster past the eastern boundary. Not on any public map. I want to know who put it there."
+            ],
+            "debriefing_victory": [
+                "Taeyang Corp. Their insignia, their serial numbers, their frequency bands. This isn't random. Someone built this to watch this district."
+            ],
+            "debriefing_defeat": [
+                "They pushed you back. But you saw the logo on that drone. Taeyang."
+            ]
+        },
+        "intel": {
+            "level1": {
+                "cost": { "data_chips": 1 },
+                "reveals": "Enemy: 2x Taeyang Drone + 1x Security Unit. Eastern approach has lower guard density."
+            },
+            "level2": {
+                "cost": { "data_chips": 3, "rep_exile": 10 },
+                "reveals": "The array has a 90-second patrol reset blind spot. The real objective isn't the array — it's what's underneath it."
+            }
+        }
+    },
+    {
+        "id": "mission_taeyang_contract",
+        "name": "The Taeyang Contract",
+        "missionType": "story",
+        "phase": 4,
+        "require": "g.flag_found_surveillance>0&&g.rep_corporate>=-20",
+        "desc": "Anonymous job. High pay. Sealed crate. Taeyang destination. You know something is wrong. But you're broke, and curiosity is expensive.",
+        "flavor": "The crate is warm. It hums.",
+        "cost": { "energy": 35 },
+        "enemies": ["enemy_rust_king_ambush"],
+        "turnLimit": 30,
+        "rewards": {
+            "xp": 100,
+            "grandpa_trust": 1
+        },
+        "failRewards": { "xp": 50 },
+        "firstClearBonus": { "glory": 8 },
+        "onComplete": { "event": "evt_taeyang_contract_choice" },
+        "storyBeats": [
+            {
+                "trigger": "on_complete",
+                "log": "You reach the Taeyang facility. The crate is still sealed. You have a choice."
+            }
+        ],
+        "debrief": [
+            "The crate was warm. Something inside was drawing power.",
+            "Behavioral modification chips. Or corporate logistics. You still don't know which.",
+            "You will."
+        ],
+        "narrative": {
+            "speaker": "system",
+            "briefing_pages": [
+                "Anonymous employer. Sealed cargo. Taeyang destination. The pay is real. The red flags are too.",
+                "The job is simple: pick up the crate, deliver it. Don't ask what's inside."
+            ],
+            "debriefing_victory": [
+                "The ambush was Rust Kings — someone tipped them off. The crate made it through. Now you have to decide what to do with it."
+            ]
+        }
+    },
+    {
+        "id": "mission_the_bounty",
+        "name": "The Bounty",
+        "missionType": "story",
+        "phase": 4,
+        "require": "g.flag_delivered_taeyang_cargo>0||g.flag_documented_taeyang_chips>0",
+        "desc": "Your mech registration appeared on a corporate bounty board. Someone wants you collected or destroyed. You need to find out who put it there — and why they think you're a threat.",
+        "flavor": "You've become inconvenient. That means you found something real.",
+        "cost": { "energy": 35 },
+        "enemies": ["enemy_bounty_hunter"],
+        "turnLimit": 35,
+        "rewards": {
+            "creds": 200,
+            "xp": 120,
+            "data_chips": 8,
+            "grandpa_trust": 1,
+            "flags": ["flag_taeyang_aware_of_player"]
+        },
+        "failRewards": { "xp": 60, "creds": 50 },
+        "firstClearBonus": { "glory": 10, "reputation": 5 },
+        "storyBeats": [
+            {
+                "trigger": "on_complete",
+                "log": "The contract traces to a shell company. Three layers deep — then a name: Taeyang Industrial Security Division. They know you exist. They know what you know."
+            }
+        ],
+        "debrief": [
+            "The bounty was placed 48 hours after the Taeyang facility job.",
+            "They were already watching. The contract was insurance.",
+            "Taeyang doesn't file bounties on random scrappers."
+        ],
+        "narrative": {
+            "speaker": "kenji",
+            "briefing_pages": [
+                "Your mech registration is on a bounty board. Corporate-tier. Someone spent serious cred to put you there.",
+                "We need to trace the contract before whoever filed it sends more than one hunter."
+            ],
+            "debriefing_victory": [
+                "Taeyang Industrial Security. They flagged you the moment you touched that cargo. We're past the point of coincidence."
+            ]
+        }
+    },
+    {
+        "id": "mission_dads_last_route",
+        "name": "Dad's Last Route",
+        "missionType": "story",
+        "phase": 4,
+        "require": "g.flag_taeyang_aware_of_player>0&&g.grandpa_trust>=3",
+        "desc": "Grandpa found the maintenance log from Kazuo's last patrol. Sector 7-East. Taeyang's surveillance network runs right through it. You're going to retrace his final route.",
+        "flavor": "His mech prints are still in the mud. Six years of rain and they're still there.",
+        "cost": { "energy": 40 },
+        "enemies": ["enemy_taeyang_guard_mk2", "enemy_taeyang_enforcer"],
+        "turnLimit": 40,
+        "rewards": {
+            "xp": 150,
+            "flags": ["flag_kazuo_crash_not_accident"]
+        },
+        "failRewards": { "xp": 80 },
+        "firstClearBonus": { "glory": 15, "reputation": 8 },
+        "storyBeats": [
+            {
+                "trigger": "on_complete",
+                "log": "The mech is there. Charred from the inside. This wasn't a malfunction — this was a directed EMP. Corporate-grade. Taeyang-grade."
+            },
+            {
+                "trigger": "on_complete",
+                "log": "Grandpa reads the log silently. Then: 'He found the same thing you found. He was going to go public.' A long pause. 'They killed my son.'"
+            }
+        ],
+        "debrief": [
+            "Kazuo's patrol logs showed him investigating the same surveillance network — six years ago.",
+            "He sent a report. It was filed as 'unsubstantiated.' Two weeks later, equipment failure.",
+            "No failure. A murder. And a cover-up that's been running ever since."
+        ],
+        "narrative": {
+            "speaker": "grandpa",
+            "briefing_pages": [
+                "I found his maintenance log. Sector 7-East. That's where he was the last week.",
+                "He kept notes. Detailed ones. Something out there scared him enough to write it all down. We need those notes."
+            ],
+            "debriefing_victory": [
+                "It was there. Charred from the inside out. Not wear, not accident. Someone used a directed EMP at close range. Someone with corporate-grade hardware."
+            ]
+        }
+    },
+    {
+        "id": "mission_arena_ranked",
+        "name": "Arena Ranked",
+        "missionType": "story",
+        "phase": 4,
+        "require": "g.flag_kazuo_crash_not_accident>0",
+        "desc": "Your name appeared on the bracket without your consent. Corporate-sponsored tournament. Win, and you become visible — to everyone. Lose, and you disappear.",
+        "flavor": "The crowd is quiet. They've seen too many good pilots come through those gates.",
+        "cost": { "energy": 50 },
+        "enemies": [
+            "enemy_arena_qualifier",
+            "enemy_arena_contender",
+            "enemy_taeyang_enforcer"
+        ],
+        "turnLimit": 50,
+        "rewards": {
+            "creds": 500,
+            "glory": 100,
+            "xp": 200,
+            "flags": ["flag_arena_ranked_complete", "flag_phase4_complete"]
+        },
+        "failRewards": {
+            "xp": 100,
+            "glory": 25
+        },
+        "firstClearBonus": { "glory": 30, "reputation": 15 },
+        "storyBeats": [
+            {
+                "trigger": "on_complete",
+                "log": "Sigma-7 lies still. The crowd erupts. From the corporate box, no one applauds. A man in a Taeyang suit writes something down. You've been noticed."
+            },
+            {
+                "trigger": "on_complete",
+                "log": "You know what happened to your father. You have evidence. You have enemies. Phase 5 begins — and this time, you're not running."
+            }
+        ],
+        "debrief": [
+            "You entered a corporate tournament you didn't sign up for and won.",
+            "Taeyang entered you to watch how you fight — and to discredit your evidence by making you a known arena fighter.",
+            "It didn't work. You're still standing. So is the evidence."
+        ],
+        "narrative": {
+            "speaker": "system",
+            "briefing_pages": [
+                "Your mech registration number appeared on the tournament bracket. No notification. No consent.",
+                "Taeyang Corp is the sponsor. They picked the participants. They picked you.",
+                "Win — and everything changes. Lose — and you get to wonder what they planned for the loser."
+            ],
+            "debriefing_victory": [
+                "SIGMA-7 is down. The crowd is loud. The corporate box is silent.",
+                "You did what they didn't expect. Now they know what you're capable of. So does everyone else."
+            ],
+            "debriefing_defeat": [
+                "You fought SIGMA-7 and lost. But you made it to the final. The crowd saw it. People noticed.",
+                "Taeyang got what they wanted — a public loss. But you're still here. That's more than they planned for."
+            ]
+        }
+    },
+    {
+        "id": "patrol_outer_district",
+        "name": "Outer District Patrol",
+        "missionType": "patrol",
+        "phase": 4,
+        "require": "g.garage>0&&g.level>=5",
+        "cooldown": 3600,
+        "desc": "Sweep the eastern outer district. Rust King activity has been reported.",
+        "flavor": "They've been bold lately. That means something changed.",
+        "cost": { "energy": 20 },
+        "enemies": ["enemy_rust_king_scout", "enemy_rust_king_fighter"],
+        "turnLimit": 25,
+        "rewards": {
+            "creds": 60,
+            "xp": 40,
+            "rep_underground": -5,
+            "rep_police": 8,
+            "ferrous_scrap": 5,
+            "scrap": 3
+        },
+        "failRewards": { "xp": 20 }
+    },
+    {
+        "id": "patrol_taeyang_watch",
+        "name": "Corporate Sector Watch",
+        "missionType": "patrol",
+        "phase": 4,
+        "require": "g.flag_found_surveillance>0",
+        "cooldown": 7200,
+        "desc": "Monitor Taeyang's activity in the industrial zone. Document movements.",
+        "flavor": "They're rotating their patrol schedules. That means they know someone's watching.",
+        "cost": { "energy": 25 },
+        "enemies": ["enemy_taeyang_drone", "enemy_taeyang_guard_mk1"],
+        "turnLimit": 25,
+        "rewards": {
+            "data_chips": 6,
+            "xp": 50,
+            "rep_corporate": -8,
+            "rep_exile": 10
+        },
+        "failRewards": { "xp": 25, "data_chips": 2 }
+    },
+    {
+        "id": "patrol_refugee_escort",
+        "name": "Refugee District Escort",
+        "missionType": "patrol",
+        "phase": 4,
+        "require": "g.level>=4",
+        "cooldown": 5400,
+        "desc": "Escort supply runners through the contested perimeter. No one else will do it.",
+        "flavor": "They carry medicine, not weapons. The Rust Kings don't care.",
+        "cost": { "energy": 18 },
+        "enemies": ["enemy_rust_king_raider"],
+        "turnLimit": 20,
+        "rewards": {
+            "creds": 40,
+            "xp": 45,
+            "rep_refugee": 15,
+            "morality": 5,
+            "polymer_scrap": 4,
+            "electronic_scrap": 2
+        },
+        "failRewards": { "xp": 20, "morality": 2 }
+    },
+    {
         "id": "msn_nephilim_salvage",
         "name": "Nephilim Salvage Team",
         "desc": "Nephilim Corp has a team stripping your zone. They won't stop unless you make them.",
