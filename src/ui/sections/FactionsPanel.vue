@@ -16,6 +16,11 @@ export default {
         /** @type {Object} Game state for item/vendor lookups */
         state: { type: Object, required: true },
     },
+    data() {
+        return {
+            purchasingItems: new Set(),
+        };
+    },
     methods: {
         renderBar,
         getAllianceLabel,
@@ -65,8 +70,11 @@ export default {
 
         buyVendorItem(itemId, factionId) {
             if (!Game.buyFromVendor) return;
+            if (this.purchasingItems.has(itemId)) return;
+            this.purchasingItems.add(itemId);
             Game.buyFromVendor(itemId, factionId);
             this.$emit('vendor-buy');
+            setTimeout(() => this.purchasingItems.delete(itemId), 400);
         },
     },
 };
@@ -123,7 +131,7 @@ export default {
                                             <span class="vendor-item-cost">{{ getVendorItemCost(itemId) }} C</span>
                                         </div>
                                         <button class="hud-btn small vendor-buy-btn"
-                                            :disabled="!canBuyVendorItem(itemId, fac.id)"
+                                            :disabled="!canBuyVendorItem(itemId, fac.id) || purchasingItems.has(itemId)"
                                             @click="buyVendorItem(itemId, fac.id)">
                                             BUY
                                         </button>
@@ -162,6 +170,9 @@ export default {
                 </div>
             </div>
         </div>
+        <div v-else class="contacts-empty">
+            [ No contacts — build faction rep to establish connections ]
+        </div>
     </section>
 </template>
 
@@ -170,6 +181,16 @@ export default {
     margin-top: 16px;
     border-top: 1px solid var(--c-border);
     padding-top: 8px;
+}
+.contacts-empty {
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    opacity: 0.45;
+    letter-spacing: 0.06em;
+    padding: 10px 0;
+    margin-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .contact-row {
     margin-bottom: 12px;

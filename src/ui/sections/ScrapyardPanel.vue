@@ -41,6 +41,16 @@ export default {
             this.renderTick;
             return Math.ceil(this.state.dtl?.layLowCooldown || 0);
         },
+        dtlBleedRate() {
+            this.renderTick;
+            if (!this.dtlLevel) return 0;
+            const credMod = (this.state.items['street_cred']?.val || 0) >= 40 ? 0.75 : 1.0;
+            return (this.dtlLevel * 0.002 * credMod * 60).toFixed(1);
+        },
+        dtlBleedLabel() {
+            const cred = (this.state.items['street_cred']?.val || 0) >= 40;
+            return cred ? `+${this.dtlBleedRate}/min ▼cred` : `+${this.dtlBleedRate}/min`;
+        },
         androidUnlocked() {
             this.renderTick;
             return this.state.android?.active || false;
@@ -165,7 +175,7 @@ export default {
                     <span v-for="i in 5" :key="i" :class="['dtl-pip', { active: i <= dtlLevel }]"></span>
                 </div>
                 <span class="dtl-status-text">{{ dtlLabel }}</span>
-                <span class="dtl-points-text">({{ dtlPoints }}/100)</span>
+                <span class="dtl-points-text">({{ dtlPoints }}/100 · {{ dtlBleedLabel }})</span>
             </div>
             <div v-if="dtlLevel >= 2" class="lay-low-row">
                 <button
@@ -590,6 +600,12 @@ export default {
 @keyframes dtl-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dtl-4, .dtl-5 {
+        animation: none;
+    }
 }
 
 .lay-low-row {

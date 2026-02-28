@@ -3066,11 +3066,11 @@ const Game = {
         if (!item) return;
 
         const owned = this.state.prestige.gloryShop[itemId] || 0;
-        if (owned >= item.max) { Log.add('✗ Already owned maximum.', 'error'); return; }
+        if (owned >= item.max) { Log.add('✗ Already owned maximum.', 'error'); return false; }
 
         const gpItem = this.state.items.glory_pool;
         const pool = gpItem?.val || 0;
-        if (pool < item.cost_glory_pool) { Log.add('✗ Insufficient Glory Pool.', 'error'); return; }
+        if (pool < item.cost_glory_pool) { Log.add('✗ Insufficient Glory Pool.', 'error'); return false; }
 
         // Deduct
         if (gpItem) gpItem.val -= item.cost_glory_pool;

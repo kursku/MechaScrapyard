@@ -23,6 +23,11 @@ import ResourceMonitor from "./sections/ResourceMonitor.vue";
 
 // Tab group definitions — maps primary tab IDs to their sub-tab children
 const TAB_GROUPS = {
+    profile: {
+        label: 'PROFILE',
+        children: ['pilot_overview', 'pilot_training', 'pilot_skills'],
+        childLabels: { pilot_overview: 'OVERVIEW', pilot_training: 'TRAINING', pilot_skills: 'SKILL TREE' },
+    },
     base: {
         label: 'BASE',
         children: ['scrapyard', 'income', 'exploration', 'refinery'],
@@ -59,11 +64,11 @@ export default {
     data() {
         return {
             selectedCategory: 'base',
-            selectedSubTab: { base: 'scrapyard', world: 'zones' },
+            selectedSubTab: { base: 'scrapyard', world: 'zones', profile: 'pilot_overview' },
             renderTick: 0,
             _renderInterval: null,
             _pauseRenderTick: false,
-            _seenCategories: new Set(['pilot', 'scrapyard', 'base']),
+            _seenCategories: new Set(['pilot', 'pilot_overview', 'scrapyard', 'base', 'profile']),
             _showPrestigeModal: false,
             _prestigeBreakdown: null,
         };
@@ -136,8 +141,10 @@ export default {
                 .filter(i => i.type === 'task' && !i.locked && i.group)
                 .map(i => i.group));
             
-            // Pilot is always available
-            cats.add('pilot');
+            // Profile sub-tabs are always available
+            cats.add('pilot_overview');
+            cats.add('pilot_training');
+            cats.add('pilot_skills');
 
             // Mecha available when frame is equipped
             if (this.frame && this.chassis) cats.add('mecha');
@@ -165,8 +172,8 @@ export default {
             const tabs = [];
             const added = new Set();
 
-            // Fixed order: pilot, mecha, base, combat, world, workshop
-            const order = ['pilot', 'mecha', 'base', 'combat', 'world', 'workshop'];
+            // Fixed order: profile, mecha, base, combat, world, workshop
+            const order = ['profile', 'mecha', 'base', 'combat', 'world', 'workshop'];
 
             for (const id of order) {
                 if (TAB_GROUPS[id]) {
@@ -178,8 +185,7 @@ export default {
                         added.add(id);
                     }
                 } else if (leafSet.has(id)) {
-                    const label = id === 'pilot' ? 'PROFILE' : id.toUpperCase();
-                    tabs.push({ id, label, isGroup: false });
+                    tabs.push({ id, label: id.toUpperCase(), isGroup: false });
                     added.add(id);
                 }
             }
@@ -194,7 +200,7 @@ export default {
                 .filter(c => leafSet.has(c))
                 .map(c => ({
                     id: c,
-                    label: c.toUpperCase(),
+                    label: group.childLabels?.[c] || c.toUpperCase(),
                 }));
         },
         // The actual resolved category for panel routing
@@ -228,7 +234,7 @@ export default {
             this.renderTick;
             const cat = this.activeCategory;
             const allTasks = Object.values(this.state.items).filter(i => i.type === 'task');
-            if (cat === 'pilot') {
+            if (cat === 'pilot' || cat === 'pilot_overview' || cat === 'pilot_training' || cat === 'pilot_skills') {
                 return allTasks.filter(t => !t.locked && t.group === 'pilot');
             }
             return allTasks.filter(t => !t.locked && t.group === cat);
@@ -417,9 +423,10 @@ export default {
                     :state="state"
                     @action="renderTick++" />
 
-                <PilotPanel v-else-if="activeCategory === 'pilot'"
+                <PilotPanel v-else-if="activeCategory === 'pilot_overview' || activeCategory === 'pilot_training' || activeCategory === 'pilot_skills'"
                     :state="state"
-                    :tasks="tasks" />
+                    :tasks="tasks"
+                    :activeView="activeCategory" />
 
                 <OperationsPanel v-else
                     :state="state"

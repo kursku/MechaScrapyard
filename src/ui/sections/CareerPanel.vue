@@ -66,6 +66,24 @@ export default {
             if (info.moralityMax !== undefined && morality > info.moralityMax) return false;
             return true;
         },
+        lockedJobs() {
+            this.renderTick;
+            return Object.values(this.state.items).filter(i => {
+                if (i.type !== 'job' || i.locked || i.enrolled) return false;
+                if (i.require_morality === undefined) return false;
+                const morality = this.state.morality?.value || 0;
+                if (i.require_morality === 'paragon' && morality < 30) return true;
+                if (i.require_morality === 'shadow' && morality > -30) return true;
+                return false;
+            });
+        },
+        negotiationTier() {
+            this.renderTick;
+            const c = this.state.items['street_cred']?.val || 0;
+            if (c >= 60) return 'high';
+            if (c >= 30) return 'mid';
+            return 'low';
+        },
         promoteBlockedReason() {
             this.renderTick;
             const job = this.activeJob;
@@ -143,6 +161,9 @@ export default {
         <!-- AVAILABLE JOBS -->
         <div v-else>
             <h3 class="hud-section-title">> AVAILABLE CAREERS</h3>
+            <div class="negotiation-tier-badge" :class="'neg-' + negotiationTier">
+                NEGOTIATION: {{ negotiationTier.toUpperCase() }}
+            </div>
             <div v-if="availableJobs.length === 0" class="career-empty">
                 No careers available yet. Complete missions and build your reputation.
             </div>
@@ -164,6 +185,14 @@ export default {
                     <div class="job-enroll-btn">[ ENROLL ]</div>
                 </div>
             </div>
+            <!-- PATH-LOCKED JOBS -->
+            <div v-if="lockedJobs.length" class="locked-jobs-section">
+                <div class="hud-section-title" style="opacity:0.4;font-size:var(--font-size-xxs);">&gt; PATH-LOCKED OPPORTUNITIES</div>
+                <div v-for="job in lockedJobs" :key="job.id" class="locked-job-row">
+                    <span class="locked-job-name">{{ job.name.toUpperCase() }}</span>
+                    <span class="locked-job-gate">⊘ REQUIRES {{ job.require_morality === 'paragon' ? 'PARAGON' : 'SHADOW' }} PATH</span>
+                </div>
+            </div>
         </div>
     </section>
 </template>
@@ -174,4 +203,28 @@ export default {
     font-size: 0.85em;
     margin-bottom: 4px;
 }
+.negotiation-tier-badge {
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border: 1px solid currentColor;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.neg-high { color: #4f4; }
+.neg-mid  { color: #fa0; }
+.neg-low  { color: #888; }
+.locked-jobs-section { margin-top: 12px; }
+.locked-job-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    opacity: 0.45;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.locked-job-gate { color: #888; font-style: italic; }
 </style>
