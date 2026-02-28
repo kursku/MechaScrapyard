@@ -111,16 +111,19 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 
 ## Phase 4-UI — UI/UX Polish
 
-**Status:** `📋 PLANNED`
+**Status:** `✅ COMPLETE` — tagged `phase4-ui-complete`
 **Goal:** Close the UI/UX gaps identified by the Phase 4 audit. No new systems — only feedback clarity, accessibility, and making existing Phase 4 mechanics legible to the player.
 **Spec folder:** `docs/phases/phase4_ui/`
 
 | # | Spec | Area | Status | Commit |
 | --- | --- | --- | --- | --- |
-| 1 | `SPEC_accessibility_fixes.md` | Accessibility / Reduced Motion | ⬜ not started | — |
-| 2 | `SPEC_stat_visibility.md` | HUD / Phase 4 Stats | ⬜ not started | — |
-| 3 | `SPEC_panel_ux_clarity.md` | Career, Factions, Zones | ⬜ not started | — |
-| 4 | `SPEC_prestige_ux_polish.md` | PilotPanel / Prestige | ⬜ not started | — |
+| 1 | `SPEC_accessibility_fixes.md` | Accessibility / Reduced Motion | ✅ complete | `11d5f7a` |
+| 2 | `SPEC_stat_visibility.md` | HUD / Phase 4 Stats | ✅ complete | `11d5f7a` |
+| 3 | `SPEC_panel_ux_clarity.md` | Career, Factions, Zones | ✅ complete | `11d5f7a` |
+| 4 | `SPEC_prestige_ux_polish.md` | PilotPanel / Prestige | ✅ complete | `11d5f7a` |
+| 5 | `SPEC_font_readability.md` | Global Typography / CSS Variables | ✅ complete | `42eb5e6` |
+| 6 | `SPEC_sidebar_redesign.md` | ResourceMonitor / Sidebar / Header | ✅ complete | `c292430` |
+| 7 | `SPEC_profile_subtabs.md` | PilotPanel / Profile / Tab System | ✅ complete | `11d5f7a` |
 
 ---
 
