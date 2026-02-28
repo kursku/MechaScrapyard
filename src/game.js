@@ -278,9 +278,10 @@ const Game = {
         // Sync reactive combat state for Vue UI
         this._syncCombatState();
 
-        // DTL passive bleed — high-visibility operations accumulate attention
+        // DTL passive bleed — street cred >= 40 reduces by 25% (SPEC 12)
         if (this.state.dtl.level > 0) {
-            const bleedRate = this.state.dtl.level * 0.002; // points per second
+            const credMod = (this.state.g.street_cred || 0) >= 40 ? 0.75 : 1.0;
+            const bleedRate = this.state.dtl.level * 0.002 * credMod;
             this._raiseDTL(bleedRate * dt, 'passive');
         }
         if (this.state.dtl.layLowCooldown > 0) {
@@ -1597,6 +1598,20 @@ const Game = {
             if (isTaeyangMission) this._raiseDTL(15, `mission:${missionData.id}`);
         }
 
+        // Street cred: mission outcome
+        if (missionData) {
+            if (result === 'victory') {
+                this._changeStreetCred(1, 'mission complete');
+                if (missionData.tags?.includes('patron_job')) {
+                    this._changeStreetCred(3, 'patron contract fulfilled');
+                }
+            } else if (result === 'defeat') {
+                if (missionData.tags?.includes('delivery')) {
+                    this._changeStreetCred(-3, 'delivery failed');
+                }
+            }
+        }
+
         // --- Check for faction rep tier transitions ---
         this._checkRepTierTransitions();
 
@@ -2081,6 +2096,12 @@ const Game = {
         const spItem = this.state.items.skill_points;
         if (spItem) spItem.val = totalRefund + bonuses.bonusSkillPoints;
 
+        // Street cred: preserve 30% of positive cred; negative resets to 0 (SPEC 12)
+        const credItem = this.state.items.street_cred;
+        if (credItem) {
+            credItem.val = credItem.val > 0 ? Math.floor(credItem.val * 0.3) : 0;
+        }
+
         // Apply alignment bonuses for the new run
         this._applyAlignmentStart(alignment, bonuses);
 
@@ -2157,6 +2178,36 @@ const Game = {
         d.points = Math.max(0, d.points - 20);
         d.layLowCooldown = 120; // 2-minute cooldown
         Log.add("You keep the yard quiet. No movement. No signals. The watchers find nothing interesting.", 'story');
+    },
+
+    // ─── STREET CREDIBILITY (SPEC 12) ────────────────────────────────
+
+    /**
+     * Adjust street cred by amount. Notifies on significant swings.
+     */
+    _changeStreetCred(amount, reason) {
+        const cred = this.state.items.street_cred;
+        if (!cred) return;
+        const prev = cred.val;
+        cred.val = Math.max(cred.min ?? -20, Math.min(cred.max ?? 100, cred.val + amount));
+        // Notify on threshold crossing into negative
+        if (prev >= 0 && cred.val < 0) {
+            Log.add('◈ Street Cred: BURNED. The district knows. Prices go up. Doors close.', 'system');
+        }
+        if (Math.abs(amount) >= 3) {
+            const dir = amount > 0 ? '+' : '';
+            Log.add(`◈ Street Cred ${dir}${amount}: ${reason}`, 'faction');
+        }
+    },
+
+    /**
+     * Returns negotiation tier based on street cred.
+     */
+    _getNegotiationTier() {
+        const c = this.state.g.street_cred || 0;
+        if (c >= 60) return 'high';  // full ask accepted
+        if (c >= 30) return 'mid';   // partial counter accepted
+        return 'low';                // base or nothing
     },
 
     // ────────────────────────────────────────────────────────────────
@@ -2456,11 +2507,18 @@ const Game = {
             }
         }
 
+        // Apply street cred from choice property (e.g. streetCred: 1)
+        if (chosen.streetCred) {
+            this._changeStreetCred(chosen.streetCred, `choice: ${chosen.id}`);
+        }
+
         // Apply resource effects
         if (chosen.effect) {
             for (const [resId, amount] of Object.entries(chosen.effect)) {
                 // Special: dtl_points routes to DTL system
                 if (resId === 'dtl_points') { this._raiseDTL(amount, 'choice'); continue; }
+                // Special: street_cred routes through _changeStreetCred for logging
+                if (resId === 'street_cred') { this._changeStreetCred(amount, `choice: ${chosen.id}`); continue; }
                 const res = this.state.items[resId];
                 if (res && res.val !== undefined) {
                     res.val = Math.max(res.min || 0, res.val + amount);
@@ -3338,7 +3396,8 @@ const Game = {
     buildContactLoyalty(contactId, amount) {
         const c = this.state.items[contactId];
         if (!c || c.type !== 'contact') return;
-        c.loyalty = Math.min(c.loyaltyMax, c.loyalty + amount);
+        const credBonus = (this.state.g.street_cred || 0) >= 40 ? 1.5 : 1.0;
+        c.loyalty = Math.min(c.loyaltyMax, c.loyalty + amount * credBonus);
         if (c.loyalty >= c.benefit.threshold && !c._benefitNotified) {
             c._benefitNotified = true;
             Log.add(`◈ ${c.name}: loyalty reached. ${c.benefit.effect}`, 'faction');

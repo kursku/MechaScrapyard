@@ -407,6 +407,23 @@
     },
 
     {
+        "id": "evt_street_legend",
+        "name": "The Word Gets Around",
+        "speaker": "narrator",
+        "require": "g.street_cred>=80",
+        "seen": false,
+        "desc": "You didn't try to build a reputation. You just kept showing up, doing what you said, not burning the people who trusted you. In a city where everyone is running an angle, that's unusual enough to become a story. People who've never met you know your name.",
+        "choices": [
+            {
+                "id": "acknowledge_it",
+                "label": "Nod. Keep moving.",
+                "effect": { "glory_pool": 10 },
+                "log": "The city gave you something that can't be taken away by any corporation: a name worth keeping."
+            }
+        ]
+    },
+
+    {
         "id": "evt_prestige_gate_1",
         "name": "The Point of No Return",
         "speaker": "system",

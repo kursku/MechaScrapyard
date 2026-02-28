@@ -105,6 +105,25 @@ export default {
                 backgroundColor: this.moralColor,
             };
         },
+        streetCred() {
+            this.renderTick;
+            return this.state.items['street_cred']?.val || 0;
+        },
+        credTier() {
+            const c = this.streetCred;
+            if (c >= 80) return 'LEGEND';
+            if (c >= 60) return 'KNOWN';
+            if (c >= 40) return 'RELIABLE';
+            if (c >= 20) return 'BUILDING';
+            if (c >= 0)  return 'UNKNOWN';
+            return 'BURNED';
+        },
+        credColor() {
+            if (this.streetCred >= 60) return '#4f4';
+            if (this.streetCred >= 20) return '#fa0';
+            if (this.streetCred < 0)   return '#f44';
+            return '#888';
+        },
     },
     methods: {
         renderBar,
@@ -199,6 +218,19 @@ export default {
                     <span style="color:#f55">SHADOW</span>
                     <span style="color:#fa0">PRAGMATIST</span>
                     <span style="color:#4af">PARAGON</span>
+                </div>
+            </div>
+
+            <!-- Street Credibility Bar -->
+            <div v-if="state.items['street_cred']" class="cred-widget">
+                <div class="stat-meta">
+                    <span :style="{ color: credColor }">&#x25CA; STREET CRED</span>
+                    <span :style="{ color: credColor }">{{ streetCred > 0 ? '+' : '' }}{{ streetCred }} — {{ credTier }}</span>
+                </div>
+                <div class="cred-bar-wrap">
+                    <div class="cred-bar" :class="{ negative: streetCred < 0 }"
+                         :style="{ width: Math.max(0, streetCred) / 100 * 100 + '%', backgroundColor: credColor }">
+                    </div>
                 </div>
             </div>
 
@@ -354,4 +386,23 @@ export default {
 .sk-desc { font-size: 9px; color: var(--text-dim, #888); margin-bottom: 4px; line-height: 1.3; }
 .sk-cost { font-size: 9px; color: var(--secondary, #5f5); }
 .sk-owned { font-size: 9px; color: var(--secondary, #5f5); }
+
+/* Street Cred */
+.cred-widget {
+    margin-top: 8px;
+}
+.cred-bar-wrap {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 4px;
+    position: relative;
+}
+.cred-bar {
+    height: 100%;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+.cred-bar.negative {
+    background: #f44 !important;
+}
 </style>

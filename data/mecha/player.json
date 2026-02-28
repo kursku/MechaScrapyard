@@ -161,5 +161,14 @@
         "desc": "Your pilot identity, crystallized at prestige. Paragon, Shadow, or Pragmatist.",
         "val": "pragmatist",
         "hide": true
+    },
+    {
+        "id": "street_cred",
+        "name": "Street Cred",
+        "desc": "The informal measure of whether the district can count on you. Earned through consistency, lost through betrayal.",
+        "val": 0,
+        "max": 100,
+        "min": -20,
+        "type": "player_stat"
     }
 ]
