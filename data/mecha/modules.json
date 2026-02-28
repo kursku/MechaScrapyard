@@ -23,7 +23,8 @@
         "zones",
         "blueprints",
         "combat_config",
-        "contacts"
+        "contacts",
+        "glory_shop"
     ],
     "modules": []
 }

@@ -145,6 +145,7 @@ export default class GameState {
             alignmentHistory: [],
             knownBlueprints: [],
             seenBriefings: [],
+            gloryShop: {},  // { [itemId]: ownedCount }
         });
 
         this.loadouts = reactive({
@@ -519,6 +520,7 @@ export default class GameState {
                 alignmentHistory: [...this.prestige.alignmentHistory],
                 knownBlueprints: [...this.prestige.knownBlueprints],
                 seenBriefings: [...this.prestige.seenBriefings],
+                gloryShop: { ...this.prestige.gloryShop },
             }
         };
     }

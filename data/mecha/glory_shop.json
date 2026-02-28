@@ -1,0 +1,38 @@
+[
+    {
+        "id": "glory_shop_extra_sp",
+        "name": "Legacy Training",
+        "desc": "Start each run with +3 Skill Points.",
+        "cost_glory_pool": 50,
+        "effect": "start_skill_points_bonus_3",
+        "max": 3,
+        "owned": 0
+    },
+    {
+        "id": "glory_shop_kita_boost",
+        "name": "K.I.T.A. Memory Module",
+        "desc": "K.I.T.A. starts each run with its previous level intact.",
+        "cost_glory_pool": 100,
+        "effect": "kita_persistent_level",
+        "max": 1,
+        "owned": 0
+    },
+    {
+        "id": "glory_shop_faction_head_start",
+        "name": "City Reputation",
+        "desc": "Start with +10 rep with all non-hostile factions.",
+        "cost_glory_pool": 150,
+        "effect": "faction_start_bonus_10",
+        "max": 2,
+        "owned": 0
+    },
+    {
+        "id": "glory_shop_scrap_cache",
+        "name": "Hidden Cache",
+        "desc": "Start each run with 200 scrap and 100 electronic scrap.",
+        "cost_glory_pool": 75,
+        "effect": "start_resource_cache",
+        "max": 1,
+        "owned": 0
+    }
+]

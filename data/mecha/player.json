@@ -139,5 +139,27 @@
         "min": -100,
         "max": 200,
         "hide": true
+    },
+    {
+        "id": "glory_pool",
+        "name": "Glory Pool",
+        "desc": "Accumulated glory from all runs. Persists through prestige. Funds the Glory Shop.",
+        "val": 0,
+        "max": 9999
+    },
+    {
+        "id": "prestige_count",
+        "name": "Prestige Rank",
+        "desc": "Number of times you have reset and begun again.",
+        "val": 0,
+        "max": 10,
+        "hide": true
+    },
+    {
+        "id": "alignment",
+        "name": "Alignment",
+        "desc": "Your pilot identity, crystallized at prestige. Paragon, Shadow, or Pragmatist.",
+        "val": "pragmatist",
+        "hide": true
     }
 ]

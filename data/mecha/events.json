@@ -338,6 +338,31 @@
     },
 
     {
+        "id": "evt_prestige_gate_1",
+        "name": "The Point of No Return",
+        "speaker": "system",
+        "require": "g.flag_phase4_complete>0&&g.prestige_count==0",
+        "seen": false,
+        "desc": "You've exposed Taeyang. You have the evidence. You have enemies. And you have something else — a reputation. The city knows who you are now. The question is: who do you want to be from here?",
+        "choices": [
+            {
+                "id": "begin_prestige",
+                "label": "Start over — harder, with everything you've earned",
+                "desc": "The city resets. Your knowledge doesn't. Your Glory Pool carries forward.",
+                "morality": 0,
+                "log": "You choose the long road. Again. But this time, you know what's waiting."
+            },
+            {
+                "id": "continue_phase5",
+                "label": "Not yet — I have unfinished business",
+                "desc": "Continue to Phase 5 without resetting.",
+                "morality": 0,
+                "log": "Phase 5 begins. The confrontation with Taeyang Corp starts now."
+            }
+        ]
+    },
+
+    {
         "id": "evt_arena_promo_1",
         "name": "The Dive",
         "require": "",

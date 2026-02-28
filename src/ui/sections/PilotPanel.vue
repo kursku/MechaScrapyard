@@ -64,6 +64,33 @@ export default {
             if (v <= -40) return 'Shadow';
             return 'Pragmatist';
         },
+        gloryPool() {
+            this.renderTick;
+            return Math.floor(this.state.items['glory_pool']?.val || 0);
+        },
+        prestigeCount() {
+            this.renderTick;
+            return this.state.items['prestige_count']?.val || 0;
+        },
+        alignment() {
+            this.renderTick;
+            return this.state.items['alignment']?.val || 'pragmatist';
+        },
+        alignmentLabel() {
+            const labels = { paragon: '◈ PARAGON', shadow: '◈ SHADOW', pragmatist: '◈ PRAGMATIST' };
+            return labels[this.alignment] || '◈ PRAGMATIST';
+        },
+        alignmentColor() {
+            if (this.alignment === 'paragon') return '#4af';
+            if (this.alignment === 'shadow') return '#f55';
+            return '#fa0';
+        },
+        showGloryShop() {
+            return this.gloryPool >= 50 || this.prestigeCount > 0;
+        },
+        gloryShopItems() {
+            return Game.getGloryShopItems?.() || [];
+        },
         moralColor() {
             const v = this.moralValue;
             if (v >= 40) return '#4af';
@@ -113,6 +140,10 @@ export default {
         },
         buySubSkill(sk) {
             Game.buySubSkill(sk.id);
+            this.renderTick++;
+        },
+        buyGloryItem(itemId) {
+            Game.buyGloryShopItem(itemId);
             this.renderTick++;
         },
         isRunning(task) {
@@ -168,6 +199,16 @@ export default {
                     <span style="color:#f55">SHADOW</span>
                     <span style="color:#fa0">PRAGMATIST</span>
                     <span style="color:#4af">PARAGON</span>
+                </div>
+            </div>
+
+            <!-- Alignment Badge + Glory Pool -->
+            <div class="prestige-row">
+                <div class="alignment-badge" :style="{ color: alignmentColor, borderColor: alignmentColor }">
+                    {{ alignmentLabel }}
+                </div>
+                <div v-if="gloryPool > 0" class="glory-pool-hud">
+                    ◈ {{ gloryPool }} GP
                 </div>
             </div>
         </div>
@@ -237,9 +278,27 @@ export default {
                             <div class="sk-name">{{ sk.name }}</div>
                             <div class="sk-desc">{{ sk.desc }}</div>
                             <div class="sk-cost" v-if="!sk.owned">{{ sk.cost }} SP</div>
-                            <div class="sk-owned" v-else>✓ OWNED</div>
+                            <div class="sk-owned" v-else>&#x2713; OWNED</div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Glory Shop -->
+        <div v-if="showGloryShop" class="glory-shop-deck">
+            <h3 class="hud-section-title">> GLORY SHOP</h3>
+            <div class="glory-pool-balance">&#x25C8; Glory Pool: <strong>{{ gloryPool }}</strong></div>
+            <div class="glory-shop-grid">
+                <div v-for="item in gloryShopItems" :key="item.id" class="glory-item">
+                    <div class="glory-item-name">{{ item.name }}</div>
+                    <div class="glory-item-desc">{{ item.desc }}</div>
+                    <div class="glory-item-owned" v-if="item.max > 1">{{ item.owned }}/{{ item.max }}</div>
+                    <button class="glory-buy-btn"
+                            :disabled="item.owned >= item.max || gloryPool < item.cost_glory_pool"
+                            @click="buyGloryItem(item.id)">
+                        {{ item.owned >= item.max ? 'OWNED' : item.cost_glory_pool + ' &#x25C8;' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -247,6 +306,30 @@ export default {
 </template>
 
 <style scoped>
+.prestige-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.alignment-badge {
+    font-size: 9px; font-weight: bold; letter-spacing: 0.1em;
+    border: 1px solid; padding: 2px 7px; font-family: var(--font-mono, monospace);
+}
+.glory-pool-hud {
+    font-size: 10px; color: #fc5; font-family: var(--font-mono, monospace); font-weight: bold;
+}
+.glory-shop-deck { margin-top: 16px; }
+.glory-pool-balance { font-size: 11px; color: #fc5; margin: 4px 0 10px; font-family: var(--font-mono, monospace); }
+.glory-shop-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.glory-item {
+    border: 1px solid #654; background: #1a1200; padding: 7px 9px; width: 160px;
+    font-family: var(--font-mono, monospace);
+}
+.glory-item-name { font-size: 10px; font-weight: bold; color: #fc5; margin-bottom: 3px; }
+.glory-item-desc { font-size: 9px; color: var(--text-dim, #888); margin-bottom: 5px; line-height: 1.3; }
+.glory-item-owned { font-size: 9px; color: var(--text-dim2, #666); margin-bottom: 4px; }
+.glory-buy-btn {
+    font-size: 9px; padding: 2px 7px; cursor: pointer;
+    border: 1px solid #fc5; background: transparent; color: #fc5;
+    font-family: var(--font-mono, monospace); letter-spacing: 0.05em;
+}
+.glory-buy-btn:disabled { border-color: #444; color: #555; cursor: not-allowed; }
 .sp-row { font-size: 11px; color: var(--secondary, #5f5); margin: 4px 0 8px; }
 .tree-selector { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
 .tree-tab {

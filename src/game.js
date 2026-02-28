@@ -116,6 +116,7 @@ const Game = {
         this._loadBlueprints(rawData.blueprints || []);
         this._loadJobs(rawData.jobs || []);
         this._loadZones(rawData.zones || []);
+        this._loadGloryShop(rawData.glory_shop || []);
 
         // Calculate initial frame state
         this.state.recalculateFrameStats();
@@ -1573,6 +1574,11 @@ const Game = {
                 this._processStoryBeats(missionData, 'on_complete');
                 this._processDebrief(missionData);
             }
+            // Glory Pool: +1 per win, +bonus from mission if defined
+            this._addToGloryPool(1);
+            if (missionData.rewards?.glory_pool_bonus) {
+                this._addToGloryPool(missionData.rewards.glory_pool_bonus);
+            }
         }
 
         // --- Check for faction rep tier transitions ---
@@ -1693,7 +1699,8 @@ const Game = {
         const stat = this.state.items[statId];
         if (!stat || stat.type !== 'player_stat') return;
         const scale = 1 / (1 + stat.val / 50);
-        stat.val = Math.min(stat.max || 100, stat.val + amount * scale);
+        const gloryMult = this._getGloryPoolBonuses().statGrowthMult;
+        stat.val = Math.min(stat.max || 100, stat.val + amount * scale * gloryMult);
         // Recalc frame so ATK/DEF update immediately
         this.state.recalculateFrameStats();
     },
@@ -1947,6 +1954,125 @@ const Game = {
     },
 
     // ── STORY FLAG SYSTEM ────────────────────────────────────
+
+    // ─── PRESTIGE FOUNDATION (SPEC 10) ─────────────────────────────
+
+    /**
+     * Add to the persistent Glory Pool (both prestige object and display item).
+     */
+    _addToGloryPool(amount) {
+        this.state.prestige.gloryPool = (this.state.prestige.gloryPool || 0) + amount;
+        const item = this.state.items.glory_pool;
+        if (item) item.val = Math.min(item.max || 9999, this.state.prestige.gloryPool);
+    },
+
+    /**
+     * Threshold-based bonuses unlocked by Glory Pool size.
+     */
+    _getGloryPoolBonuses() {
+        const pool = this.state.prestige?.gloryPool || 0;
+        return {
+            statGrowthMult:   pool >= 2500 ? 1.30
+                            : pool >= 1000 ? 1.25
+                            : pool >= 500  ? 1.20
+                            : pool >= 300  ? 1.15
+                            : pool >= 150  ? 1.10
+                            : pool >= 50   ? 1.05 : 1.00,
+            bonusSkillPoints: pool >= 1000 ? 5 : pool >= 300 ? 2 : pool >= 150 ? 1 : 0,
+            kitaStartLevel:   pool >= 300  ? 2 : 1,
+            startManeuver:    pool >= 500,
+            factionBonus:     pool >= 1000 ? 15 : 0,
+        };
+    },
+
+    /**
+     * Map current morality to an alignment string.
+     */
+    _calculateAlignment() {
+        const morality = this.state.morality?.value || 0;
+        if (morality >= 30)  return 'paragon';
+        if (morality <= -30) return 'shadow';
+        return 'pragmatist';
+    },
+
+    /**
+     * Apply faction rep head-starts based on alignment at the start of a new run.
+     */
+    _applyAlignmentStart(alignment, bonuses) {
+        if (alignment === 'paragon') {
+            this.awardFactionRep('faction_ntpd', 20, 'alignment_start');
+            const refugee = this.state.items.rep_refugee;
+            if (refugee) refugee.val = Math.min(refugee.max || 200, (refugee.val || 0) + 20);
+        } else if (alignment === 'shadow') {
+            this.awardFactionRep('faction_underground', 20, 'alignment_start');
+        }
+        if (bonuses.factionBonus > 0) {
+            for (const item of Object.values(this.state.items)) {
+                if (item.type === 'faction') {
+                    const repItem = this.state.items[item.repId];
+                    if (repItem && (repItem.val || 0) >= 0) {
+                        this.awardFactionRep(item.id, bonuses.factionBonus, 'glory_pool_bonus', true);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * Refund all owned sub-skill points and reset sub-skills.
+     * Returns total SP refunded.
+     */
+    _refundSkillPoints() {
+        let refund = 0;
+        for (const item of Object.values(this.state.items)) {
+            if (item.type === 'sub_skill' && item.owned) {
+                refund += item.cost || 0;
+                item.owned = 0;
+            }
+        }
+        return refund;
+    },
+
+    /**
+     * Execute prestige: snapshot alignment, delegate to performPrestige(), then
+     * sync the display items and apply alignment starting bonuses.
+     */
+    _doPrestige() {
+        const alignment = this._calculateAlignment();
+        const bonuses   = this._getGloryPoolBonuses();
+
+        // Snapshot alignment item before full reset wipes morality
+        const alignmentItem = this.state.items.alignment;
+        if (alignmentItem) alignmentItem.val = alignment;
+
+        // Full reset via existing engine (glory pool persists inside prestige object)
+        this.performPrestige(this._calculatePrestigeGlory());
+
+        // Sync display items after reset
+        const gpItem = this.state.items.glory_pool;
+        if (gpItem) gpItem.val = Math.min(gpItem.max || 9999, this.state.prestige.gloryPool);
+
+        const pcItem = this.state.items.prestige_count;
+        if (pcItem) pcItem.val = this.state.prestige.cycleCount;
+
+        // K.I.T.A. level carry-over
+        if (this.state.android.level < bonuses.kitaStartLevel) {
+            this.state.android.level = bonuses.kitaStartLevel;
+        }
+
+        // Bonus skill points from glory pool
+        const totalRefund = this._refundSkillPoints();
+        const spItem = this.state.items.skill_points;
+        if (spItem) spItem.val = totalRefund + bonuses.bonusSkillPoints;
+
+        // Apply alignment bonuses for the new run
+        this._applyAlignmentStart(alignment, bonuses);
+
+        Log.add(`★ PRESTIGE ${this.state.prestige.cycleCount} — ${alignment.toUpperCase()} PATH`, 'story');
+        Log.add(`Glory Pool: ${this.state.prestige.gloryPool} | Bonuses: x${bonuses.statGrowthMult} growth`, 'story');
+    },
+
+    // ────────────────────────────────────────────────────────────────
 
     /**
      * Create or set a story flag in the g.* namespace.
@@ -2275,6 +2401,11 @@ const Game = {
             } else {
                 this.state.g.android_destroyed = 1;
             }
+        }
+
+        // Prestige gate: begin_prestige triggers full reset
+        if (chosen.id === 'begin_prestige') {
+            setTimeout(() => this._doPrestige(), 500);
         }
 
         // Mark event as completed
@@ -2762,6 +2893,50 @@ const Game = {
 
             this.state.register(rItem);
             this.techTree.register(rItem);
+        }
+    },
+
+    _loadGloryShop(data) {
+        this.gloryShop = Array.isArray(data) ? data : [];
+    },
+
+    /**
+     * Returns glory shop catalog merged with current owned counts from prestige state.
+     */
+    getGloryShopItems() {
+        const owned = this.state.prestige.gloryShop || {};
+        return this.gloryShop.map(item => ({
+            ...item,
+            owned: owned[item.id] || 0,
+        }));
+    },
+
+    /**
+     * Purchase a Glory Shop item using Glory Pool.
+     */
+    buyGloryShopItem(itemId) {
+        const item = this.gloryShop.find(i => i.id === itemId);
+        if (!item) return;
+
+        const owned = this.state.prestige.gloryShop[itemId] || 0;
+        if (owned >= item.max) { Log.add('✗ Already owned maximum.', 'error'); return; }
+
+        const gpItem = this.state.items.glory_pool;
+        const pool = gpItem?.val || 0;
+        if (pool < item.cost_glory_pool) { Log.add('✗ Insufficient Glory Pool.', 'error'); return; }
+
+        // Deduct
+        if (gpItem) gpItem.val -= item.cost_glory_pool;
+        this.state.prestige.gloryPool = Math.max(0, this.state.prestige.gloryPool - item.cost_glory_pool);
+        this.state.prestige.glorySpent = (this.state.prestige.glorySpent || 0) + item.cost_glory_pool;
+        this.state.prestige.gloryShop[itemId] = owned + 1;
+
+        Log.add(`◈ GLORY SHOP: ${item.name} purchased. (${gpItem?.val || 0} ◈ remaining)`, 'story');
+
+        // Immediate effects for items that apply now rather than at prestige
+        if (item.effect === 'start_resource_cache') {
+            this.state.award({ scrap: 200, electronic_scrap: 100 });
+            Log.add('◈ Hidden cache unlocked — 200 scrap, 100 electronic scrap deposited.', 'loot');
         }
     },
 
