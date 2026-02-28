@@ -18,6 +18,7 @@ Phase:   p1 | p2 | p3
 ```
 
 **Examples:**
+
 ```
 fix(data/p1): fix zone mission ID mismatch and standardize Portuguese IDs
 feat(save/p1): add beforeunload force-save and save timestamp flash
@@ -30,6 +31,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ---
 
 ## Phase 1 — Foundation
+
 **Status:** `✅ COMPLETE` — tagged `phase1-complete`
 **Goal:** Fix all blockers. Game is stable, consistent, and has a working first impression.
 **Spec folder:** `docs/phases/phase1/`
@@ -47,6 +49,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ---
 
 ## Phase 2 — Core Experience
+
 **Status:** `✅ COMPLETE` — tagged `phase2-complete`
 **Goal:** Skills matter. Combat has depth. UI is informative. First story beats land.
 **Estimated effort:** ~1 week
@@ -65,6 +68,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 ---
 
 ## Phase 3 — Content & Polish
+
 **Status:** `✅ COMPLETE` — tagged `phase3-complete`
 **Goal:** Real story progression through Phase 3. Zones explorable. UI design-system compliant.
 **Estimated effort:** ~2–3 weeks
@@ -84,25 +88,39 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 
 ## Phase 4 — Character & Systems Depth
 
-**Status:** `🔄 IN PROGRESS`
+**Status:** `✅ COMPLETE` — tagged `phase4-complete`
 **Goal:** Pilot stats matter in combat. Skill trees shape playstyle. K.I.T.A. automates the scrapyard. Jobs build identity. Faction choices have consequences. Phase 4 story missions deliver the corporate conspiracy arc. DTL and street cred make the city react to the player.
-**Estimated effort:** ~5–6 weeks
 **Spec folder:** `docs/phases/phase4/`
 
 | # | Spec | Area | Status | Commit |
 | --- | --- | --- | --- | --- |
 | 1 | `SPEC_pilot_stats.md` | Combat / Stats | ✅ complete | `ce6bf05` |
-| 2 | `SPEC_skill_trees.md` | Skills / UI | ⬜ not started | — |
-| 3 | `SPEC_maneuvers.md` | Combat / Maneuvers | ⬜ not started | — |
-| 4 | `SPEC_android_companion.md` | Scrapyard / K.I.T.A. | ✅ complete | `189b916` |
-| 5 | `SPEC_jobs_system.md` | Career / Jobs + Fixer Voice | ⬜ not started | — |
-| 6 | `SPEC_faction_alliances.md` | Factions / Vendors + Contacts | ⬜ not started | — |
-| 7 | `SPEC_parts_flavor.md` | Data / Parts | ✅ complete | `989a9e6` |
-| 8 | `SPEC_scrapyard_phase4.md` | Scrapyard / Structures | ⬜ not started | — |
-| 9 | `SPEC_phase4_missions.md` | Content / Missions + Intel | ⬜ not started | — |
-| 10 | `SPEC_prestige_foundation.md` | Prestige / Glory | ⬜ not started | — |
-| 11 | `SPEC_district_threat.md` | World / DTL system | ⬜ not started | — |
-| 12 | `SPEC_street_credibility.md` | Reputation / Street Cred | ⬜ not started | — |
+| 2 | `SPEC_skill_trees.md` | Skills / UI | ✅ complete | `176e60f` |
+| 3 | `SPEC_maneuvers.md` | Combat / Maneuvers | ✅ complete | `d7124b5` |
+| 4 | `SPEC_android_companion.md` | Scrapyard / K.I.T.A. | ✅ complete | `51305f7`, `189b916` |
+| 5 | `SPEC_jobs_system.md` | Career / Jobs + Fixer Voice | ✅ complete | `96cf72a` |
+| 6 | `SPEC_faction_alliances.md` | Factions / Vendors + Contacts | ✅ complete | `7e65ccb` |
+| 7 | `SPEC_parts_flavor.md` | Data / Parts | ✅ complete | `989a9e6`, `efd6006` |
+| 8 | `SPEC_scrapyard_phase4.md` | Scrapyard / Structures | ✅ complete | `47ee1b9` |
+| 9 | `SPEC_phase4_missions.md` | Content / Missions + Intel | ✅ complete | `514a757`, `f201f26` |
+| 10 | `SPEC_prestige_foundation.md` | Prestige / Glory | ✅ complete | `f9a9d94` |
+| 11 | `SPEC_district_threat.md` | World / DTL system | ✅ complete | `f4a126a` |
+| 12 | `SPEC_street_credibility.md` | Reputation / Street Cred | ✅ complete | `27daef1` |
+
+---
+
+## Phase 4-UI — UI/UX Polish
+
+**Status:** `📋 PLANNED`
+**Goal:** Close the UI/UX gaps identified by the Phase 4 audit. No new systems — only feedback clarity, accessibility, and making existing Phase 4 mechanics legible to the player.
+**Spec folder:** `docs/phases/phase4_ui/`
+
+| # | Spec | Area | Status | Commit |
+| --- | --- | --- | --- | --- |
+| 1 | `SPEC_accessibility_fixes.md` | Accessibility / Reduced Motion | ⬜ not started | — |
+| 2 | `SPEC_stat_visibility.md` | HUD / Phase 4 Stats | ⬜ not started | — |
+| 3 | `SPEC_panel_ux_clarity.md` | Career, Factions, Zones | ⬜ not started | — |
+| 4 | `SPEC_prestige_ux_polish.md` | PilotPanel / Prestige | ⬜ not started | — |
 
 ---
 
