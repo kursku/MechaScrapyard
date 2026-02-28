@@ -278,6 +278,15 @@ const Game = {
         // Sync reactive combat state for Vue UI
         this._syncCombatState();
 
+        // DTL passive bleed — high-visibility operations accumulate attention
+        if (this.state.dtl.level > 0) {
+            const bleedRate = this.state.dtl.level * 0.002; // points per second
+            this._raiseDTL(bleedRate * dt, 'passive');
+        }
+        if (this.state.dtl.layLowCooldown > 0) {
+            this.state.dtl.layLowCooldown = Math.max(0, this.state.dtl.layLowCooldown - dt);
+        }
+
         // 3. Handle loot drops
         if (result.lootDrops.length > 0) {
             for (const bpId of result.lootDrops) {
@@ -1581,6 +1590,13 @@ const Game = {
             }
         }
 
+        // DTL: anti-Taeyang missions raise district threat
+        if (result === 'victory' && missionData) {
+            const isTaeyangMission = missionData.id?.includes('taeyang') ||
+                missionData.tags?.includes('anti_taeyang');
+            if (isTaeyangMission) this._raiseDTL(15, `mission:${missionData.id}`);
+        }
+
         // --- Check for faction rep tier transitions ---
         this._checkRepTierTransitions();
 
@@ -2072,6 +2088,77 @@ const Game = {
         Log.add(`Glory Pool: ${this.state.prestige.gloryPool} | Bonuses: x${bonuses.statGrowthMult} growth`, 'story');
     },
 
+    // ─── DISTRICT THREAT LEVEL (SPEC 11) ────────────────────────────
+
+    _dtlLabel(level) {
+        return ['CLEAR', 'WATCHED', 'FLAGGED', 'HUNTED', 'BESIEGED', 'CRISIS'][level] || 'CLEAR';
+    },
+
+    /**
+     * Add threat points. Levels up DTL every 100 points (max 5).
+     */
+    _raiseDTL(points, reason = 'action') {
+        const d = this.state.dtl;
+        d.points += points;
+        d.lastChange = Date.now();
+
+        while (d.points >= 100 && d.level < 5) {
+            d.points -= 100;
+            d.level = Math.min(5, d.level + 1);
+            Log.add(`⚠ DISTRICT THREAT: ${d.level} — ${this._dtlLabel(d.level)}`, 'system');
+            this._applyDTLEffects(d.level);
+            if (d.level === 5) this._triggerDTLCrisis();
+        }
+    },
+
+    /**
+     * Apply mechanical effects when DTL crosses a new level.
+     */
+    _applyDTLEffects(level) {
+        const android = this.state.android;
+        if (level >= 5 && android) {
+            android.active = false;
+            Log.add('⚠ K.I.T.A. forced offline — corporate signal interference.', 'system');
+        } else if (level >= 4 && android && android.energyRate) {
+            android.energyRate = Math.max(0.05, android.energyRate * 0.8);
+            Log.add('⚠ K.I.T.A. entering low-power mode.', 'system');
+        } else if (level >= 2 && android && android.energyRate) {
+            android.energyRate = Math.max(0.1, android.energyRate * 0.9);
+        }
+        if (level >= 2) this.queueEvent('evt_dtl_flagged');
+        if (level >= 4) this.queueEvent('evt_dtl_besieged');
+    },
+
+    /**
+     * DTL 5 — triggers Phase 4 climax or early Phase 5 beat.
+     */
+    _triggerDTLCrisis() {
+        if (this.state.g.flag_phase4_complete) {
+            Log.add('⚠ TAEYANG CORP has moved against the district — Phase 5 arc begins.', 'system');
+        } else {
+            Log.add('⚠ TAEYANG CORP has moved against the district. The arena tournament is your only leverage.', 'system');
+            const existing = this.state.items.dtl_crisis_active;
+            if (!existing) {
+                const flagItem = reactive({ id: 'dtl_crisis_active', val: 1, type: 'flag' });
+                this.state.items.dtl_crisis_active = flagItem;
+                this.state.register(flagItem);
+            } else {
+                existing.val = 1;
+            }
+        }
+    },
+
+    /**
+     * Manually reduce DTL exposure (Lay Low action from Scrapyard panel).
+     */
+    layLow() {
+        const d = this.state.dtl;
+        if (d.level < 2 || d.layLowCooldown > 0) return;
+        d.points = Math.max(0, d.points - 20);
+        d.layLowCooldown = 120; // 2-minute cooldown
+        Log.add("You keep the yard quiet. No movement. No signals. The watchers find nothing interesting.", 'story');
+    },
+
     // ────────────────────────────────────────────────────────────────
 
     /**
@@ -2372,6 +2459,8 @@ const Game = {
         // Apply resource effects
         if (chosen.effect) {
             for (const [resId, amount] of Object.entries(chosen.effect)) {
+                // Special: dtl_points routes to DTL system
+                if (resId === 'dtl_points') { this._raiseDTL(amount, 'choice'); continue; }
                 const res = this.state.items[resId];
                 if (res && res.val !== undefined) {
                     res.val = Math.max(res.min || 0, res.val + amount);

@@ -338,6 +338,75 @@
     },
 
     {
+        "id": "evt_dtl_flagged",
+        "name": "Eyes on the Yard",
+        "speaker": "system",
+        "require": "g.dtl_level>=2",
+        "seen": false,
+        "desc": "A Taeyang survey drone passes over the scrapyard at low altitude. It doesn't stop. It doesn't need to. The scan is complete in seconds. Somewhere in the city, a file gets updated.",
+        "choices": [
+            {
+                "id": "ignore_it",
+                "label": "Let it pass",
+                "log": "You don't move. Movement draws attention. You've learned this."
+            },
+            {
+                "id": "shoot_it_down",
+                "label": "Destroy the drone",
+                "morality": 0,
+                "effect": { "dtl_points": 15 },
+                "log": "The drone goes down. The data was already transmitted. Now they know you know you're watched."
+            }
+        ]
+    },
+
+    {
+        "id": "evt_dtl_besieged",
+        "name": "Corporate Security Assessment",
+        "speaker": "system",
+        "require": "g.dtl_level>=4",
+        "seen": false,
+        "desc": "An official notice arrives via district channel. Taeyang Industrial Security Division has classified this sector as a 'high-incident zone.' Zone access now requires permit verification. The notice has no appeal process. It's not a law. It's a fact.",
+        "choices": [
+            {
+                "id": "contact_covenant",
+                "label": "Reach out to the Steel Covenant",
+                "log": "The Covenant acknowledges. They have lawyers. Slower than mechs, but they don't leave evidence."
+            },
+            {
+                "id": "go_visible",
+                "label": "Make noise — publicly",
+                "morality": 5,
+                "effect": { "dtl_points": 10 },
+                "log": "You broadcast the notice to every district channel you have access to. The city notices. So does Taeyang."
+            }
+        ]
+    },
+
+    {
+        "id": "evt_taeyang_patrol",
+        "name": "Patrol Unit Spotted",
+        "speaker": "system",
+        "require": "g.dtl_level>=1",
+        "seen": false,
+        "repeatable": true,
+        "desc": "A Taeyang security unit is running a sweep of the outer district. They haven't reached your sector yet.",
+        "choices": [
+            {
+                "id": "avoid_them",
+                "label": "Lay low until they pass",
+                "log": "They pass without incident. They'll be back."
+            },
+            {
+                "id": "intercept",
+                "label": "Intercept — force a confrontation",
+                "effect": { "glory": 5, "dtl_points": 12 },
+                "log": "You engage. You win. They'll send more next time."
+            }
+        ]
+    },
+
+    {
         "id": "evt_prestige_gate_1",
         "name": "The Point of No Return",
         "speaker": "system",

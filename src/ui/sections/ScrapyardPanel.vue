@@ -26,6 +26,21 @@ export default {
         if (this._tick) clearInterval(this._tick);
     },
     computed: {
+        dtlLevel() {
+            this.renderTick;
+            return this.state.dtl?.level || 0;
+        },
+        dtlLabel() {
+            return ['CLEAR', 'WATCHED', 'FLAGGED', 'HUNTED', 'BESIEGED', 'CRISIS'][this.dtlLevel] || 'CLEAR';
+        },
+        dtlPoints() {
+            this.renderTick;
+            return Math.floor(this.state.dtl?.points || 0);
+        },
+        layLowCooldown() {
+            this.renderTick;
+            return Math.ceil(this.state.dtl?.layLowCooldown || 0);
+        },
         androidUnlocked() {
             this.renderTick;
             return this.state.android?.active || false;
@@ -85,6 +100,7 @@ export default {
         formatName,
         formatModKey,
         fmtRate,
+        layLow() { Game.layLow(); },
         salvage(opt) { Game.salvagePart(opt); },
         breakdown(opt) { Game.breakdownPart(opt); },
         closeSalvage() { Game.closeSalvage(); },
@@ -140,7 +156,29 @@ export default {
 
 <template>
     <section class="scrapyard-panel">
-        
+
+        <!-- DTL HUD — District Threat Level -->
+        <div v-if="dtlLevel > 0" class="dtl-hud-block" :class="'dtl-' + dtlLevel">
+            <div class="dtl-hud-row">
+                <span class="dtl-label-text">THREAT</span>
+                <div class="dtl-pips">
+                    <span v-for="i in 5" :key="i" :class="['dtl-pip', { active: i <= dtlLevel }]"></span>
+                </div>
+                <span class="dtl-status-text">{{ dtlLabel }}</span>
+                <span class="dtl-points-text">({{ dtlPoints }}/100)</span>
+            </div>
+            <div v-if="dtlLevel >= 2" class="lay-low-row">
+                <button
+                    class="lay-low-btn"
+                    :disabled="layLowCooldown > 0"
+                    @click="layLow()"
+                >
+                    <span v-if="layLowCooldown > 0">[ GO DARK — {{ layLowCooldown }}s ]</span>
+                    <span v-else>[ GO DARK — Reduce exposure ]</span>
+                </button>
+            </div>
+        </div>
+
         <!-- 1. ANDROID TASK SLOT -->
         <div v-if="androidUnlocked" class="android-task-section">
             <div class="hud-section-title">> ANDROID_UNIT: [ {{ androidStatus }} ]</div>
@@ -493,4 +531,93 @@ export default {
     width: 100%;
 }
 .hud-btn.dim:hover { opacity: 1; }
+
+/* DTL HUD */
+.dtl-hud-block {
+    border: 1px solid currentColor;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 10px;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+}
+
+.dtl-hud-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dtl-label-text {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    opacity: 0.7;
+}
+
+.dtl-pips {
+    display: flex;
+    gap: 3px;
+}
+
+.dtl-pip {
+    width: 8px;
+    height: 8px;
+    border: 1px solid currentColor;
+    opacity: 0.25;
+}
+
+.dtl-pip.active {
+    opacity: 1;
+    background: currentColor;
+}
+
+.dtl-status-text {
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}
+
+.dtl-points-text {
+    font-size: 9px;
+    opacity: 0.5;
+    margin-left: auto;
+}
+
+.dtl-1 { color: #aaa; }
+.dtl-2 { color: #e83; }
+.dtl-3 { color: #e55; }
+.dtl-4, .dtl-5 { color: #e05; animation: dtl-pulse 1.5s ease-in-out infinite; }
+
+@keyframes dtl-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.lay-low-row {
+    margin-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 6px;
+}
+
+.lay-low-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid currentColor;
+    color: currentColor;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.15s;
+}
+
+.lay-low-btn:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.lay-low-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
 </style>

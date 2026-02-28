@@ -134,6 +134,19 @@ export default class GameState {
             configurable: true,
         });
 
+        /** District Threat Level — corporate pressure tracker */
+        this.dtl = reactive({
+            level: 0,          // 0–5
+            points: 0,         // accumulator (100 = level up)
+            lastChange: 0,     // timestamp for UI pulse
+            layLowCooldown: 0, // seconds before Lay Low is usable again
+        });
+
+        Object.defineProperty(this.g, 'dtl_level', {
+            get: () => this.dtl.level,
+            configurable: true,
+        });
+
         /** Prestige system — persists across resets (GDD §2+§3+§6) */
         this.prestige = reactive({
             gloryPool: 0,
@@ -510,6 +523,7 @@ export default class GameState {
                 secondary: { ...this.loadouts.secondary },
             },
             pragmatistTimer: this.pragmatistTimer,
+            dtl: { level: this.dtl.level, points: this.dtl.points },
             prestige: {
                 gloryPool: this.prestige.gloryPool,
                 glorySpent: this.prestige.glorySpent,
@@ -631,6 +645,9 @@ export default class GameState {
 
         if (json.prestige) {
             Object.assign(this.prestige, json.prestige);
+        }
+        if (json.dtl) {
+            Object.assign(this.dtl, json.dtl);
         }
     }
 }
