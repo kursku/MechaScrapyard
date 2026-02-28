@@ -1,8 +1,7 @@
 <script>
 /**
- * ResourceMonitor.vue — Extracted from TerminalUI.vue
- * Displays the current directive, resource list (core and auxiliary),
- * morality alignment, and sector specifications.
+ * ResourceMonitor.vue — Sidebar resource panel
+ * Collapsible sections with compact grids for secondary resources.
  */
 import Game from "@/game";
 import { RollOver, ItemOut } from "../../ui/popups/itemPopup.vue";
@@ -15,6 +14,11 @@ export default {
     data() {
         return {
             renderTick: 0,
+            collapsedSections: {
+                refined: true,
+                combat: true,
+                reputation: true,
+            },
         };
     },
     mounted() {
@@ -24,10 +28,9 @@ export default {
         if (this._tick) clearInterval(this._tick);
     },
     computed: {
-        resources() {
+        allResources() {
             this.renderTick;
             const _ = Game.runner.activeTask;
-            
             return Object.values(this.state.items)
                 .filter(i => {
                     if (i.type !== 'resource' || i.locked) return false;
@@ -42,6 +45,23 @@ export default {
                     return (a.name || a.id).localeCompare(b.name || b.id);
                 });
         },
+        coreResources() {
+            return this.allResources.filter(r => this.isCoreResource(r));
+        },
+        refinedResources() {
+            return this.allResources.filter(r => 
+                !this.isCoreResource(r) && !this.isSecondaryResource(r) && !this.isCombatResource(r)
+            );
+        },
+        combatResources() {
+            return this.allResources.filter(r => this.isCombatResource(r));
+        },
+        reputationResources() {
+            return this.allResources.filter(r => r.id && r.id.startsWith('rep_'));
+        },
+        spaceResource() {
+            return this.allResources.find(r => r.id === 'space');
+        },
         morality() {
             this.renderTick;
             return this.state.get("morality");
@@ -50,62 +70,6 @@ export default {
             this.renderTick;
             return Object.values(this.state.items).find(i => i.type === 'home' && i.owned > 0);
         },
-        currentDirective() {
-            this.renderTick;
-            const items = this.state.items;
-            const directives = [
-                {
-                    id: 'gather_scrap',
-                    text: 'Scavenge scrap from the piles.',
-                    detail: 'Click SCAVENGE SCRAP to start collecting.',
-                    condition: () => (items.scrap?.val || 0) >= 30,
-                    progress: () => Math.floor(items.scrap?.val || 0),
-                    target: 30,
-                    unit: 'SCRAP'
-                },
-                {
-                    id: 'earn_creds',
-                    text: 'Earn Creds from Odd Jobs.',
-                    detail: 'Run ODD JOBS to earn currency.',
-                    condition: () => (items.creds?.val || 0) >= 15,
-                    progress: () => Math.floor(items.creds?.val || 0),
-                    target: 15,
-                    unit: 'CREDS'
-                },
-                {
-                    id: 'build_sorting',
-                    text: 'Build the Sorting Station.',
-                    detail: 'Scroll down to BASE INFRASTRUCTURE.',
-                    condition: () => (this.state.get('sorting_station')?.owned || 0) > 0,
-                    progress: () => ((this.state.get('sorting_station')?.owned || 0) > 0 ? 1 : 0),
-                    target: 1,
-                    unit: 'BUILT'
-                },
-                {
-                    id: 'upgrade_workshop',
-                    text: 'Upgrade the Workshop.',
-                    detail: 'Restore grandpa\'s workshop to full power.',
-                    condition: () => (this.state.get('workshop_lv2')?.owned || 0) > 0,
-                    progress: () => ((this.state.get('workshop_lv2')?.owned || 0) > 0 ? 1 : 0),
-                    target: 1,
-                    unit: 'BUILT'
-                },
-                {
-                    id: 'restore_garage',
-                    text: 'Restore the Garage.',
-                    detail: 'Something from the past awaits inside.',
-                    condition: () => (this.state.get('garage')?.owned || 0) > 0,
-                    progress: () => ((this.state.get('garage')?.owned || 0) > 0 ? 1 : 0),
-                    target: 1,
-                    unit: 'BUILT'
-                },
-            ];
-
-            for (const d of directives) {
-                if (!d.condition()) return d;
-            }
-            return null;
-        }
     },
     methods: {
         renderBar,
@@ -114,6 +78,10 @@ export default {
         formatName,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
+
+        toggleSection(section) {
+            this.collapsedSections[section] = !this.collapsedSections[section];
+        },
 
         getNetRate(res) {
             let rate = res.rate || 0;
@@ -136,100 +104,171 @@ export default {
             return 40 + (res.sortOrder || 0);
         },
         isCoreResource(res) {
-            return res.id === 'energy' || res.id === 'scrap' || res.id === 'creds';
+            return ['energy', 'scrap', 'creds', 'mecha_parts', 'data_chips'].includes(res.id);
         },
         isSecondaryResource(res) {
             return res.id === 'space' || (res.id && res.id.startsWith('rep_'));
+        },
+        isCombatResource(res) {
+            return ['glory', 'supply'].includes(res.id);
         },
         getAlignmentText(val) {
             if (val >= 40) return "PARAGON";
             if (val <= -40) return "SHADOW";
             return "PRAGMATIST";
-        }
+        },
+        getRepShort(res) {
+            // Extract faction name: "rep_kuroda" → "KRD", "rep_ntpd" → "NTPD"
+            const name = res.name || res.id;
+            const clean = name.replace(/\s*reputation\s*/i, '').trim();
+            return clean.substring(0, 4).toUpperCase();
+        },
+        getRepPct(res) {
+            return Math.min(100, (res.val / (res.max || 100)) * 100);
+        },
     }
 };
 </script>
 
 <template>
     <aside class="terminal-resource-list hud-panel side-panel">
-        <!-- CURRENT DIRECTIVE -->
-        <div class="directive-tracker" v-if="currentDirective">
-            <div class="directive-header">> CURRENT DIRECTIVE</div>
-            <div class="directive-text">{{ currentDirective.text }}</div>
-            <div class="directive-detail">{{ currentDirective.detail }}</div>
-            <div class="directive-progress">
-                <span class="directive-count">
-                    {{ currentDirective.progress() }}/{{ currentDirective.target }} {{ currentDirective.unit }}
-                </span>
-                <div class="directive-bar">
-                    <div class="directive-fill" 
-                         :style="{ width: Math.min(100, (currentDirective.progress() / currentDirective.target) * 100) + '%' }">
+        <h4 class="hud-label">> RESOURCE MONITOR</h4>
+
+        <!-- CORE RESOURCES — always visible, full rows -->
+        <div v-for="res in coreResources" :key="res.id"
+             class="hud-resource-btn"
+             :class="{ 
+                'rate-pos': getNetRate(res) > 0.01,
+                'rate-neg': getNetRate(res) < -0.01,
+                'resource-core': true,
+             }"
+             :style="{ '--res-color': res.color || 'var(--primary)' }"
+             @mouseover="itemOver($event, res)"
+             @mouseleave="itemOut">
+            
+            <span class="res-badge" :style="{ 
+                '--badge-color': res.color || 'var(--primary)',
+                borderColor: (res.color || 'var(--primary)') + '60',
+                background: (res.color || 'var(--primary)') + '12'
+            }">
+                {{ res.icon || res.abbr || '•' }}
+            </span>
+            <span class="res-info">
+                <div class="flex-between">
+                    <span>{{ res.name.toUpperCase() }}</span>
+                    <div class="res-values">
+                        <span v-if="getNetRate(res) !== 0" class="res-delta">
+                            {{ fmtRate(getNetRate(res)) }}/s
+                        </span>
+                        <span class="res-val">{{ Math.floor(res.val) }}</span>
+                        <span class="res-max">/{{ res.max || 0 }}</span>
+                        <span v-if="res.id === 'energy' && getNetRate(res) > 0" class="energy-stable-tag">STABLE</span>
+                        <span v-if="res.id === 'energy' && getNetRate(res) < -0.01" class="energy-drain-tag">DRAIN</span>
+                    </div>
+                </div>
+                <div class="res-progress-bar">
+                    <div class="res-progress-fill" :style="{ 
+                        width: Math.min(100, (res.val / (res.max || 1)) * 100) + '%',
+                        backgroundColor: res.color || 'var(--primary)',
+                        boxShadow: '0 0 6px ' + (res.color || 'var(--primary)') + '80'
+                    }"></div>
+                </div>
+            </span>
+        </div>
+
+        <!-- SPACE (always visible if unlocked) -->
+        <div v-if="spaceResource" class="hud-resource-btn resource-secondary"
+             :style="{ '--res-color': spaceResource.color || 'var(--primary)' }"
+             @mouseover="itemOver($event, spaceResource)"
+             @mouseleave="itemOut">
+            <span class="res-badge" :style="{ 
+                '--badge-color': spaceResource.color || 'var(--primary)',
+                borderColor: (spaceResource.color || 'var(--primary)') + '60',
+                background: (spaceResource.color || 'var(--primary)') + '12'
+            }">
+                {{ spaceResource.icon || '📦' }}
+            </span>
+            <span class="res-info">
+                <div class="flex-between">
+                    <span>SPACE</span>
+                    <div class="res-values">
+                        <span class="res-val">{{ Math.floor(spaceResource.val) }}</span>
+                        <span class="res-max">/{{ spaceResource.max || 0 }}</span>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+        <!-- REFINED — collapsible, compact tiles -->
+        <div v-if="refinedResources.length > 0" class="section-group">
+            <div class="section-toggle" @click="toggleSection('refined')">
+                <span>── REFINED</span>
+                <span class="toggle-chevron">{{ collapsedSections.refined ? '►' : '▼' }}</span>
+                <span class="section-count">{{ refinedResources.length }}</span>
+            </div>
+            <div v-if="!collapsedSections.refined" class="compact-grid">
+                <div v-for="res in refinedResources" :key="res.id"
+                     class="compact-tile"
+                     :style="{ '--tile-color': res.color || 'var(--primary)' }"
+                     @mouseover="itemOver($event, res)"
+                     @mouseleave="itemOut">
+                    <div class="compact-tile-icon">{{ res.icon || res.abbr || '•' }}</div>
+                    <div class="compact-tile-name">{{ (res.name || res.id).replace(/\s+/g, ' ').toUpperCase() }}</div>
+                    <div class="compact-tile-val">{{ Math.floor(res.val) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMBAT — collapsible, inline row -->
+        <div v-if="combatResources.length > 0" class="section-group">
+            <div class="section-toggle" @click="toggleSection('combat')">
+                <span>── COMBAT</span>
+                <span class="toggle-chevron">{{ collapsedSections.combat ? '►' : '▼' }}</span>
+                <span class="section-count">{{ combatResources.length }}</span>
+            </div>
+            <div v-if="!collapsedSections.combat" class="compact-inline-row">
+                <div v-for="res in combatResources" :key="res.id"
+                     class="compact-inline-item"
+                     :style="{ '--tile-color': res.color || 'var(--primary)' }"
+                     @mouseover="itemOver($event, res)"
+                     @mouseleave="itemOut">
+                    <span class="cii-icon">{{ res.icon || '⚔' }}</span>
+                    <span class="cii-name">{{ (res.name || res.id).toUpperCase() }}</span>
+                    <span class="cii-val">{{ Math.floor(res.val) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPUTATION — collapsible, compact badge row -->
+        <div v-if="reputationResources.length > 0" class="section-group">
+            <div class="section-toggle" @click="toggleSection('reputation')">
+                <span>── REPUTATION</span>
+                <span class="toggle-chevron">{{ collapsedSections.reputation ? '►' : '▼' }}</span>
+                <span class="section-count">{{ reputationResources.length }}</span>
+            </div>
+            <div v-if="!collapsedSections.reputation" class="rep-badge-row">
+                <div v-for="res in reputationResources" :key="res.id"
+                     class="rep-badge"
+                     :style="{ '--rep-color': res.color || '#88aaff' }"
+                     @mouseover="itemOver($event, res)"
+                     @mouseleave="itemOut">
+                    <div class="rep-badge-label">{{ getRepShort(res) }}</div>
+                    <div class="rep-badge-val">{{ Math.floor(res.val) }}</div>
+                    <div class="rep-badge-bar">
+                        <div class="rep-badge-fill" :style="{ width: getRepPct(res) + '%' }"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <h4 class="hud-label">> RESOURCE MONITOR</h4>
-        <template v-for="(res, resIndex) in resources" :key="res.id">
-            <div v-if="resIndex > 0 && isSecondaryResource(res) && !isSecondaryResource(resources[resIndex - 1])" class="res-group-divider">
-                <span>&#x2500;&#x2500; AUXILIARY &#x2500;&#x2500;</span>
-            </div>
-            <div v-if="res.id === 'ferrous_scrap' && resources[0]?.id !== 'ferrous_scrap'" class="res-group-divider">
-                <span>&#x2500;&#x2500; REFINED &#x2500;&#x2500;</span>
-            </div>
-            <div v-if="res.id === 'glory'" class="res-group-divider">
-                <span>&#x2500;&#x2500; COMBAT &#x2500;&#x2500;</span>
-            </div>
-            <!-- RESOURCE BUTTON -->
-            <div class="hud-resource-btn"
-                 :class="{ 
-                    'rate-pos': getNetRate(res) > 0.01,
-                    'rate-neg': getNetRate(res) < -0.01,
-                    'resource-core': isCoreResource(res),
-                    'resource-secondary': isSecondaryResource(res)
-                 }"
-                 :style="{ '--res-color': res.color || 'var(--primary)' }"
-                 @mouseover="itemOver($event, res)"
-                 @mouseleave="itemOut">
-                
-                <span class="res-badge" :style="{ 
-                    '--badge-color': res.color || 'var(--primary)',
-                    borderColor: (res.color || 'var(--primary)') + '60',
-                    background: (res.color || 'var(--primary)') + '12'
-                }">
-                    {{ res.icon || res.abbr || '•' }}
-                </span>
-                <span class="res-info">
-                    <div class="flex-between">
-                        <span>{{ res.name.toUpperCase() }}</span>
-                        <div class="res-values">
-                            <span v-if="getNetRate(res) !== 0" class="res-delta">
-                                {{ fmtRate(getNetRate(res)) }}/s
-                            </span>
-                            <span class="res-val">{{ Math.floor(res.val) }}</span>
-                            <span class="res-max">/{{ res.max || 0 }}</span>
-                            <span v-if="res.id === 'energy' && getNetRate(res) > 0" class="energy-stable-tag">STABLE</span>
-                            <span v-if="res.id === 'energy' && getNetRate(res) < -0.01" class="energy-drain-tag">DRAIN</span>
-                        </div>
-                    </div>
-                    <div class="res-progress-bar">
-                        <div class="res-progress-fill" :style="{ 
-                            width: Math.min(100, (res.val / (res.max || 1)) * 100) + '%',
-                            backgroundColor: res.color || 'var(--primary)',
-                            boxShadow: '0 0 6px ' + (res.color || 'var(--primary)') + '80'
-                        }"></div>
-                    </div>
-                </span>
-            </div>
-        </template>
-        
+        <!-- MORALITY -->
         <div class="hud-align-widget" v-if="morality">
             <div class="hud-label">> MORALITY_V_1.0</div>
             <div class="align-text">{{ getAlignmentText(morality.val) }}</div>
             <div class="align-val">[{{ Math.floor(morality.val) }}]</div>
         </div>
 
-        <!-- SECTOR SPECS FRAGMENT -->
+        <!-- SECTOR SPECS -->
         <div class="hud-sector-specs" v-if="currentHome">
             <div class="hud-label">> SECTOR_SPECS</div>
             <div class="spec-row" v-if="currentHome.mod">
@@ -245,3 +284,175 @@ export default {
         </div>
     </aside>
 </template>
+
+<style scoped>
+/* ── Section Groups ────────────────────────────────── */
+.section-group {
+    margin: 6px 0;
+}
+
+.section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    letter-spacing: 1.5px;
+    padding: 4px 0;
+    user-select: none;
+    transition: color 0.15s;
+}
+.section-toggle:hover {
+    color: var(--primary);
+}
+.toggle-chevron {
+    font-size: 9px;
+    transition: transform 0.2s;
+}
+.section-count {
+    margin-left: auto;
+    color: var(--text-dim);
+    opacity: 0.5;
+    font-size: var(--font-size-xxs);
+}
+
+/* ── Compact Grid (Refined materials) ──────────────── */
+.compact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 4px;
+    padding: 4px 0;
+    animation: slideDown 0.2s ease;
+}
+
+.compact-tile {
+    background: rgba(0, 255, 65, 0.03);
+    border: 1px solid rgba(0, 255, 65, 0.1);
+    padding: 6px 8px;
+    text-align: center;
+    cursor: default;
+    transition: all 0.15s;
+    font-family: var(--font-mono);
+}
+.compact-tile:hover {
+    background: rgba(0, 255, 65, 0.08);
+    border-color: var(--tile-color, var(--primary));
+}
+.compact-tile-icon {
+    font-size: var(--font-size-sm);
+    margin-bottom: 2px;
+}
+.compact-tile-name {
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.compact-tile-val {
+    font-size: var(--font-size-xs);
+    color: var(--tile-color, var(--primary));
+    font-weight: bold;
+}
+
+/* ── Compact Inline Row (Combat) ───────────────────── */
+.compact-inline-row {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    animation: slideDown 0.2s ease;
+}
+.compact-inline-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    cursor: default;
+    padding: 4px 8px;
+    border: 1px solid rgba(0, 255, 65, 0.1);
+    background: rgba(0, 255, 65, 0.03);
+    transition: all 0.15s;
+    flex: 1;
+}
+.compact-inline-item:hover {
+    background: rgba(0, 255, 65, 0.08);
+    border-color: var(--tile-color, var(--primary));
+}
+.cii-icon {
+    font-size: var(--font-size-sm);
+}
+.cii-name {
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+}
+.cii-val {
+    margin-left: auto;
+    color: var(--tile-color, var(--primary));
+    font-weight: bold;
+    font-size: var(--font-size-xs);
+}
+
+/* ── Reputation Badge Row ──────────────────────────── */
+.rep-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 0;
+    animation: slideDown 0.2s ease;
+}
+.rep-badge {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 70px;
+    background: rgba(136, 170, 255, 0.04);
+    border: 1px solid rgba(136, 170, 255, 0.12);
+    padding: 4px 6px;
+    font-family: var(--font-mono);
+    cursor: default;
+    transition: all 0.15s;
+}
+.rep-badge:hover {
+    background: rgba(136, 170, 255, 0.1);
+    border-color: var(--rep-color);
+}
+.rep-badge-label {
+    font-size: var(--font-size-xxs);
+    color: var(--rep-color, #88aaff);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.rep-badge-val {
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    float: right;
+    margin-top: -14px;
+}
+.rep-badge-bar {
+    height: 2px;
+    background: rgba(136, 170, 255, 0.1);
+    margin-top: 3px;
+}
+.rep-badge-fill {
+    height: 100%;
+    background: var(--rep-color, #88aaff);
+    box-shadow: 0 0 4px var(--rep-color, #88aaff);
+    transition: width 0.3s;
+}
+
+/* ── Slide Animation ───────────────────────────────── */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+    }
+}
+</style>
