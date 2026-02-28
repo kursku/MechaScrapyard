@@ -90,6 +90,7 @@ export default {
         renderBar,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
+        switchLoadout(slot) { Game.switchLoadout(slot); },
         conditionLabel(cnd) {
             const v = Math.round((cnd || 0) * 100);
             if (v >= 90) return 'PRISTINE';
@@ -249,6 +250,17 @@ export default {
             >
                 [ENR] {{ Math.floor(state.items.energy?.val || 0) }}/{{ state.items.energy?.max || 0 }}
                 <span class="hint-text">[ regenerates passively ]</span>
+            </div>
+
+            <!-- Loadout Switcher (requires Hangar) -->
+            <div v-if="state.g.hangar_operacional > 0" class="loadout-switcher">
+                <span class="loadout-label">LOADOUT</span>
+                <button
+                    v-for="slot in ['primary', 'secondary']"
+                    :key="slot"
+                    :class="['hud-btn', 'micro', { active: state.loadouts.active === slot }]"
+                    @click="switchLoadout(slot)"
+                >{{ state.loadouts[slot].name || slot.toUpperCase() }}</button>
             </div>
 
             <!-- Rig Slot Grid -->
@@ -472,6 +484,25 @@ export default {
 }
 
 /* Rig slot grid */
+.loadout-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #333;
+}
+.loadout-label {
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 0.08em;
+    margin-right: 4px;
+}
+.hud-btn.micro.active {
+    background: #3a3a1a;
+    border-color: #ffe066;
+    color: #ffe066;
+}
 .rig-grid {
     display: grid;
     grid-template-areas:

@@ -147,6 +147,25 @@ export default class GameState {
             seenBriefings: [],
         });
 
+        this.loadouts = reactive({
+            active: 'primary',
+            primary: {
+                name: 'Primary',
+                installedParts: {},
+                installedEquip: {},
+            },
+            secondary: {
+                name: 'Secondary',
+                installedParts: {},
+                installedEquip: {},
+            },
+        });
+
+        this.salvage = reactive({
+            show: false,
+            options: [],   // [{ slot, partId, partName, tier, condition, breakdown }]
+        });
+
         this.loaded = false;
     }
 
@@ -484,6 +503,11 @@ export default class GameState {
                 modules: this.android.modules,
                 personality: this.android.personality
             },
+            loadouts: {
+                active: this.loadouts.active,
+                primary: { ...this.loadouts.primary },
+                secondary: { ...this.loadouts.secondary },
+            },
             pragmatistTimer: this.pragmatistTimer,
             prestige: {
                 gloryPool: this.prestige.gloryPool,
@@ -577,6 +601,10 @@ export default class GameState {
 
         if (json.android) {
             Object.assign(this.android, json.android);
+        }
+
+        if (json.loadouts) {
+            Object.assign(this.loadouts, json.loadouts);
         }
 
         // Restore morality from saved morality resource value

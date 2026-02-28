@@ -85,7 +85,16 @@ export default {
         formatName,
         formatModKey,
         fmtRate,
-        
+        salvage(opt) { Game.salvagePart(opt); },
+        breakdown(opt) { Game.breakdownPart(opt); },
+        closeSalvage() { Game.closeSalvage(); },
+        conditionClass(cnd) {
+            const v = Math.round((cnd || 0) * 100);
+            if (v >= 70) return 'cnd-good';
+            if (v >= 40) return 'cnd-worn';
+            return 'cnd-damaged';
+        },
+
         startAndroid() {
             if (!this.selectedAndroidTask) return;
             Game.runner.startAndroidTask(this.selectedAndroidTask);
@@ -253,6 +262,32 @@ export default {
             </div>
         </div>
     </section>
+
+    <!-- Salvage Overlay (Dismantling Bay) -->
+    <div v-if="state.salvage.show" class="salvage-overlay">
+        <div class="salvage-modal">
+            <div class="salvage-title">◈ SALVAGE OPPORTUNITY</div>
+            <div class="salvage-subtitle">The downed mech has recoverable components.</div>
+
+            <div v-for="opt in state.salvage.options" :key="opt.slot" class="salvage-option">
+                <div class="salvage-info">
+                    <span class="salvage-part-name">{{ opt.partName }}</span>
+                    <span class="salvage-condition" :class="conditionClass(opt.condition / 100)">
+                        {{ opt.condition }}% CONDITION
+                    </span>
+                </div>
+                <div class="salvage-breakdown-preview">
+                    breakdown: {{ Object.entries(opt.breakdown).map(([k,v]) => `${v} ${k.replace(/_/g,' ')}`).join(' · ') }}
+                </div>
+                <div class="salvage-buttons">
+                    <button class="hud-btn" @click="salvage(opt)">▶ Take Part</button>
+                    <button class="hud-btn secondary" @click="breakdown(opt)">⚙ Break Down</button>
+                </div>
+            </div>
+
+            <button class="hud-btn dim" @click="closeSalvage()">Leave it</button>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -397,4 +432,65 @@ export default {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+/* Salvage Overlay */
+.salvage-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+.salvage-modal {
+    background: #0e0e0e;
+    border: 1px solid #4a4;
+    padding: 20px;
+    width: 360px;
+    max-width: 95vw;
+    font-family: var(--font-mono);
+}
+.salvage-title {
+    font-size: 1rem;
+    color: #4f4;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+.salvage-subtitle {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 14px;
+}
+.salvage-option {
+    border: 1px solid #333;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background: #111;
+}
+.salvage-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+.salvage-part-name { color: #ddd; font-size: 0.85rem; }
+.salvage-condition { font-size: 0.75rem; }
+.cnd-good    { color: #4f4; }
+.cnd-worn    { color: #fa4; }
+.cnd-damaged { color: #f44; }
+.salvage-breakdown-preview {
+    font-size: 0.68rem;
+    color: #555;
+    margin-bottom: 8px;
+}
+.salvage-buttons {
+    display: flex;
+    gap: 6px;
+}
+.hud-btn.dim {
+    margin-top: 10px;
+    opacity: 0.5;
+    width: 100%;
+}
+.hud-btn.dim:hover { opacity: 1; }
 </style>

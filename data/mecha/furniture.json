@@ -137,5 +137,33 @@
             "space": 2
         },
         "flavor": "It works while you sleep. Barely, but it works."
+    },
+    {
+        "id": "hangar_operacional",
+        "name": "Operational Hangar",
+        "desc": "Full structural bay for a second mech frame. Enables rapid loadout swapping before missions.",
+        "flavor": "The smell of solvent and scorched metal. Yours.",
+        "require": "g.workshop_lv2>0&&g.level>=7",
+        "max": 1,
+        "cost": { "ferrous_scrap": 80, "polymer_scrap": 40, "creds": 300, "nano_infra": 20 },
+        "mod": { "space": 4 },
+        "log": {
+            "name": "Hangar Operational",
+            "desc": "The hangar bay is open. You can now maintain a second mech configuration."
+        }
+    },
+    {
+        "id": "baia_desmontagem",
+        "name": "Dismantling Bay",
+        "desc": "Precision breakdown station. Strip defeated enemy mechs for reusable parts or raw materials.",
+        "flavor": "What was a threat is now inventory.",
+        "require": "g.workshop_lv2>0&&g.triagem>0&&g.level>=6",
+        "max": 1,
+        "cost": { "ferrous_scrap": 60, "polymer_scrap": 30, "creds": 200 },
+        "mod": { "space": 3 },
+        "log": {
+            "name": "Dismantling Bay Ready",
+            "desc": "Defeated enemies may now yield salvageable components."
+        }
     }
 ]

@@ -1601,6 +1601,14 @@ const Game = {
                 }
             }
         }
+
+        // Salvage prompt after victory if Dismantling Bay is built
+        if (result === 'victory') {
+            const defeatedEnemy = (this.combatRunner.enemies || []).find(
+                e => e && (e.hp <= 0 || e.destroyed)
+            ) || (this.combatRunner.enemies || [])[0];
+            this._offerSalvagePrompt(defeatedEnemy);
+        }
     },
 
     /**
@@ -1790,6 +1798,141 @@ const Game = {
         Log.add(`★ Maneuver Unlocked: ${mnvr.name}`, 'upgrade');
         this.techTree.check();
         return true;
+    },
+
+    // ── Loadout System (Hangar) ───────────────────────────
+
+    switchLoadout(name) {
+        if (!['primary', 'secondary'].includes(name)) return;
+        const loadouts = this.state.loadouts;
+        const frame = this.state.player.frame;
+
+        // Save current config to active slot
+        const current = loadouts.active;
+        loadouts[current].installedParts = { ...frame.installedParts };
+        loadouts[current].installedEquip = { ...frame.installedEquip };
+
+        // Apply target slot config (if it has been saved before)
+        const target = loadouts[name];
+        if (Object.keys(target.installedParts).length > 0) {
+            frame.installedParts = { ...target.installedParts };
+            frame.installedEquip = { ...target.installedEquip };
+        }
+
+        loadouts.active = name;
+        this.state.recalculateFrameStats();
+        Log.add(`◈ Loadout switched to: ${target.name}`, 'system');
+    },
+
+    // ── Salvage System (Dismantling Bay) ─────────────────
+
+    _offerSalvagePrompt(enemy) {
+        if (!this.state.items['baia_desmontagem']?.owned) return;
+        const options = this._generateSalvageOptions(enemy);
+        if (options.length === 0) return;
+        this.state.salvage.options = options;
+        this.state.salvage.show = true;
+    },
+
+    _generateSalvageOptions(enemy) {
+        const engBonus = this.getSkillBonus('salvage_slot_bonus') || 0;
+        const slots = ['torso', 'arm', 'legs'];
+        const enemyTier = enemy?.tier || 1;
+        const options = [];
+        for (const slot of slots) {
+            if (Math.random() < (0.4 + engBonus)) {
+                const part = this._randomPartForTier(enemyTier, slot);
+                if (part) {
+                    options.push({
+                        slot,
+                        partId: part.id,
+                        partName: part.name,
+                        tier: enemyTier,
+                        condition: 40 + Math.floor(Math.random() * 35),
+                        breakdown: this._getBreakdownValue(enemyTier),
+                    });
+                }
+            }
+        }
+        return options;
+    },
+
+    _randomPartForTier(tier, slotHint) {
+        const parts = Object.values(this.state.items).filter(i =>
+            i.type === 'part' && (i.tier || 1) === tier
+        );
+        if (parts.length === 0) {
+            // Fall back to any tier
+            const any = Object.values(this.state.items).filter(i => i.type === 'part');
+            if (any.length === 0) return null;
+            return any[Math.floor(Math.random() * any.length)];
+        }
+        return parts[Math.floor(Math.random() * parts.length)];
+    },
+
+    _getBreakdownValue(tier) {
+        return {
+            ferrous_scrap:    5 * tier,
+            polymer_scrap:    3 * tier,
+            electronic_scrap: 2 * tier,
+        };
+    },
+
+    salvagePart(option) {
+        // Add a copy of the part to inventory at salvage condition
+        const part = this.state.items[option.partId];
+        if (part) {
+            const copy = { ...part, condition: option.condition / 100, _salvaged: true };
+            this.state.player.partsInventory.push(copy);
+            this.state.player.inventory.parts.push(copy);
+            Log.add(`◈ Salvaged: ${option.partName} (${option.condition}% condition)`, 'reward');
+            this._growStat('focus', 0.3);
+        }
+        this._removeSalvageOption(option);
+    },
+
+    breakdownPart(option) {
+        const loot = option.breakdown;
+        for (const [res, amount] of Object.entries(loot)) {
+            const item = this.state.items[res];
+            if (item) item.val = Math.min(item.max ?? Infinity, item.val + amount);
+        }
+        const lootStr = Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ');
+        Log.add(`⚙ Broken down: ${option.partName} → ${lootStr}`, 'reward');
+        this._growStat('solda', 0.5);
+
+        // Reverse engineering — chance to unlock a related blueprint
+        if (this.state.items['research_desk']?.owned) {
+            const chance = 0.15 + (this.getSkillBonus('reverse_eng_bonus') || 0);
+            if (Math.random() < chance) {
+                this._unlockRelatedBlueprint(option.partId);
+            }
+        }
+        this._removeSalvageOption(option);
+    },
+
+    _unlockRelatedBlueprint(partId) {
+        const part = this.state.items[partId];
+        const mfr = part?.mfr;
+        const candidates = Object.values(this.state.items).filter(i =>
+            i.type === 'blueprint' && !i.owned && (!mfr || i.mfr === mfr)
+        );
+        if (candidates.length > 0) {
+            const bp = candidates[Math.floor(Math.random() * candidates.length)];
+            bp.owned = 1;
+            Log.add(`★ Blueprint unlocked via reverse engineering: ${bp.name}`, 'discovery');
+        }
+    },
+
+    _removeSalvageOption(option) {
+        const s = this.state.salvage;
+        s.options = s.options.filter(o => o !== option);
+        if (s.options.length === 0) s.show = false;
+    },
+
+    closeSalvage() {
+        this.state.salvage.show = false;
+        this.state.salvage.options = [];
     },
 
     craftBlueprint(bp) {

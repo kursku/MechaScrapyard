@@ -200,5 +200,101 @@
             "name": "Neural Chip Online",
             "desc": "K.I.T.A. efficiency improved by 20%. New task categories unlocked."
         }
+    },
+    {
+        "id": "android_empathy_module",
+        "name": "K.I.T.A. Empathy Matrix",
+        "desc": "Social processing upgrade. K.I.T.A. reads social situations. Charisma growth +20%.",
+        "flavor": "It doesn't feel emotions. But it understands them better than some people.",
+        "tags": "t_android",
+        "locked": true,
+        "require": "g.cybernetic_bench>0&&g.android_level>=7",
+        "max": 1,
+        "cost": { "data_chips": 15, "quantum_circuits": 4, "nano_infra": 20 },
+        "mod": {},
+        "log": {
+            "name": "Empathy Matrix Installed",
+            "desc": "K.I.T.A.: 'I understand now. I think.'"
+        }
+    },
+    {
+        "id": "android_autonomy_core",
+        "name": "K.I.T.A. Autonomy Core",
+        "desc": "Full independent operation. K.I.T.A. can manage two tasks simultaneously.",
+        "flavor": "You asked if it was okay with this. It paused two full seconds before answering.",
+        "tags": "t_android",
+        "locked": true,
+        "require": "g.cybernetic_bench>0&&g.android_level>=8&&g.android_neural_chip>0",
+        "max": 1,
+        "cost": { "quantum_circuits": 8, "data_chips": 20, "nano_infra": 30, "creds": 800 },
+        "mod": {},
+        "log": {
+            "name": "Autonomy Core Online",
+            "desc": "K.I.T.A. can now manage two tasks at once. It immediately asks which ones are the priority."
+        }
+    },
+    {
+        "id": "cyb_neural_port",
+        "name": "Neural Interface Port",
+        "desc": "Direct neural link to your mech. Reflex +5, reaction time reduced.",
+        "flavor": "The first time, it feels wrong. Then it feels like wearing a glove.",
+        "tags": "t_cyborg",
+        "locked": true,
+        "require": "g.cybernetic_bench>0",
+        "max": 1,
+        "cost": { "nano_infra": 25, "quantum_circuits": 3, "creds": 400 },
+        "mod": { "reflex": 5 },
+        "log": {
+            "name": "Neural Port Installed",
+            "desc": "You are now closer to your mech than you thought possible."
+        }
+    },
+    {
+        "id": "cyb_muscle_fiber",
+        "name": "Muscle Fiber Enhancement",
+        "desc": "Synthetic muscle tissue grafts. Muscle +8. Punch harder. Lift more.",
+        "flavor": "Recovery takes three days. Worth it.",
+        "tags": "t_cyborg",
+        "locked": true,
+        "require": "g.cybernetic_bench>0&&g.muscle>=20",
+        "max": 2,
+        "cost": { "nano_infra": 20, "polymer_scrap": 15, "creds": 350 },
+        "mod": { "muscle": 8 },
+        "log": {
+            "name": "Muscle Fiber Installed",
+            "desc": "Your grip leaves marks."
+        }
+    },
+    {
+        "id": "cyb_ocular_implant",
+        "name": "Combat Ocular Implant",
+        "desc": "Targeting overlay, threat assessment, trajectory prediction. Focus +8.",
+        "flavor": "You see the arc of the bullet before it's fired. Mostly.",
+        "tags": "t_cyborg",
+        "locked": true,
+        "require": "g.cybernetic_bench>0&&g.focus>=15",
+        "max": 1,
+        "cost": { "electronic_scrap": 30, "nano_infra": 15, "data_chips": 10, "creds": 600 },
+        "mod": { "focus": 8 },
+        "log": {
+            "name": "Ocular Implant Installed",
+            "desc": "The world has more information in it than before."
+        }
+    },
+    {
+        "id": "cyb_stress_shunt",
+        "name": "Stress Shunt",
+        "desc": "Neural feedback dampener. Stress growth reduced. Grit +5.",
+        "flavor": "Grandpa noticed. 'You seem... calmer.' You don't tell him why.",
+        "tags": "t_cyborg",
+        "locked": true,
+        "require": "g.cybernetic_bench>0",
+        "max": 1,
+        "cost": { "nano_infra": 18, "electronic_scrap": 25, "creds": 300 },
+        "mod": { "grit": 5 },
+        "log": {
+            "name": "Stress Shunt Installed",
+            "desc": "The noise is quieter now."
+        }
     }
 ]
