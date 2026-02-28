@@ -232,31 +232,28 @@ export default {
                      @click="startMission(m.id)">
                     <div class="mission-main">
                         <div class="mission-name">{{ m.name.toUpperCase() }}</div>
+                        <div class="mission-tags-inline">
+                            <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+                            <span v-if="m.type === 'story' || m.missionType === 'story'" class="story-tag">STORY</span>
+                            <span v-if="m.missionType === 'patrol'" class="patrol-tag">PATROL</span>
+                            <span v-if="m.encounter && m.encounter.mode === 'none'" class="narrative-tag">NARRATIVE</span>
+                            <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
+                        </div>
                         <div class="mission-difficulty" v-if="m.difficulty > 0">
                             <span v-for="i in (m.difficulty || 1)" :key="i">★</span>
                         </div>
                         <div v-else class="mission-difficulty" style="color: #8af;">◆</div>
                     </div>
-                    <div class="mission-tags">
-                        <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
-                        <span v-if="m.type === 'story' || m.missionType === 'story'" class="story-tag">STORY</span>
-                        <span v-if="m.missionType === 'patrol'" class="patrol-tag">PATROL</span>
-                        <span v-if="m.encounter && m.encounter.mode === 'none'" class="narrative-tag">NARRATIVE</span>
-                        <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
-                    </div>
                     <div class="mission-desc">{{ m.desc }}</div>
-                    <div v-if="m.narrative && m.narrative.briefing && m.narrative.briefing[0]" class="mission-flavor">
-                        "{{ m.narrative.briefing[0].substring(0, 80) }}{{ m.narrative.briefing[0].length > 80 ? '...' : '' }}"
-                    </div>
                     <div class="mission-footer">
-                        <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">COST: {{ m.cost?.energy || 0 }} ENR</span>
+                        <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">{{ m.cost?.energy || 0 }} ENR</span>
                         <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">
-                            PWR: {{ playerPower }} vs ★×{{ m.difficulty || 1 }}
+                            PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}
                         </span>
                         <span class="rewards">
-                            <span v-if="m.rewards?.glory">{{ m.rewards.glory }} GLORY</span>
-                            <span v-if="m.rewards?.creds"> · {{ m.rewards.creds }}¢</span>
-                            <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward"> · +{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
+                            <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
+                            <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
+                            <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
                         </span>
                     </div>
                 </div>
@@ -272,55 +269,59 @@ export default {
                 <div class="config-section">
                     <div class="hud-section-title">> COMBAT CONFIGURATION</div>
 
-                    <!-- Stance selector -->
-                    <div class="config-label">STANCE</div>
-                    <div class="config-options">
-                        <button
-                            v-for="s in stanceOptions"
-                            :key="s.id"
-                            :class="['config-btn', { active: combatRunner.stance === s.id }]"
-                            :title="s.desc"
-                            @click="setStance(s.id)"
-                        >
-                            <span class="config-icon">{{ s.icon }}</span>
-                            <span class="config-name">{{ s.name.toUpperCase() }}</span>
-                            <span class="config-stat atk" v-if="s.atkMod !== 0">ATK {{ formatMod(s.atkMod) }}</span>
-                            <span class="config-stat def" v-if="s.defMod !== 0">DEF {{ formatMod(s.defMod) }}</span>
-                            <span class="config-stat heat" v-if="s.heatDissipMod !== 0">HEAT {{ formatMod(s.heatDissipMod) }}</span>
-                            <span class="config-stat" v-if="s.atkMod === 0 && s.defMod === 0 && s.heatDissipMod === 0">---</span>
-                        </button>
+                    <!-- Stance selector (inline row) -->
+                    <div class="config-row">
+                        <span class="config-label">STANCE</span>
+                        <div class="config-options-inline">
+                            <button
+                                v-for="s in stanceOptions"
+                                :key="s.id"
+                                :class="['config-btn-inline', { active: combatRunner.stance === s.id }]"
+                                :title="s.desc"
+                                @click="setStance(s.id)"
+                            >
+                                {{ s.icon }} {{ s.name.toUpperCase() }}
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Targeting selector -->
-                    <div class="config-label" style="margin-top: 10px;">TARGETING</div>
-                    <div class="config-options">
-                        <button
-                            v-for="t in targetingOptions"
-                            :key="t.id"
-                            :class="['config-btn', { active: combatRunner.targeting === t.id }]"
-                            :title="t.desc"
-                            @click="setTargeting(t.id)"
-                        >
-                            <span class="config-icon">{{ t.icon }}</span>
-                            <span class="config-name">{{ t.name.toUpperCase() }}</span>
-                            <span class="config-desc">{{ t.desc }}</span>
-                        </button>
+                    <!-- Active stance detail -->
+                    <div class="config-active-detail" v-if="activeStance">
+                        <span class="config-stat atk" v-if="activeStance.atkMod !== 0">ATK {{ formatMod(activeStance.atkMod) }}</span>
+                        <span class="config-stat def" v-if="activeStance.defMod !== 0">DEF {{ formatMod(activeStance.defMod) }}</span>
+                        <span class="config-stat heat" v-if="activeStance.heatDissipMod !== 0">HEAT {{ formatMod(activeStance.heatDissipMod) }}</span>
                     </div>
 
-                    <!-- Position selector -->
-                    <div class="config-label" style="margin-top: 10px;">POSITION</div>
-                    <div class="config-options">
-                        <button
-                            v-for="pos in positionOptions"
-                            :key="pos.id"
-                            :class="['config-btn', { active: combatRunner.position === pos.id }]"
-                            :title="pos.desc"
-                            @click="setPosition(pos.id)"
-                        >
-                            <span class="config-icon">{{ pos.icon }}</span>
-                            <span class="config-name">{{ pos.label }}</span>
-                            <span class="config-desc">{{ pos.desc }}</span>
-                        </button>
+                    <!-- Targeting selector (inline row) -->
+                    <div class="config-row">
+                        <span class="config-label">TARGET</span>
+                        <div class="config-options-inline">
+                            <button
+                                v-for="t in targetingOptions"
+                                :key="t.id"
+                                :class="['config-btn-inline', { active: combatRunner.targeting === t.id }]"
+                                :title="t.desc"
+                                @click="setTargeting(t.id)"
+                            >
+                                {{ t.icon }} {{ t.name.toUpperCase() }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Position selector (inline row) -->
+                    <div class="config-row">
+                        <span class="config-label">POSTN</span>
+                        <div class="config-options-inline">
+                            <button
+                                v-for="pos in positionOptions"
+                                :key="pos.id"
+                                :class="['config-btn-inline', { active: combatRunner.position === pos.id }]"
+                                :title="pos.desc"
+                                @click="setPosition(pos.id)"
+                            >
+                                {{ pos.icon }} {{ pos.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -340,7 +341,7 @@ export default {
                             </button>
                         </div>
                     </div>
-                    <div class="maneuver-grid">
+                    <div class="maneuver-grid-2col">
                         <div v-for="m in ownedManeuvers" :key="m.id"
                              class="maneuver-mini-card"
                              :class="{ 'equipped': equippedIds.includes(m.id) }"
@@ -357,7 +358,7 @@ export default {
                 <!-- ── SHOP ────────────────────────────────────────────── -->
                 <div class="shop-section" v-if="shopManeuvers.length > 0 && (state.items.glory?.val || 0) > 0">
                     <div class="hud-section-title">> MANEUVER SHOP</div>
-                    <div class="maneuver-grid">
+                    <div class="maneuver-grid-2col">
                         <div v-for="m in shopManeuvers" :key="m.id" class="maneuver-mini-card shop-item">
                             <div class="mnvr-header">
                                 <span class="mnvr-name">{{ m.name.toUpperCase() }}</span>
@@ -439,17 +440,10 @@ export default {
                             <div class="part-val">{{ Math.floor(part.hp) }}/{{ part.maxHp }}</div>
                         </div>
                     </div>
-                    <div class="vitals-row">
-                        <div class="vital">
-                            <label>HEAT</label>
-                            <div class="vital-bar heat"><div class="vital-fill" :style="renderHeatBar()"></div></div>
-                            <span>{{ Math.floor(playerFrame.heat || 0) }}%</span>
-                        </div>
-                        <div class="vital">
-                            <label>STRESS</label>
-                            <div class="vital-bar stress"><div class="vital-fill" :style="renderStressBar()"></div></div>
-                            <span>{{ Math.floor(playerFrame.stress || 0) }}</span>
-                        </div>
+                    <div class="vitals-row-compact">
+                        <span class="vital-inline">HEAT <span class="vital-val heat-val">{{ Math.floor(playerFrame.heat || 0) }}%</span></span>
+                        <span class="vital-sep">|</span>
+                        <span class="vital-inline">STRESS <span class="vital-val stress-val">{{ Math.floor(playerFrame.stress || 0) }}</span></span>
                     </div>
                 </div>
 
@@ -486,17 +480,10 @@ export default {
                             <div class="part-val">{{ Math.floor(part.hp) }}/{{ part.maxHp }}</div>
                         </div>
                     </div>
-                    <div class="vitals-row" v-if="enemy.heat !== undefined || enemy.stress !== undefined">
-                        <div class="vital" v-if="enemy.heat !== undefined">
-                            <label>HEAT</label>
-                            <div class="vital-bar heat"><div class="vital-fill" :style="renderEnemyHeatBar(enemy)"></div></div>
-                            <span>{{ Math.floor(enemy.heat || 0) }}%</span>
-                        </div>
-                        <div class="vital" v-if="enemy.stress !== undefined">
-                            <label>STRESS</label>
-                            <div class="vital-bar stress"><div class="vital-fill" :style="renderEnemyStressBar(enemy)"></div></div>
-                            <span>{{ Math.floor(enemy.stress || 0) }}</span>
-                        </div>
+                    <div class="vitals-row-compact" v-if="enemy.heat !== undefined || enemy.stress !== undefined">
+                        <span class="vital-inline" v-if="enemy.heat !== undefined">HEAT <span class="vital-val heat-val">{{ Math.floor(enemy.heat || 0) }}%</span></span>
+                        <span class="vital-sep" v-if="enemy.heat !== undefined && enemy.stress !== undefined">|</span>
+                        <span class="vital-inline" v-if="enemy.stress !== undefined">STRESS <span class="vital-val stress-val">{{ Math.floor(enemy.stress || 0) }}</span></span>
                     </div>
                 </div>
             </div>
@@ -579,8 +566,8 @@ export default {
 /* ── Mission list ───────────────────────────────────────────────────────── */
 .mission-card {
     border: 1px solid var(--border-dim);
-    padding: 12px;
-    margin-bottom: 10px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -588,47 +575,35 @@ export default {
     border-color: var(--primary);
     background: rgba(0, 255, 65, 0.05);
 }
-.mission-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.mission-name { font-weight: bold; color: var(--secondary); font-size: var(--font-size-sm); }
-.mission-difficulty { color: #f5c542; letter-spacing: 2px; }
-.mission-desc { font-size: var(--font-size-xs); color: var(--text-dim); margin-bottom: 8px; line-height: 1.35; }
-.mission-footer { display: flex; gap: 20px; font-size: var(--font-size-xxs); font-weight: bold; }
+.mission-main { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.mission-name { font-weight: bold; color: var(--secondary); font-size: var(--font-size-xs); white-space: nowrap; }
+.mission-tags-inline { display: flex; gap: 4px; flex: 1; }
+.mission-difficulty { color: #f5c542; letter-spacing: 2px; margin-left: auto; }
+.mission-desc {
+    font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 4px;
+    line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mission-footer { display: flex; gap: 12px; font-size: var(--font-size-xxs); font-weight: bold; }
 .cost { color: var(--error); }
-.rewards { color: var(--primary); }
+.rewards { color: var(--primary); display: flex; gap: 6px; }
 .empty-msg { font-size: var(--font-size-xs); color: var(--text-dim); padding: 10px 0; }
 
-.mission-tags {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-}
-.zone-tag, .story-tag, .patrol-tag, .completed-tag {
-    font-size: var(--font-size-xxs);
-    padding: 1px 5px;
+.zone-tag, .story-tag, .patrol-tag, .completed-tag, .narrative-tag {
+    font-size: 10px;
+    padding: 0px 4px;
     border: 1px solid;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 .zone-tag { border-color: #556; color: #8899aa; }
 .story-tag { border-color: #f5c542; color: #f5c542; }
 .patrol-tag { border-color: #556; color: #778; }
 .completed-tag { border-color: var(--primary); color: var(--primary); }
-
-.mission-flavor {
-    font-size: var(--font-size-xxs);
-    color: #6a7a8a;
-    font-style: italic;
-    margin-bottom: 8px;
-    padding-left: 8px;
-    border-left: 2px solid #334;
-    line-height: 1.3;
-}
+.narrative-tag { border-color: #8af; color: #8af; }
 
 .mission-story { border-left: 3px solid #f5c542; }
 .mission-narrative { border-left: 3px solid #8af; background: rgba(100, 150, 255, 0.03); }
 .mission-completed { opacity: 0.7; }
 .mission-completed:hover { opacity: 1; }
-.narrative-tag { border-color: #8af; color: #8af; }
 .rep-reward { color: #8af; }
 
 .result-mission {
@@ -652,58 +627,69 @@ export default {
     letter-spacing: 1px;
 }
 
-/* ── Combat config ──────────────────────────────────────────────────────── */
-.config-section { margin-bottom: 18px; }
+/* ── Combat config (inline rows) ──────────────────────────────────────── */
+.config-section { margin-bottom: 14px; }
+
+.config-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
 
 .config-label {
     color: var(--primary);
     font-size: var(--font-size-xxs);
-    letter-spacing: 2px;
-    margin: 6px 0 5px;
-    opacity: 0.8;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    width: 52px;
+    flex-shrink: 0;
 }
 
-.config-options {
+.config-options-inline {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     flex-wrap: wrap;
+    flex: 1;
 }
 
-.config-btn {
+.config-btn-inline {
     background: rgba(0, 255, 170, 0.04);
-    border: 1px solid rgba(0, 255, 170, 0.2);
-    color: var(--primary);
-    padding: 7px 9px;
+    border: 1px solid rgba(0, 255, 170, 0.15);
+    color: var(--text-dim);
+    padding: 4px 8px;
     cursor: pointer;
     font-family: inherit;
     font-size: var(--font-size-xxs);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 74px;
-    gap: 2px;
+    letter-spacing: 0.5px;
     transition: border-color 0.15s, background 0.15s;
+    white-space: nowrap;
 }
-.config-btn:hover {
-    border-color: rgba(0, 255, 170, 0.5);
-    background: rgba(0, 255, 170, 0.08);
+.config-btn-inline:hover {
+    border-color: rgba(0, 255, 170, 0.4);
+    color: var(--primary);
 }
-.config-btn.active {
+.config-btn-inline.active {
     border-color: var(--primary);
-    background: rgba(0, 255, 170, 0.14);
-    box-shadow: 0 0 8px rgba(0, 255, 170, 0.25);
+    background: rgba(0, 255, 170, 0.12);
+    color: var(--primary);
+    font-weight: bold;
 }
-.config-icon { font-size: var(--font-size-sm); }
-.config-name { font-weight: bold; font-size: var(--font-size-xxs); letter-spacing: 1px; }
-.config-stat { font-size: var(--font-size-xxs); color: rgba(0, 255, 170, 0.55); }
+
+.config-active-detail {
+    display: flex;
+    gap: 10px;
+    padding: 2px 0 6px 58px;
+    font-size: var(--font-size-xxs);
+}
+.config-stat { color: rgba(0, 255, 170, 0.55); }
 .config-stat.atk { color: #f5c542; }
 .config-stat.def { color: #00aaff; }
 .config-stat.heat { color: #ff9900; }
-.config-desc { font-size: var(--font-size-xxs); color: rgba(0, 255, 170, 0.45); text-align: center; line-height: 1.25; }
 
 /* ── Loadout & shop ─────────────────────────────────────────────────────── */
-.loadout-section { margin-bottom: 16px; }
-.maneuver-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.loadout-section { margin-bottom: 12px; }
+.maneuver-grid-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 
 .frame-status-mini {
     background: rgba(255, 60, 60, 0.08);
@@ -875,26 +861,31 @@ export default {
     cursor: help;
 }
 
-.part-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: var(--font-size-xs); }
-.part-label { width: 70px; }
-.part-integrity { display: flex; gap: 2px; width: 30px; }
-.dot { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
-.part-hp-bar { flex: 1; height: 6px; background: #000; border: 1px solid #333; }
+.part-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: var(--font-size-xxs); }
+.part-label { width: 60px; font-size: var(--font-size-xxs); }
+.part-integrity { display: flex; gap: 2px; width: 24px; }
+.dot { width: 4px; height: 4px; background: var(--primary); border-radius: 50%; }
+.part-hp-bar { flex: 1; height: 5px; background: #000; border: 1px solid #333; }
 .hp-fill { height: 100%; transition: width 0.3s; }
-.part-val { width: 50px; text-align: right; font-size: var(--font-size-xxs); color: var(--text-dim); }
+.part-val { width: 45px; text-align: right; font-size: var(--font-size-xxs); color: var(--text-dim); }
 .destroyed { opacity: 0.35; filter: grayscale(1); }
 
-.vitals-row {
-    margin-top: 12px;
-    padding-top: 10px;
+.vitals-row-compact {
+    margin-top: 6px;
+    padding-top: 6px;
     border-top: 1px dashed var(--border-dim);
     display: flex;
-    gap: 20px;
+    gap: 10px;
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
 }
-.vital { flex: 1; font-size: var(--font-size-xxs); }
-.vital label { display: block; margin-bottom: 3px; color: var(--text-dim); font-size: var(--font-size-xxs); }
-.vital-bar { height: 4px; background: #000; margin-bottom: 3px; }
-.vital-fill { height: 100%; transition: width 0.3s; }
+.vital-inline { display: flex; gap: 4px; }
+.vital-val { font-weight: bold; }
+.vital-val.heat-val { color: #ff9900; }
+.vital-val.stress-val { color: #88aaff; }
+.vital-sep { color: var(--border-dim); }
 
 /* Battle log */
 .battle-log {
