@@ -1567,9 +1567,12 @@ const Game = {
         // Story processing for Phase 4+ missions
         if (result === 'victory' && missionData) {
             this._processRewardFlags(missionData);
-            this._processStoryBeats(missionData, 'on_complete');
-            this._processDebrief(missionData);
             this._processEnemyLoot();
+            // Story beats and debrief only on first clear
+            if ((missionData.completed || 0) <= 1) {
+                this._processStoryBeats(missionData, 'on_complete');
+                this._processDebrief(missionData);
+            }
         }
 
         // --- Check for faction rep tier transitions ---
@@ -1958,12 +1961,11 @@ const Game = {
             this.state.items[flagId] = flagItem;
             this.state.register(flagItem);
         }
-        this.techTree.check();
-        Log.add(`◈ ${flagId.replace(/flag_/g, '').replace(/_/g, ' ')}`, 'story');
+        Log.add(`◈ ${flagId.replace(/^flag_/, '').replace(/_/g, ' ')}`, 'story');
     },
 
     /**
-     * Process rewards.flags array — set each as a story flag.
+     * Process rewards.flags array — set each as a story flag, then check tree once.
      */
     _processRewardFlags(mission) {
         const flags = mission?.rewards?.flags;
@@ -1971,6 +1973,7 @@ const Game = {
         for (const flagId of flags) {
             this._setFlag(flagId);
         }
+        if (flags.length > 0) this.techTree.check();
     },
 
     /**
@@ -2002,7 +2005,11 @@ const Game = {
      */
     _processEnemyLoot() {
         for (const enemy of this.combatRunner.enemies || []) {
-            if (enemy?.loot && typeof enemy.loot === 'object') {
+            if (!enemy?.loot || typeof enemy.loot !== 'object') continue;
+            // Only award loot from enemies that were actually defeated
+            const defeated = enemy.hp <= 0 || enemy.destroyed
+                || (enemy.parts && Object.values(enemy.parts).every(p => (p.hp || 0) <= 0));
+            if (defeated) {
                 this._routeFactionRepFromRewards(enemy.loot, `enemy_loot:${enemy.id || 'unknown'}`);
             }
         }
@@ -2259,6 +2266,7 @@ const Game = {
         // Set story flag if choice carries one
         if (chosen.flag) {
             this._setFlag(chosen.flag);
+            this.techTree.check();
         }
 
         if (event.id === 'evt_android_discovery') {
