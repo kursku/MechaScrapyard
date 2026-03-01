@@ -12,6 +12,18 @@ export default {
                 .filter(i => i.type === 'mission' && !i.locked)
                 .sort((a, b) => a.difficulty - b.difficulty);
         },
+        storyMissions() {
+            return this.missions.filter(m => m.type === 'story' || m.missionType === 'story');
+        },
+        operationsMissions() {
+            return this.missions.filter(m =>
+                (m.type !== 'story' && m.missionType !== 'story') &&
+                !(m.encounter && m.encounter.mode === 'none')
+            );
+        },
+        intelMissions() {
+            return this.missions.filter(m => m.encounter && m.encounter.mode === 'none');
+        },
         playerFrame() {
             return this.state.player.frame;
         },
@@ -219,44 +231,95 @@ export default {
         <!-- ══ PRE-COMBAT INTERFACE ══════════════════════════════════════════ -->
         <div v-if="!showBattle" class="pre-combat-layout">
 
-            <!-- LEFT: Mission list -->
+            <!-- LEFT: Mission list (grouped) -->
             <div class="column-panel mission-list">
-                <div class="hud-section-title">> AVAILABLE MISSIONS</div>
-                <div v-for="m in missions" :key="m.id"
-                     class="mission-card"
-                     :class="{ 
-                        'mission-story': m.type === 'story' || m.missionType === 'story', 
-                        'mission-completed': m.completed > 0,
-                        'mission-narrative': m.encounter && m.encounter.mode === 'none'
-                     }"
-                     @click="startMission(m.id)">
-                    <div class="mission-main">
-                        <div class="mission-name">{{ m.name.toUpperCase() }}</div>
-                        <div class="mission-tags-inline">
-                            <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
-                            <span v-if="m.type === 'story' || m.missionType === 'story'" class="story-tag">STORY</span>
-                            <span v-if="m.missionType === 'patrol'" class="patrol-tag">PATROL</span>
-                            <span v-if="m.encounter && m.encounter.mode === 'none'" class="narrative-tag">NARRATIVE</span>
-                            <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
+
+                <!-- ─── STORY MISSIONS ─── -->
+                <div v-if="storyMissions.length > 0" class="mission-group">
+                    <div class="group-header group-story">◈ STORY MISSIONS</div>
+                    <div v-for="m in storyMissions" :key="m.id"
+                         class="mission-card mission-story"
+                         :class="{ 'mission-completed': m.completed > 0 }"
+                         @click="startMission(m.id)">
+                        <div class="mission-main">
+                            <div class="mission-name">{{ m.name.toUpperCase() }}</div>
+                            <div class="mission-tags-inline">
+                                <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+                                <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
+                            </div>
+                            <div class="mission-difficulty" v-if="m.difficulty > 0">
+                                <span v-for="i in (m.difficulty || 1)" :key="i">★</span>
+                            </div>
                         </div>
-                        <div class="mission-difficulty" v-if="m.difficulty > 0">
-                            <span v-for="i in (m.difficulty || 1)" :key="i">★</span>
+                        <div class="mission-desc">{{ m.desc }}</div>
+                        <div class="mission-footer">
+                            <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">{{ m.cost?.energy || 0 }} ENR</span>
+                            <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}</span>
+                            <span class="rewards">
+                                <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
+                                <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
+                                <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
+                            </span>
                         </div>
-                        <div v-else class="mission-difficulty" style="color: #8af;">◆</div>
-                    </div>
-                    <div class="mission-desc">{{ m.desc }}</div>
-                    <div class="mission-footer">
-                        <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">{{ m.cost?.energy || 0 }} ENR</span>
-                        <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">
-                            PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}
-                        </span>
-                        <span class="rewards">
-                            <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
-                            <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
-                            <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
-                        </span>
                     </div>
                 </div>
+
+                <!-- ─── COMBAT OPERATIONS ─── -->
+                <div v-if="operationsMissions.length > 0" class="mission-group">
+                    <div class="group-header group-ops">⚔ COMBAT OPERATIONS</div>
+                    <div v-for="m in operationsMissions" :key="m.id"
+                         class="mission-card"
+                         :class="{ 'mission-completed': m.completed > 0 }"
+                         @click="startMission(m.id)">
+                        <div class="mission-main">
+                            <div class="mission-name">{{ m.name.toUpperCase() }}</div>
+                            <div class="mission-tags-inline">
+                                <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+                                <span v-if="m.missionType === 'patrol'" class="patrol-tag">PATROL</span>
+                                <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
+                            </div>
+                            <div class="mission-difficulty" v-if="m.difficulty > 0">
+                                <span v-for="i in (m.difficulty || 1)" :key="i">★</span>
+                            </div>
+                        </div>
+                        <div class="mission-desc">{{ m.desc }}</div>
+                        <div class="mission-footer">
+                            <span class="cost">{{ m.cost?.energy || 0 }} ENR</span>
+                            <span class="power-indicator" :class="powerClass(m)">PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}</span>
+                            <span class="rewards">
+                                <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
+                                <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
+                                <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── INTEL / NARRATIVE ─── -->
+                <div v-if="intelMissions.length > 0" class="mission-group">
+                    <div class="group-header group-intel">◇ INTEL / NARRATIVE</div>
+                    <div v-for="m in intelMissions" :key="m.id"
+                         class="mission-card mission-narrative"
+                         :class="{ 'mission-completed': m.completed > 0 }"
+                         @click="startMission(m.id)">
+                        <div class="mission-main">
+                            <div class="mission-name">{{ m.name.toUpperCase() }}</div>
+                            <div class="mission-tags-inline">
+                                <span v-if="m.zone" class="zone-tag">{{ m.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+                                <span v-if="m.completed > 0" class="completed-tag">✓ ×{{ m.completed }}</span>
+                            </div>
+                            <div class="mission-difficulty" style="color: #8af;">◆</div>
+                        </div>
+                        <div class="mission-desc">{{ m.desc }}</div>
+                        <div class="mission-footer">
+                            <span class="rewards">
+                                <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
+                                <span v-for="(val, key) in repRewards(m)" :key="key" class="rep-reward">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
                 <div v-if="missions.length === 0" class="empty-msg">
                     No missions available. Continue your exploration...
                 </div>
@@ -355,25 +418,28 @@ export default {
                     </div>
                 </div>
 
-                <!-- ── SHOP ────────────────────────────────────────────── -->
-                <div class="shop-section" v-if="shopManeuvers.length > 0 && (state.items.glory?.val || 0) > 0">
-                    <div class="hud-section-title">> MANEUVER SHOP</div>
-                    <div class="maneuver-grid-2col">
-                        <div v-for="m in shopManeuvers" :key="m.id" class="maneuver-mini-card shop-item">
-                            <div class="mnvr-header">
-                                <span class="mnvr-name">{{ m.name.toUpperCase() }}</span>
-                                <span class="cost">{{ m.cost?.glory || 0 }} GLORY</span>
+                <!-- ── SHOP (collapsible) ──────────────────────────────── -->
+                <details v-if="shopManeuvers.length > 0" class="shop-details">
+                    <summary class="shop-summary">
+                        ▶ MANEUVER SHOP
+                        <span class="shop-count">{{ shopManeuvers.length }} available</span>
+                    </summary>
+                    <div v-if="(state.items.glory?.val || 0) > 0" class="shop-content">
+                        <div class="maneuver-grid-2col">
+                            <div v-for="m in shopManeuvers" :key="m.id" class="maneuver-mini-card shop-item">
+                                <div class="mnvr-header">
+                                    <span class="mnvr-name">{{ m.name.toUpperCase() }}</span>
+                                    <span class="cost">{{ m.cost?.glory || 0 }} GLORY</span>
+                                </div>
+                                <div class="mnvr-desc">{{ m.desc }}</div>
+                                <button class="btn-buy" @click="buyManeuver(m.id)">UNLOCK</button>
                             </div>
-                            <div class="mnvr-desc">{{ m.desc }}</div>
-                            <button class="btn-buy" @click="buyManeuver(m.id)">UNLOCK</button>
                         </div>
                     </div>
-                </div>
-                <div v-else-if="shopManeuvers.length > 0 && (state.items.glory?.val || 0) === 0"
-                     class="shop-locked-msg">
-                    > MANEUVER SHOP LOCKED
-                    <span class="shop-locked-hint">Complete missions to earn GLORY and unlock tactical maneuvers.</span>
-                </div>
+                    <div v-else class="shop-locked-msg">
+                        Complete missions to earn GLORY and unlock tactical maneuvers.
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -553,7 +619,7 @@ export default {
 /* ── Pre-combat layout ──────────────────────────────────────────────────── */
 .pre-combat-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr minmax(260px, 320px);
     gap: 14px;
 }
 
@@ -563,6 +629,30 @@ export default {
     padding: 14px;
 }
 
+/* ── Mission groups ──────────────────────────────────────────────────── */
+.mission-group {
+    margin-bottom: 14px;
+}
+.group-header {
+    font-size: var(--font-size-xxs);
+    letter-spacing: 2px;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--border-dim);
+}
+.group-story {
+    color: #f5c542;
+    border-bottom-color: rgba(245, 197, 66, 0.3);
+}
+.group-ops {
+    color: var(--primary);
+    border-bottom-color: rgba(0, 255, 170, 0.3);
+}
+.group-intel {
+    color: #8af;
+    border-bottom-color: rgba(136, 170, 255, 0.3);
+}
 /* ── Mission list ───────────────────────────────────────────────────────── */
 .mission-card {
     border: 1px solid var(--border-dim);
@@ -749,9 +839,38 @@ export default {
 .mnvr-type { font-size: var(--font-size-xxs); color: var(--text-dim); }
 .mnvr-desc { font-size: var(--font-size-xxs); color: var(--text-dim); line-height: 1.3; }
 
+/* ── Shop (collapsible) ─────────────────────────────────── */
+.shop-details {
+    margin-top: 10px;
+    border: 1px dashed rgba(0, 255, 170, 0.15);
+}
+.shop-summary {
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    color: var(--primary);
+    letter-spacing: 1px;
+    padding: 6px 8px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.shop-summary:hover {
+    background: rgba(0, 255, 170, 0.05);
+}
+.shop-count {
+    font-weight: normal;
+    color: var(--text-dim);
+    font-size: 10px;
+    letter-spacing: 0;
+}
+.shop-content {
+    padding: 8px;
+}
 .shop-item { border-style: dashed; }
 .btn-buy {
-    margin-top: 8px;
+    margin-top: 6px;
     width: 100%;
     background: transparent;
     border: 1px solid var(--primary);
@@ -762,20 +881,12 @@ export default {
     font-family: inherit;
 }
 .btn-buy:hover { background: var(--primary); color: #000; }
-
 .shop-locked-msg {
     font-size: var(--font-size-xxs);
     color: var(--text-dim);
-    padding: 10px;
-    border: 1px dashed rgba(0, 255, 170, 0.15);
-    letter-spacing: 1px;
-}
-.shop-locked-hint {
-    display: block;
-    margin-top: 4px;
-    font-size: var(--font-size-xxs);
-    opacity: 0.6;
-    letter-spacing: 0;
+    padding: 8px;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
 }
 
 /* ── Battle view ────────────────────────────────────────────────────────── */
