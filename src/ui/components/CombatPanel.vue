@@ -104,11 +104,51 @@ export default {
             if (!frame?.attributes) return 0;
             return (frame.attributes.atk || 0) + (frame.attributes.def || 0);
         },
+        filteredStoryMissions() {
+            if (this.missionFilter !== 'all' && this.missionFilter !== 'story') return [];
+            const list = this.storyMissions;
+            return this.hideCompleted ? list.filter(m => !m.completed) : list;
+        },
+        filteredOpsMissions() {
+            if (this.missionFilter !== 'all' && this.missionFilter !== 'combat') return [];
+            const list = this.operationsMissions;
+            return this.hideCompleted ? list.filter(m => !m.completed) : list;
+        },
+        filteredIntelMissions() {
+            if (this.missionFilter !== 'all' && this.missionFilter !== 'intel') return [];
+            const list = this.intelMissions;
+            return this.hideCompleted ? list.filter(m => !m.completed) : list;
+        },
+        briefingPowerLabel() {
+            const m = this.selectedMission;
+            if (!m) return '';
+            const cls = this.powerClass(m);
+            const labels = { 'power-safe': '▲ SAFE', 'power-ok': '⚠ MARGINAL', 'power-risky': '▼ RISKY' };
+            return labels[cls] || '';
+        },
+    },
+    data() {
+        return {
+            selectedMission: null,
+            missionFilter: 'all',
+            hideCompleted: false,
+        };
     },
     methods: {
         fmt, pct,
         tokenDef(type) {
             return TOKEN_DEFS[type] || { icon: '?', color: '#fff', desc: '' };
+        },
+        selectMission(m) {
+            this.selectedMission = m;
+        },
+        cancelBriefing() {
+            this.selectedMission = null;
+        },
+        deployMission() {
+            const m = this.selectedMission;
+            this.selectedMission = null;
+            Game.startMission(m.id);
         },
         startMission(mid) {
             Game.startMission(mid);
@@ -234,13 +274,26 @@ export default {
             <!-- LEFT: Mission list (grouped) -->
             <div class="column-panel mission-list">
 
+                <!-- ── Filter bar ──────────────────────────────────────── -->
+                <div class="mission-filter-bar">
+                    <button v-for="f in [['all','ALL'],['combat','⚔ OPS'],['story','◈ STORY'],['intel','◇ INTEL']]"
+                            :key="f[0]"
+                            :class="['filter-btn', { active: missionFilter === f[0] }]"
+                            @click="missionFilter = f[0]; selectedMission = null">{{ f[1] }}</button>
+                    <button :class="['filter-btn', 'filter-hide', { active: hideCompleted }]"
+                            @click="hideCompleted = !hideCompleted"
+                            title="Hide completed missions">
+                        {{ hideCompleted ? '✓ HIDE' : '✓ SHOW' }}
+                    </button>
+                </div>
+
                 <!-- ─── STORY MISSIONS ─── -->
-                <div v-if="storyMissions.length > 0" class="mission-group">
+                <div v-if="filteredStoryMissions.length > 0" class="mission-group">
                     <div class="group-header group-story">◈ STORY MISSIONS</div>
-                    <div v-for="m in storyMissions" :key="m.id"
+                    <div v-for="m in filteredStoryMissions" :key="m.id"
                          class="mission-card mission-story"
-                         :class="{ 'mission-completed': m.completed > 0 }"
-                         @click="startMission(m.id)">
+                         :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
+                         @click="selectMission(m)">
                         <div class="mission-main">
                             <div class="mission-name">{{ m.name.toUpperCase() }}</div>
                             <div class="mission-tags-inline">
@@ -265,12 +318,12 @@ export default {
                 </div>
 
                 <!-- ─── COMBAT OPERATIONS ─── -->
-                <div v-if="operationsMissions.length > 0" class="mission-group">
+                <div v-if="filteredOpsMissions.length > 0" class="mission-group">
                     <div class="group-header group-ops">⚔ COMBAT OPERATIONS</div>
-                    <div v-for="m in operationsMissions" :key="m.id"
+                    <div v-for="m in filteredOpsMissions" :key="m.id"
                          class="mission-card"
-                         :class="{ 'mission-completed': m.completed > 0 }"
-                         @click="startMission(m.id)">
+                         :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
+                         @click="selectMission(m)">
                         <div class="mission-main">
                             <div class="mission-name">{{ m.name.toUpperCase() }}</div>
                             <div class="mission-tags-inline">
@@ -296,12 +349,12 @@ export default {
                 </div>
 
                 <!-- ─── INTEL / NARRATIVE ─── -->
-                <div v-if="intelMissions.length > 0" class="mission-group">
+                <div v-if="filteredIntelMissions.length > 0" class="mission-group">
                     <div class="group-header group-intel">◇ INTEL / NARRATIVE</div>
-                    <div v-for="m in intelMissions" :key="m.id"
+                    <div v-for="m in filteredIntelMissions" :key="m.id"
                          class="mission-card mission-narrative"
-                         :class="{ 'mission-completed': m.completed > 0 }"
-                         @click="startMission(m.id)">
+                         :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
+                         @click="selectMission(m)">
                         <div class="mission-main">
                             <div class="mission-name">{{ m.name.toUpperCase() }}</div>
                             <div class="mission-tags-inline">
@@ -323,10 +376,87 @@ export default {
                 <div v-if="missions.length === 0" class="empty-msg">
                     No missions available. Continue your exploration...
                 </div>
+                <div v-else-if="filteredStoryMissions.length === 0 && filteredOpsMissions.length === 0 && filteredIntelMissions.length === 0" class="empty-msg">
+                    No missions match the current filter.
+                </div>
             </div>
 
-            <!-- RIGHT: Config + Loadout -->
+            <!-- RIGHT: Mission Briefing (when selected) OR Config + Loadout -->
             <div class="column-panel config-loadout">
+
+                <!-- ══ MISSION BRIEFING ══════════════════════════════════ -->
+                <template v-if="selectedMission">
+                    <div class="briefing-panel">
+                        <div class="briefing-header">
+                            <span class="briefing-label">MISSION BRIEFING</span>
+                            <button class="briefing-close" @click="cancelBriefing">✕</button>
+                        </div>
+                        <div class="briefing-mission-name">{{ selectedMission.name.toUpperCase() }}</div>
+                        <div class="briefing-tags">
+                            <span v-if="selectedMission.zone" class="zone-tag">{{ selectedMission.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+                            <span v-if="selectedMission.missionType === 'story'" class="story-tag">STORY</span>
+                            <span v-if="selectedMission.missionType === 'patrol'" class="patrol-tag">PATROL</span>
+                            <span v-if="selectedMission.completed > 0" class="completed-tag">✓ ×{{ selectedMission.completed }}</span>
+                        </div>
+
+                        <div class="briefing-section-label">▶ OBJECTIVE</div>
+                        <div class="briefing-desc">{{ selectedMission.desc }}</div>
+
+                        <div class="briefing-section-label">▶ THREAT ASSESSMENT</div>
+                        <div class="briefing-threat">
+                            <div class="threat-row">
+                                <span class="threat-label">DIFFICULTY</span>
+                                <span class="mission-difficulty threat-val">
+                                    <template v-if="selectedMission.difficulty > 0">
+                                        <span v-for="i in selectedMission.difficulty" :key="i">★</span>
+                                    </template>
+                                    <template v-else>— NONE</template>
+                                </span>
+                            </div>
+                            <div class="threat-row" v-if="selectedMission.encounter?.mode !== 'none'">
+                                <span class="threat-label">ENERGY COST</span>
+                                <span class="threat-val cost">{{ selectedMission.cost?.energy || 0 }} ENR</span>
+                            </div>
+                            <div class="threat-row" v-if="selectedMission.difficulty > 0">
+                                <span class="threat-label">POWER CHECK</span>
+                                <span class="threat-val power-indicator" :class="powerClass(selectedMission)">
+                                    PWR {{ playerPower }} — {{ briefingPowerLabel }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="briefing-section-label">▶ REWARDS</div>
+                        <div class="briefing-rewards">
+                            <span v-if="selectedMission.rewards?.glory" class="reward-pill">{{ selectedMission.rewards.glory }} GLORY</span>
+                            <span v-if="selectedMission.rewards?.creds" class="reward-pill">{{ selectedMission.rewards.creds }} CREDS</span>
+                            <span v-for="(val, key) in repRewards(selectedMission)" :key="key" class="reward-pill rep-pill">+{{ val }} {{ key.replace('rep_', '').toUpperCase() }}</span>
+                            <span v-if="!selectedMission.rewards?.glory && !selectedMission.rewards?.creds" class="threat-val" style="opacity:0.5">— Intel value only</span>
+                        </div>
+
+                        <div class="briefing-section-label">▶ LOADOUT</div>
+                        <div class="briefing-loadout">
+                            <span v-if="equippedIds.length === 0" class="briefing-no-loadout">No maneuvers equipped</span>
+                            <span v-for="id in equippedIds" :key="id" class="briefing-maneuver-pill">
+                                {{ (allManeuvers.find(m => m.id === id)?.name || id).toUpperCase() }}
+                            </span>
+                        </div>
+                        <div class="briefing-config-summary">
+                            {{ activeStance.icon }} {{ activeStance.name.toUpperCase() }}
+                            &nbsp;|&nbsp;
+                            {{ activeTargeting.icon }} {{ activeTargeting.name.toUpperCase() }}
+                            &nbsp;|&nbsp;
+                            {{ activePosition }}
+                        </div>
+
+                        <div class="briefing-actions">
+                            <button class="briefing-abort" @click="cancelBriefing">[ ABORT ]</button>
+                            <button class="briefing-deploy" @click="deployMission">[ DEPLOY ]</button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ══ CONFIG + LOADOUT (default) ═══════════════════════════ -->
+                <template v-else>
 
                 <!-- ── COMBAT CONFIGURATION ─────────────────────────────── -->
                 <div class="config-section">
@@ -440,11 +570,21 @@ export default {
                         Complete missions to earn GLORY and unlock tactical maneuvers.
                     </div>
                 </details>
+
+                </template><!-- end v-else config/loadout -->
             </div>
         </div>
 
         <!-- ══ BATTLE VIEW ═══════════════════════════════════════════════════ -->
         <div v-else class="battle-view">
+
+            <!-- Mission context strip -->
+            <div class="mission-context-strip" v-if="combatRunner.mission">
+                <span class="mcs-label">MISSION</span>
+                <span class="mcs-sep">◈</span>
+                <span class="mcs-name">{{ combatRunner.mission.name.toUpperCase() }}</span>
+                <span v-if="combatRunner.mission.zone" class="mcs-zone">{{ combatRunner.mission.zone.replace(/_/g, ' ').toUpperCase() }}</span>
+            </div>
 
             <!-- Active config indicator (read-only) -->
             <div class="active-config-bar">
@@ -671,7 +811,8 @@ export default {
 .mission-difficulty { color: #f5c542; letter-spacing: 2px; margin-left: auto; }
 .mission-desc {
     font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 4px;
-    line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 .mission-footer { display: flex; gap: 12px; font-size: var(--font-size-xxs); font-weight: bold; }
 .cost { color: var(--error); }
@@ -1137,4 +1278,212 @@ export default {
 .power-safe  { color: var(--primary); }
 .power-ok    { color: #f5c542; }
 .power-risky { color: var(--error); }
+
+/* ── Mission filter bar ─────────────────────────────────────────────────── */
+.mission-filter-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-dim);
+}
+.filter-btn {
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    padding: 3px 7px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: border-color 0.15s, color 0.15s;
+}
+.filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+.filter-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0,255,170,0.07); font-weight: bold; }
+.filter-hide { margin-left: auto; border-color: #556; }
+.filter-hide.active { border-color: #f5c542; color: #f5c542; background: rgba(245,197,66,0.06); }
+
+/* ── Mission selected state ─────────────────────────────────────────────── */
+.mission-selected {
+    border-color: var(--primary) !important;
+    background: rgba(0, 255, 170, 0.06) !important;
+    box-shadow: inset 2px 0 0 var(--primary);
+}
+
+/* ── Mission briefing panel ─────────────────────────────────────────────── */
+.briefing-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+.briefing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 255, 170, 0.25);
+    padding-bottom: 6px;
+}
+.briefing-label {
+    font-size: var(--font-size-xxs);
+    color: var(--primary);
+    letter-spacing: 2px;
+    font-weight: bold;
+    opacity: 0.7;
+}
+.briefing-close {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    padding: 0 4px;
+    line-height: 1;
+    font-family: inherit;
+}
+.briefing-close:hover { color: var(--error); }
+.briefing-mission-name {
+    font-size: var(--font-size-sm);
+    font-weight: 900;
+    color: var(--secondary);
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+.briefing-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.briefing-section-label {
+    font-size: var(--font-size-xxs);
+    color: var(--primary);
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    margin-top: 2px;
+}
+.briefing-desc {
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+}
+.briefing-threat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.threat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-xxs);
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.threat-label {
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    opacity: 0.6;
+}
+.threat-val {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+.briefing-rewards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.reward-pill {
+    font-size: var(--font-size-xxs);
+    padding: 2px 7px;
+    border: 1px solid rgba(0,255,170,0.25);
+    color: var(--primary);
+    letter-spacing: 0.5px;
+}
+.rep-pill { border-color: rgba(136,170,255,0.3); color: #8af; }
+.briefing-loadout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.briefing-maneuver-pill {
+    font-size: var(--font-size-xxs);
+    padding: 2px 7px;
+    border: 1px solid rgba(0,255,170,0.3);
+    background: rgba(0,255,170,0.05);
+    color: var(--primary);
+    letter-spacing: 0.5px;
+}
+.briefing-no-loadout {
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    opacity: 0.5;
+    font-style: italic;
+}
+.briefing-config-summary {
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    opacity: 0.5;
+    letter-spacing: 0.5px;
+    border-top: 1px dashed var(--border-dim);
+    padding-top: 6px;
+}
+.briefing-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,255,170,0.15);
+}
+.briefing-abort {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--error);
+    color: var(--error);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    padding: 7px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+}
+.briefing-abort:hover { background: rgba(255,60,60,0.12); }
+.briefing-deploy {
+    flex: 2;
+    background: rgba(0,255,170,0.08);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    padding: 7px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.15s;
+}
+.briefing-deploy:hover { background: rgba(0,255,170,0.18); }
+
+/* ── Mission context strip (battle view) ────────────────────────────────── */
+.mission-context-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+}
+.mcs-label { color: var(--text-dim); opacity: 0.5; }
+.mcs-sep { color: var(--primary); opacity: 0.4; }
+.mcs-name { color: var(--secondary); font-weight: bold; letter-spacing: 1.5px; }
+.mcs-zone {
+    margin-left: auto;
+    color: #8899aa;
+    font-size: 10px;
+    padding: 0 5px;
+    border: 1px solid #334;
+}
 </style>
