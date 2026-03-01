@@ -20,7 +20,7 @@ export default {
             data._meta = {
                 version: SAVE_VERSION,
                 savedAt: Date.now(),
-                playTime: game.timer?.total || 0,
+                playTime: game.timer?.totalTime || 0,
             };
             localStorage.setItem(SAVE_KEY, JSON.stringify(data));
             this._lastSavedAt = Date.now();

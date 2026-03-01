@@ -159,9 +159,6 @@ export default {
             this.$emit('action');
         },
         equipPart(slot, partObj) {
-            if (typeof partObj === 'string') {
-                partObj = this.state.player.partsInventory.find(p => p.id === partObj);
-            }
             if (!partObj) return;
             Game.equipPart(slot, partObj);
             this.renderTick++;

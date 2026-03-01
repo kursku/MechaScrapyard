@@ -1828,10 +1828,6 @@ const Game = {
         }
     },
 
-    equipManeuvers(list) {
-        this.combatRunner.setManeuvers(list);
-    },
-
     setPosition(pos) {
         this.combatRunner.setPosition(pos);
     },
@@ -3429,110 +3425,6 @@ const Game = {
             this.state.register(rItem);
             this.techTree.register(rItem);
         }
-    },
-
-    equipFrame(frameId) {
-        const frame = this.state.player.frame;
-        const newChassis = this.state.get(frameId);
-
-        if (!newChassis || newChassis.type !== 'frame') return;
-
-        // Remove incompatible installed parts
-        for (const slot of Object.keys(frame.installedParts)) {
-            const partId = frame.installedParts[slot];
-            if (!partId) continue;
-
-            const partTemplate = this.state.get(partId);
-            if (partTemplate && partTemplate.category_compat) {
-                if (!partTemplate.category_compat.includes(newChassis.category)) {
-                    // Unequip this part
-                    const livePart = frame.parts[slot];
-                    this.state.player.partsInventory.push({
-                        id: 'part_' + Date.now() + '_' + Math.floor(Math.random() * 1000), // Unique identifier
-                        partId: partId,
-                        name: partTemplate.name,
-                        slot: partTemplate.slot,
-                        condition: livePart ? livePart.condition : 1.0,
-                        hp: livePart ? livePart.hp : partTemplate.maxHp
-                    });
-
-                    frame.installedParts[slot] = null;
-                    if (frame.parts[slot]) {
-                        frame.parts[slot].condition = 0;
-                    }
-                    Log.add(`[SYSTEM] Unequipped ${partTemplate.name} (Incompatible with ${newChassis.category} chassis).`, 'system');
-                }
-            }
-        }
-
-        frame.chassisId = frameId;
-        Log.add(`[SYSTEM] Core Chassis changed to ${newChassis.name}.`, 'system');
-
-        this.syncFrameSlots();
-        this.state.recalculateFrameStats();
-    },
-
-    equipPart(slotId, inventoryPartId) {
-        const frame = this.state.player.frame;
-        const chassis = this.state.get(frame.chassisId);
-
-        // Find the part in inventory
-        const invIndex = this.state.player.partsInventory.findIndex(p => p.id === inventoryPartId);
-        if (invIndex === -1) return;
-
-        const invPart = this.state.player.partsInventory[invIndex];
-        const partTemplate = this.state.get(invPart.partId);
-
-        if (!partTemplate) return;
-
-        // Check category compatibility
-        if (partTemplate.category_compat && !partTemplate.category_compat.includes(chassis.category)) {
-            Log.add(`[ERROR] ${partTemplate.name} is incompatible with ${chassis.category} frames.`, 'error');
-            return;
-        }
-
-        // Check weight limits for logging
-        const expectedWeight = chassis.weightRange && chassis.weightRange[slotId] ? chassis.weightRange[slotId] : [0, 999];
-        const isWeightMismatch = partTemplate.weight < expectedWeight[0] || partTemplate.weight > expectedWeight[1];
-        if (isWeightMismatch) {
-            Log.add(`[WARNING] ${partTemplate.name} weight is outside optimal range. Efficiency reduced by 5%.`, 'warning');
-        }
-
-        // Unequip current part
-        const currentPartId = frame.installedParts[slotId];
-        if (currentPartId) {
-            const currentTemplate = this.state.get(currentPartId);
-            const livePart = frame.parts[slotId];
-            if (currentTemplate) {
-                this.state.player.partsInventory.push({
-                    id: 'part_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-                    partId: currentPartId,
-                    name: currentTemplate.name,
-                    slot: currentTemplate.slot,
-                    condition: livePart ? livePart.condition : 1.0,
-                    hp: livePart ? livePart.hp : currentTemplate.maxHp
-                });
-                Log.add(`[SYSTEM] Unequipped ${currentTemplate.name} from slot [${slotId.toUpperCase()}].`, 'system');
-            }
-        }
-
-        // Equip new part
-        frame.installedParts[slotId] = invPart.partId;
-        frame.parts[slotId] = {
-            id: slotId,
-            name: partTemplate.name,
-            hp: invPart.hp ?? partTemplate.maxHp,
-            maxHp: partTemplate.maxHp,
-            integrity: partTemplate.integrity,
-            status: 'operational',
-            condition: invPart.condition ?? 1.0
-        };
-
-        // Remove from inventory
-        this.state.player.partsInventory.splice(invIndex, 1);
-
-        Log.add(`[SYSTEM] Installed ${partTemplate.name} in slot [${slotId.toUpperCase()}].`, 'system');
-        this.state.recalculateFrameStats();
     },
 
     equipItem(slotId, itemId) {

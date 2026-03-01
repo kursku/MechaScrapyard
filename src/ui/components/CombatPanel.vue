@@ -54,13 +54,13 @@ export default {
         positionOptions() {
             return [
                 { id: 'fighter', icon: '⚔', label: 'FIGHTER', desc: 'High damage, counter-strike' },
-                { id: 'scout',   icon: '👁', label: 'SCOUT',   desc: 'Speed, evasion, intel' },
-                { id: 'gunner',  icon: '🎯', label: 'GUNNER',  desc: 'Accuracy, precision fire' },
+                { id: 'scout',   icon: '⊙', label: 'SCOUT',   desc: 'Speed, evasion, intel' },
+                { id: 'gunner',  icon: '⊕', label: 'GUNNER',  desc: 'Accuracy, precision fire' },
             ];
         },
         activePosition() {
             const pos = this.combatRunner.position || 'fighter';
-            const icons = { fighter: '⚔', scout: '👁', gunner: '🎯' };
+            const icons = { fighter: '⚔', scout: '⊙', gunner: '⊕' };
             return `${icons[pos] || '◈'} ${pos.toUpperCase()}`;
         },
         equippedIds() {
@@ -239,6 +239,9 @@ export default {
                 backgroundColor: p > 75 ? '#ff3333' : '#00afff',
             };
         },
+        powerLabel(mission) {
+            return { 'power-safe': '▲ SAFE', 'power-ok': '⚠ MARG', 'power-risky': '▼ RISKY' }[this.powerClass(mission)] || '';
+        },
         powerClass(mission) {
             const threshold = (mission.difficulty || 1) * 8;
             if (this.playerPower >= threshold * 1.2) return 'power-safe';
@@ -282,14 +285,20 @@ export default {
                             @click="missionFilter = f[0]; selectedMission = null">{{ f[1] }}</button>
                     <button :class="['filter-btn', 'filter-hide', { active: hideCompleted }]"
                             @click="hideCompleted = !hideCompleted"
-                            title="Hide completed missions">
-                        {{ hideCompleted ? '✓ HIDE' : '✓ SHOW' }}
+                            :title="hideCompleted ? 'Showing active missions only' : 'Show all missions'">
+                        ✓ HIDE DONE
                     </button>
+                </div>
+
+                <!-- Pilot power readout (shown once for all cards) -->
+                <div class="pilot-power-line" v-if="playerPower > 0">
+                    <span class="ppl-label">PILOT PWR</span>
+                    <span class="ppl-val">{{ playerPower }}</span>
                 </div>
 
                 <!-- ─── STORY MISSIONS ─── -->
                 <div v-if="filteredStoryMissions.length > 0" class="mission-group">
-                    <div class="group-header group-story">◈ STORY MISSIONS</div>
+                    <div class="group-header group-story">◈ STORY MISSIONS <span class="group-count">({{ filteredStoryMissions.length }})</span></div>
                     <div v-for="m in filteredStoryMissions" :key="m.id"
                          class="mission-card mission-story"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -307,7 +316,7 @@ export default {
                         <div class="mission-desc">{{ m.desc }}</div>
                         <div class="mission-footer">
                             <span class="cost" v-if="m.encounter && m.encounter.mode !== 'none'">{{ m.cost?.energy || 0 }} ENR</span>
-                            <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}</span>
+                            <span class="power-indicator" v-if="m.difficulty > 0" :class="powerClass(m)">{{ powerLabel(m) }}</span>
                             <span class="rewards">
                                 <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
                                 <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
@@ -319,7 +328,7 @@ export default {
 
                 <!-- ─── COMBAT OPERATIONS ─── -->
                 <div v-if="filteredOpsMissions.length > 0" class="mission-group">
-                    <div class="group-header group-ops">⚔ COMBAT OPERATIONS</div>
+                    <div class="group-header group-ops">⚔ COMBAT OPERATIONS <span class="group-count">({{ filteredOpsMissions.length }})</span></div>
                     <div v-for="m in filteredOpsMissions" :key="m.id"
                          class="mission-card"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -338,7 +347,7 @@ export default {
                         <div class="mission-desc">{{ m.desc }}</div>
                         <div class="mission-footer">
                             <span class="cost">{{ m.cost?.energy || 0 }} ENR</span>
-                            <span class="power-indicator" :class="powerClass(m)">PWR {{ playerPower }} vs ★×{{ m.difficulty || 1 }}</span>
+                            <span class="power-indicator" :class="powerClass(m)">{{ powerLabel(m) }}</span>
                             <span class="rewards">
                                 <span v-if="m.rewards?.glory">{{ m.rewards.glory }}⚔</span>
                                 <span v-if="m.rewards?.creds">{{ m.rewards.creds }}¢</span>
@@ -350,7 +359,7 @@ export default {
 
                 <!-- ─── INTEL / NARRATIVE ─── -->
                 <div v-if="filteredIntelMissions.length > 0" class="mission-group">
-                    <div class="group-header group-intel">◇ INTEL / NARRATIVE</div>
+                    <div class="group-header group-intel">◇ INTEL / NARRATIVE <span class="group-count">({{ filteredIntelMissions.length }})</span></div>
                     <div v-for="m in filteredIntelMissions" :key="m.id"
                          class="mission-card mission-narrative"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -520,14 +529,14 @@ export default {
 
                 <!-- ── LOADOUT ──────────────────────────────────────────── -->
                 <div class="loadout-section">
-                    <div class="hud-section-title">> LOADOUT [{{ equippedIds.length }}/3]</div>
+                    <div class="hud-section-title">> LOADOUT [{{ equippedIds.length }}/3]<span v-if="equippedIds.length >= 3" class="slots-full-badge">FULL</span></div>
                     
                     <!-- Frame Status Mini -->
                     <div class="frame-status-mini" v-if="frameDamaged">
                         <div class="damage-alert">⚠ FRAME DAMAGED</div>
                         <div class="repair-actions">
                             <button class="btn-repair" @click="repairFrame" title="15 Scrap + 2 Parts">
-                                🛠️ REPAIR (15⚙ + 2⊞)
+                                ◆ REPAIR (15⚙ + 2⊞)
                             </button>
                             <button class="btn-repair glory" @click="quickRepairGlory" title="5 Glory — emergency repair">
                                 ⚔ GLORY REPAIR (5)
@@ -537,7 +546,7 @@ export default {
                     <div class="maneuver-grid-2col">
                         <div v-for="m in ownedManeuvers" :key="m.id"
                              class="maneuver-mini-card"
-                             :class="{ 'equipped': equippedIds.includes(m.id) }"
+                             :class="{ 'equipped': equippedIds.includes(m.id), 'slots-locked': equippedIds.length >= 3 && !equippedIds.includes(m.id) }"
                              @click="toggleEquip(m.id)">
                             <div class="mnvr-header">
                                 <span class="mnvr-name">{{ m.name.toUpperCase() }}</span>
@@ -793,6 +802,13 @@ export default {
     color: #8af;
     border-bottom-color: rgba(136, 170, 255, 0.3);
 }
+.group-count {
+    font-weight: normal;
+    opacity: 0.45;
+    letter-spacing: 0;
+    font-size: var(--font-size-xxs);
+    margin-left: 4px;
+}
 /* ── Mission list ───────────────────────────────────────────────────────── */
 .mission-card {
     border: 1px solid var(--border-dim);
@@ -934,9 +950,15 @@ export default {
     font-weight: bold;
     letter-spacing: 1px;
     margin-bottom: 6px;
-    animation: blink 1.5s infinite;
+    animation: dmg-pulse 2s ease-in-out infinite;
 }
-@keyframes blink { 50% { opacity: 0.5; } }
+@keyframes dmg-pulse {
+    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(255, 80, 80, 0.7); }
+    50% { opacity: 0.65; text-shadow: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .damage-alert { animation: none; }
+}
 .repair-actions { display: flex; gap: 6px; }
 .btn-repair {
     flex: 1;
@@ -974,6 +996,24 @@ export default {
     font-size: var(--font-size-xxs);
     color: var(--primary);
     font-weight: bold;
+}
+.maneuver-mini-card.slots-locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.maneuver-mini-card.slots-locked:hover {
+    border-color: var(--border-dim);
+    background: rgba(30, 40, 50, 0.3);
+}
+.slots-full-badge {
+    color: #f5c542;
+    border: 1px solid rgba(245, 197, 66, 0.35);
+    padding: 0 5px;
+    margin-left: 8px;
+    font-size: var(--font-size-xxs);
+    letter-spacing: 1px;
+    font-weight: normal;
+    vertical-align: middle;
 }
 .mnvr-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
 .mnvr-name { font-size: var(--font-size-xs); font-weight: bold; color: var(--text); }
@@ -1141,7 +1181,9 @@ export default {
 
 /* Battle log */
 .battle-log {
-    height: 170px;
+    min-height: 120px;
+    max-height: 220px;
+    flex: 1;
     border: 1px solid var(--border-dim);
     background: #000;
     padding: 8px;
@@ -1279,6 +1321,18 @@ export default {
 .power-ok    { color: #f5c542; }
 .power-risky { color: var(--error); }
 
+/* ── Pilot power readout ─────────────────────────────────────────────────── */
+.pilot-power-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0 10px;
+    font-size: var(--font-size-xxs);
+    letter-spacing: 0.5px;
+}
+.ppl-label { color: var(--text-dim); opacity: 0.5; letter-spacing: 1px; }
+.ppl-val { color: var(--primary); font-weight: bold; }
+
 /* ── Mission filter bar ─────────────────────────────────────────────────── */
 .mission-filter-bar {
     display: flex;
@@ -1293,7 +1347,7 @@ export default {
     color: var(--text-dim);
     font-family: var(--font-mono);
     font-size: var(--font-size-xxs);
-    padding: 3px 7px;
+    padding: 5px 10px;
     cursor: pointer;
     letter-spacing: 0.5px;
     transition: border-color 0.15s, color 0.15s;

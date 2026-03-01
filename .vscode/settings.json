@@ -1,3 +1,17 @@
 {
-    "chatgpt.openOnStartup": true
+    "chatgpt.openOnStartup": true,
+    "switchboard.team.strictPrompts": false,
+    "switchboard.planner.strictPrompts": false,
+    "switchboard.review.strictPrompts": false,
+    "mcpServers": {
+        "switchboard": {
+            "command": "node",
+            "args": [
+                "c:/Users/nicol/dyad-apps/MechaScrapyard/.switchboard/MCP/mcp-server.js"
+            ],
+            "env": {},
+            "disabled": false,
+            "alwaysAllow": []
+        }
+    }
 }

@@ -1,0 +1,24 @@
+{
+  "servers": {
+    "switchboard": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/.switchboard/MCP/mcp-server.js"
+      ]
+    },
+    "owlex": {
+      "type": "stdio",
+      "command": "owlex-server"
+    },
+    "codesurface": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "codesurface",
+        "--project",
+        "C:\\Users\\nicol\\dyad-apps\\MechaScrapyard"
+      ]
+    }
+  }
+}
