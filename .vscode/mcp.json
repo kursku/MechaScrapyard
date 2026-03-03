@@ -19,6 +19,9 @@
         "--project",
         "C:\\Users\\nicol\\dyad-apps\\MechaScrapyard"
       ]
+    },
+    "ai-com-mcp-contabo": {
+      "url": "https://contabo.run.mcp.com.ai/mcp"
     }
   }
 }

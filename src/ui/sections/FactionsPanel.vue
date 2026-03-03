@@ -7,6 +7,8 @@
 import Game from "@/game";
 import { renderBar, getAllianceLabel } from "@/ui/uiHelpers";
 
+const OPEN_VENDORS = new Set();
+
 export default {
     props: {
         /** @type {Array} Pre-computed faction objects from parent */
@@ -19,6 +21,7 @@ export default {
     data() {
         return {
             purchasingItems: new Set(),
+            openVendors: OPEN_VENDORS,
         };
     },
     methods: {
@@ -76,6 +79,16 @@ export default {
             this.$emit('vendor-buy');
             setTimeout(() => this.purchasingItems.delete(itemId), 400);
         },
+        toggleVendor(facId) {
+            if (this.openVendors.has(facId)) {
+                this.openVendors.delete(facId);
+            } else {
+                this.openVendors.add(facId);
+            }
+        },
+        isVendorOpen(facId) {
+            return this.openVendors.has(facId);
+        },
     },
 };
 </script>
@@ -93,7 +106,8 @@ export default {
                     background: 'linear-gradient(180deg, transparent 0%, ' + fac.color + '1A 100%)'
                  }">
                 <div class="faction-title" :style="{ color: fac.color }">
-                    {{ fac.icon }} {{ fac.name.toUpperCase() }}
+                    <span class="faction-icon-glow" :style="{ color: fac.color }">{{ fac.icon }}</span>
+                    {{ fac.name.toUpperCase() }}
                 </div>
                 <div class="faction-desc">{{ fac.desc }}</div>
 
@@ -106,8 +120,12 @@ export default {
                         <span>ALLIANCE:</span>
                         <span class="alliance-chip" :style="{ color: fac.color, borderColor: fac.color }">{{ fac.allianceLabel }}</span>
                     </div>
-                    <div v-if="fac.nextTier" class="hud-ascii-bar" :style="{ color: fac.color, marginBottom: '15px' }">
-                        {{ renderBar(fac.repValue - fac.currentTier.min, fac.nextTier.min - fac.currentTier.min, 15) }}
+                    <div v-if="fac.nextTier" class="faction-rep-bar-track">
+                        <div class="faction-rep-bar-fill" :style="{
+                            width: ((fac.repValue - fac.currentTier.min) / (fac.nextTier.min - fac.currentTier.min) * 100) + '%',
+                            background: fac.color,
+                        }"></div>
+                        <div class="faction-rep-segments"></div>
                     </div>
                     <div v-else class="hud-ascii-bar" :style="{ color: fac.color, marginBottom: '15px' }">
                         [ MAX REPUTATION REACHED ]
@@ -116,15 +134,17 @@ export default {
                     <div v-if="fac.currentTier.unlocks && fac.currentTier.unlocks.length" class="faction-perks">
                         <div class="faction-perks-title" :style="{ color: fac.color }">UNLOCKED:</div>
                         <div v-for="(perk, i) in fac.currentTier.unlocks.filter(u => !u.startsWith('bp_'))" :key="i" class="perk-item">
-                            - {{ perk }}
+                            <span class="perk-bullet" :style="{ color: fac.color }">◆</span> {{ perk }}
                         </div>
                     </div>
 
                     <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length">
-                        <details class="faction-vendor-details">
-                            <summary class="faction-vendor-summary" :style="{ '--fac-color': fac.color }">
-                                ACCESS VOR-X VENDOR (UNLOCKED)
-                            </summary>
+                        <div class="vendor-toggle" @click="toggleVendor(fac.id)"
+                             :style="{ '--fac-color': fac.color }">
+                            <span class="vendor-toggle-chevron" :class="{ open: isVendorOpen(fac.id) }">▶</span>
+                            ACCESS VOR-X VENDOR (UNLOCKED)
+                        </div>
+                        <div v-if="isVendorOpen(fac.id)" class="vendor-content-slide">
                             <div class="faction-vendor-scroll">
                                 <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key">
                                     <div class="vendor-category-title">{{ cat.label }}</div>
@@ -133,15 +153,16 @@ export default {
                                             <span class="vendor-item-name">{{ getVendorItem(itemId)?.name || itemId }}</span>
                                             <span class="vendor-item-cost">{{ getVendorItemCost(itemId) }} C</span>
                                         </div>
-                                        <button class="hud-btn small vendor-buy-btn"
+                                        <button class="vendor-buy-btn"
+                                            :style="{ '--fac-color': fac.color }"
                                             :disabled="!canBuyVendorItem(itemId, fac.id) || purchasingItems.has(itemId)"
                                             @click="buyVendorItem(itemId, fac.id)">
-                                            BUY
+                                            [ BUY ]
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        </details>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,6 +201,154 @@ export default {
 </template>
 
 <style scoped>
+/* ══ P3 FactionsPanel — Scoped CSS ════════════════════════════════════════ */
+
+/* ── Faction card glow ────────────────────────────────────────────────── */
+.faction-card {
+    transition: box-shadow 0.3s ease-out;
+}
+.faction-card:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.04);
+}
+.faction-icon-glow {
+    text-shadow: 0 0 10px currentColor;
+    margin-right: 4px;
+    font-size: 1.1em;
+}
+
+/* ── Rep progress bar ─────────────────────────────────────────────────── */
+.faction-rep-bar-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    margin-bottom: 15px;
+}
+.faction-rep-bar-fill {
+    height: 100%;
+    transition: width 0.4s ease-out;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+.faction-rep-segments {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 24%,
+        rgba(0, 0, 0, 0.5) 24%,
+        rgba(0, 0, 0, 0.5) 25%
+    );
+}
+
+/* ── Perk items ───────────────────────────────────────────────────────── */
+.perk-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+.perk-bullet {
+    font-size: 0.6em;
+    text-shadow: 0 0 4px currentColor;
+}
+
+/* ── Vendor toggle (replaces <details>) ───────────────────────────────── */
+.vendor-toggle {
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    color: var(--fac-color, var(--primary));
+    letter-spacing: 1px;
+    padding: 6px 8px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    transition: background 0.2s, border-color 0.2s;
+}
+.vendor-toggle:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--fac-color, var(--primary));
+}
+.vendor-toggle-chevron {
+    display: inline-block;
+    font-size: 0.7em;
+    transition: transform 0.2s ease-out;
+}
+.vendor-toggle-chevron.open {
+    transform: rotate(90deg);
+}
+
+/* ── Vendor content ───────────────────────────────────────────────────── */
+.vendor-content-slide {
+    animation: vendor-slide-in 0.2s ease-out;
+    padding: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.06);
+    border-top: none;
+}
+@keyframes vendor-slide-in {
+    0%   { opacity: 0; max-height: 0; }
+    100% { opacity: 1; max-height: 500px; }
+}
+
+/* ── Vendor buy button ────────────────────────────────────────────────── */
+.vendor-buy-btn {
+    background: transparent;
+    border: 1px solid var(--fac-color, var(--primary));
+    color: var(--fac-color, var(--primary));
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    padding: 2px 8px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+}
+.vendor-buy-btn:hover:not(:disabled) {
+    background: var(--fac-color, var(--primary));
+    color: #000;
+}
+.vendor-buy-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* ── Vendor item row ──────────────────────────────────────────────────── */
+.vendor-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.vendor-item-row:last-child {
+    border-bottom: none;
+}
+.vendor-item-meta {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+}
+.vendor-item-name {
+    font-size: var(--font-size-xxs);
+    color: var(--text, #ccc);
+}
+.vendor-item-cost {
+    font-size: var(--font-size-xxs);
+    color: #f5c542;
+    font-weight: bold;
+}
+.vendor-category-title {
+    font-size: var(--font-size-xxs);
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin: 8px 0 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Contacts section ─────────────────────────────────────────────────── */
 .contacts-section {
     margin-top: 16px;
     border-top: 1px solid var(--c-border);
@@ -199,6 +368,10 @@ export default {
     margin-bottom: 12px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--c-border);
+    transition: background 0.2s;
+}
+.contact-row:hover {
+    background: rgba(255, 255, 255, 0.015);
 }
 .contact-header {
     display: flex;
@@ -229,9 +402,18 @@ export default {
     background: var(--c-dim);
     transition: width 0.3s;
 }
-.loyalty-fill.active { background: var(--c-accent); }
+.loyalty-fill.active {
+    background: var(--c-accent);
+    box-shadow: 0 0 6px var(--c-accent);
+}
 .contact-loyalty-num { font-size: var(--font-size-micro); color: var(--c-dim); white-space: nowrap; }
 .contact-benefit { font-size: var(--font-size-micro); color: var(--c-dim2); }
-.contact-benefit--active { color: var(--c-accent); }
-.contact-benefit--high { color: #4af; margin-top: 2px; }
+.contact-benefit--active { color: var(--c-accent); text-shadow: 0 0 4px var(--c-accent); }
+.contact-benefit--high { color: #4af; margin-top: 2px; text-shadow: 0 0 4px rgba(68, 170, 255, 0.3); }
+
+/* ── Reduced motion ───────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .vendor-content-slide { animation: none; }
+    .vendor-toggle-chevron { transition: none; }
+}
 </style>

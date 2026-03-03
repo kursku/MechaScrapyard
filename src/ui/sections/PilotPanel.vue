@@ -289,7 +289,7 @@ export default {
             <div class="neural-section">
                 <div class="section-toggle" @click="skillsCollapsed = !skillsCollapsed">
                     <span class="hud-section-title" style="margin:0;cursor:pointer">> NEURAL SKILLS</span>
-                    <span class="toggle-chevron">{{ skillsCollapsed ? '►' : '▼' }}</span>
+                    <span class="toggle-chevron" :class="{ open: !skillsCollapsed }">▶</span>
                     <span class="section-count">{{ skills.length }}</span>
                 </div>
                 <div v-if="!skillsCollapsed" class="neural-grid">
@@ -419,11 +419,12 @@ export default {
     padding: 10px;
     font-family: var(--font-mono);
     cursor: default;
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
 }
 .stat-card:hover {
     background: rgba(0, 255, 65, 0.08);
     border-color: var(--stat-color, var(--primary));
+    box-shadow: 0 0 14px rgba(0, 255, 65, 0.1);
 }
 .stat-card-icon {
     font-size: var(--font-size-lg);
@@ -509,6 +510,7 @@ export default {
     left: 0;
     top: 0;
     opacity: 1;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
 }
 .morality-center {
     position: absolute;
@@ -592,8 +594,13 @@ export default {
     user-select: none;
 }
 .toggle-chevron {
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     color: var(--text-dim);
+    display: inline-block;
+    transition: transform 0.25s ease-out;
+}
+.toggle-chevron.open {
+    transform: rotate(90deg);
 }
 .section-count {
     margin-left: auto;
@@ -618,11 +625,12 @@ export default {
     font-family: var(--font-mono);
     font-size: var(--font-size-xxs);
     cursor: default;
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
 }
 .neural-badge:hover {
     background: rgba(0, 255, 65, 0.08);
     border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
 }
 .neural-icon { font-size: var(--font-size-sm); }
 .neural-name { color: var(--text); }
@@ -654,15 +662,17 @@ export default {
     background: rgba(0, 255, 65, 0.02);
     cursor: pointer;
     font-family: var(--font-mono);
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
 }
 .training-row:hover {
     background: rgba(0, 255, 65, 0.06);
     border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.06);
 }
 .training-row.running {
     border-color: var(--secondary);
     background: rgba(0, 255, 65, 0.08);
+    box-shadow: inset 3px 0 0 var(--secondary), 0 0 10px rgba(0, 255, 65, 0.06);
 }
 .training-name {
     font-size: var(--font-size-xs);
@@ -714,7 +724,7 @@ export default {
     transition: all 0.15s;
 }
 .sub-skill-wide.available { border-color: var(--secondary); cursor: pointer; }
-.sub-skill-wide.available:hover { background: rgba(0, 255, 65, 0.08); }
+.sub-skill-wide.available:hover { background: rgba(0, 255, 65, 0.08); box-shadow: 0 0 10px rgba(0, 255, 65, 0.08); }
 .sub-skill-wide.owned { border-color: var(--secondary); opacity: 0.6; cursor: default; }
 .sub-skill-wide.locked { opacity: 0.35; cursor: not-allowed; }
 .sk-name { font-size: var(--font-size-xs); font-weight: bold; margin-bottom: 4px; color: var(--text-bright, #eee); }
@@ -731,7 +741,7 @@ export default {
     font-family: var(--font-mono);
 }
 .glory-item-name { font-size: var(--font-size-xs); font-weight: bold; color: #fc5; margin-bottom: 4px; }
-.glory-item-desc { font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 6px; line-height: 1.3; }
+.glory-item-desc { font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 6px; line-height: 1.4; }
 .glory-item-owned { font-size: var(--font-size-xxs); color: var(--text-dim2, #666); margin-bottom: 4px; }
 .glory-buy-btn {
     font-size: var(--font-size-xxs); padding: 4px 10px; cursor: pointer;
@@ -744,5 +754,11 @@ export default {
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Reduced motion — P6 ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .neural-grid { animation: none; }
+    .toggle-chevron { transition: none; }
 }
 </style>

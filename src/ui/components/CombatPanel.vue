@@ -270,6 +270,7 @@ export default {
 
 <template>
     <div class="combat-panel-container">
+        <div class="scanline-overlay"></div>
 
         <!-- ══ PRE-COMBAT INTERFACE ══════════════════════════════════════════ -->
         <div v-if="!showBattle" class="pre-combat-layout">
@@ -298,7 +299,7 @@ export default {
 
                 <!-- ─── STORY MISSIONS ─── -->
                 <div v-if="filteredStoryMissions.length > 0" class="mission-group">
-                    <div class="group-header group-story">◈ STORY MISSIONS <span class="group-count">({{ filteredStoryMissions.length }})</span></div>
+                    <div class="group-header group-story"><span class="group-icon">◈</span> STORY MISSIONS <span class="group-count">({{ filteredStoryMissions.length }})</span></div>
                     <div v-for="m in filteredStoryMissions" :key="m.id"
                          class="mission-card mission-story"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -328,7 +329,7 @@ export default {
 
                 <!-- ─── COMBAT OPERATIONS ─── -->
                 <div v-if="filteredOpsMissions.length > 0" class="mission-group">
-                    <div class="group-header group-ops">⚔ COMBAT OPERATIONS <span class="group-count">({{ filteredOpsMissions.length }})</span></div>
+                    <div class="group-header group-ops"><span class="group-icon">⚔</span> COMBAT OPERATIONS <span class="group-count">({{ filteredOpsMissions.length }})</span></div>
                     <div v-for="m in filteredOpsMissions" :key="m.id"
                          class="mission-card"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -359,7 +360,7 @@ export default {
 
                 <!-- ─── INTEL / NARRATIVE ─── -->
                 <div v-if="filteredIntelMissions.length > 0" class="mission-group">
-                    <div class="group-header group-intel">◇ INTEL / NARRATIVE <span class="group-count">({{ filteredIntelMissions.length }})</span></div>
+                    <div class="group-header group-intel"><span class="group-icon">◇</span> INTEL / NARRATIVE <span class="group-count">({{ filteredIntelMissions.length }})</span></div>
                     <div v-for="m in filteredIntelMissions" :key="m.id"
                          class="mission-card mission-narrative"
                          :class="{ 'mission-completed': m.completed > 0, 'mission-selected': selectedMission?.id === m.id }"
@@ -459,7 +460,7 @@ export default {
 
                         <div class="briefing-actions">
                             <button class="briefing-abort" @click="cancelBriefing">[ ABORT ]</button>
-                            <button class="briefing-deploy" @click="deployMission">[ DEPLOY ]</button>
+                            <button class="briefing-deploy deploy-pulse" @click="deployMission">[ DEPLOY ]</button>
                         </div>
                     </div>
                 </template>
@@ -609,7 +610,7 @@ export default {
                     {{ activePosition }}
                 </span>
                 <span class="config-sep">|</span>
-                <span class="turn-badge">TURN {{ combatRunner.turnNumber }}</span>
+                <span class="turn-badge turn-tick">TURN {{ combatRunner.turnNumber }}</span>
             </div>
 
             <!-- Token legend — shows active token descriptions -->
@@ -635,8 +636,8 @@ export default {
                     <div class="token-bar" v-if="playerFrame.tokens && playerFrame.tokens.length > 0">
                         <span class="token-label">TOKENS:</span>
                         <span v-for="t in playerFrame.tokens" :key="t.type"
-                              class="token-badge"
-                              :style="{ color: tokenDef(t.type).color }"
+                              class="token-badge token-glow"
+                              :style="{ color: tokenDef(t.type).color, '--token-color': tokenDef(t.type).color }"
                               :title="`${tokenDef(t.type).desc}${t.turns ? ` (${t.turns} turns)` : ''}`">
                             {{ tokenDef(t.type).icon }}×{{ t.stacks }}<small v-if="t.turns"> ({{ t.turns }}t)</small>
                         </span>
@@ -644,7 +645,7 @@ export default {
 
                     <div class="parts-list">
                         <div v-for="part in Object.values(playerFrame.parts)" :key="part.id"
-                             class="part-row" :class="{ 'destroyed': part.status === 'destroyed' }">
+                             class="part-row" :class="{ 'destroyed': part.status === 'destroyed', 'part-critical': part.hp > 0 && (part.hp / part.maxHp) < 0.25 }">
                             <div class="part-label">{{ part.name?.toUpperCase() }}</div>
                             <div class="part-integrity">
                                 <span v-for="i in part.integrity" :key="i" class="dot"></span>
@@ -675,8 +676,8 @@ export default {
                     <div class="token-bar" v-if="enemy.tokens && enemy.tokens.length > 0">
                         <span class="token-label">TOKENS:</span>
                         <span v-for="t in enemy.tokens" :key="t.type"
-                              class="token-badge"
-                              :style="{ color: tokenDef(t.type).color }"
+                              class="token-badge token-glow"
+                              :style="{ color: tokenDef(t.type).color, '--token-color': tokenDef(t.type).color }"
                               :title="`${tokenDef(t.type).desc}${t.turns ? ` (${t.turns} turns)` : ''}`">
                             {{ tokenDef(t.type).icon }}×{{ t.stacks }}<small v-if="t.turns"> ({{ t.turns }}t)</small>
                         </span>
@@ -684,7 +685,7 @@ export default {
 
                     <div class="parts-list">
                         <div v-for="part in Object.values(enemy.parts || {})" :key="part.id"
-                             class="part-row" :class="{ 'destroyed': part.status === 'destroyed' }">
+                             class="part-row" :class="{ 'destroyed': part.status === 'destroyed', 'part-critical': part.hp > 0 && (part.hp / part.maxHp) < 0.25 }">
                             <div class="part-label">{{ part.name?.toUpperCase() }}</div>
                             <div class="part-integrity">
                                 <span v-for="i in part.integrity" :key="i" class="dot"></span>
@@ -706,7 +707,7 @@ export default {
             <!-- Battle log (newest on top) -->
             <div class="battle-log">
                 <div v-for="(line, idx) in recentLog" :key="idx"
-                     class="log-entry" :class="logClass(line)">
+                     class="log-entry" :class="[logClass(line), { 'log-alt': idx % 2 === 1 }]">
                     > {{ line }}
                 </div>
             </div>
@@ -738,7 +739,8 @@ export default {
 
             <!-- Result overlay -->
             <div v-if="combatResult" class="result-overlay" :class="combatResult">
-                <div class="result-title">{{ combatResult.toUpperCase() }}</div>
+                <div class="result-glow-border"></div>
+                <div class="result-title result-title-anim">{{ combatResult.toUpperCase() }}</div>
                 <div class="result-mission" v-if="combatRunner.mission">
                     {{ combatRunner.mission.name.toUpperCase() }}
                 </div>
@@ -747,11 +749,13 @@ export default {
                     <span v-else>Mission failed. Partial salvage recovered.</span>
                 </div>
                 <div v-if="combatResult === 'victory' && combatRunner.mission?.rewards" class="result-rewards">
-                    <span v-for="(val, key) in combatRunner.mission.rewards" :key="key" class="reward-item">
+                    <span v-for="(val, key, i) in combatRunner.mission.rewards" :key="key" 
+                          class="reward-item reward-stagger"
+                          :style="{ animationDelay: (i * 120) + 'ms' }">
                         {{ key.replace(/_/g, ' ').toUpperCase() }}: +{{ val }}
                     </span>
                 </div>
-                <button class="hud-btn" @click="continueAfterCombat">[ CONTINUE ]</button>
+                <button class="hud-btn result-continue-btn" @click="continueAfterCombat">[ CONTINUE ]</button>
             </div>
         </div>
     </div>
@@ -1540,5 +1544,259 @@ export default {
     font-size: var(--font-size-micro);
     padding: 0 5px;
     border: 1px solid #334;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   P1 REDESIGN — Micro-animations, Glow Effects, Visual Hierarchy
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Scanline Overlay ──────────────────────────────────────────────────── */
+.scanline-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.012) 2px,
+        rgba(0, 255, 65, 0.012) 4px
+    );
+    mix-blend-mode: overlay;
+}
+
+/* ── Group Icon Glow ───────────────────────────────────────────────────── */
+.group-icon {
+    display: inline-block;
+    text-shadow: 0 0 8px currentColor;
+    margin-right: 2px;
+}
+.group-header {
+    position: relative;
+    overflow: hidden;
+}
+.group-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, currentColor, transparent 80%);
+    opacity: 0.4;
+}
+.group-story::after { color: #f5c542; }
+.group-ops::after   { color: var(--primary); }
+.group-intel::after  { color: #8af; }
+
+/* ── Mission Card Hover Glow ───────────────────────────────────────────── */
+.mission-card {
+    position: relative;
+    overflow: hidden;
+}
+.mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: transparent;
+    transition: background 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.mission-card:hover::before {
+    background: var(--primary);
+    box-shadow: 0 0 12px var(--primary), 0 0 4px var(--primary);
+}
+.mission-story:hover::before {
+    background: #f5c542;
+    box-shadow: 0 0 12px rgba(245, 197, 66, 0.6), 0 0 4px #f5c542;
+}
+.mission-narrative:hover::before {
+    background: #8af;
+    box-shadow: 0 0 12px rgba(136, 170, 255, 0.6), 0 0 4px #8af;
+}
+
+/* ── Deploy Button Pulse ───────────────────────────────────────────────── */
+.deploy-pulse {
+    animation: deploy-glow 2s ease-in-out infinite;
+}
+@keyframes deploy-glow {
+    0%, 100% {
+        box-shadow: 0 0 6px rgba(0, 255, 170, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 18px rgba(0, 255, 170, 0.35), inset 0 0 8px rgba(0, 255, 170, 0.08);
+    }
+}
+
+/* ── Turn Counter Tick ─────────────────────────────────────────────────── */
+.turn-tick {
+    animation: turn-pulse 0.6s ease-out;
+}
+@keyframes turn-pulse {
+    0%   { text-shadow: 0 0 12px var(--secondary); transform: scale(1.15); }
+    100% { text-shadow: none; transform: scale(1); }
+}
+
+/* ── Token Glow ────────────────────────────────────────────────────────── */
+.token-glow {
+    text-shadow: 0 0 6px var(--token-color, currentColor);
+    transition: text-shadow 0.3s ease-out;
+}
+.token-glow:hover {
+    text-shadow: 0 0 12px var(--token-color, currentColor), 0 0 4px var(--token-color, currentColor);
+}
+
+/* ── Critical Part Pulse ───────────────────────────────────────────────── */
+.part-critical .part-label {
+    color: #ff4444;
+    animation: critical-pulse 1.5s ease-in-out infinite;
+}
+.part-critical .hp-fill {
+    box-shadow: 0 0 8px rgba(255, 51, 51, 0.7);
+}
+@keyframes critical-pulse {
+    0%, 100% { opacity: 1; text-shadow: 0 0 4px rgba(255, 68, 68, 0.5); }
+    50%      { opacity: 0.65; text-shadow: none; }
+}
+
+/* ── HP Bar Segments ───────────────────────────────────────────────────── */
+.part-hp-bar {
+    position: relative;
+}
+.part-hp-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 19%,
+        rgba(0, 0, 0, 0.6) 19%,
+        rgba(0, 0, 0, 0.6) 20%
+    );
+    pointer-events: none;
+}
+.hp-fill {
+    box-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
+}
+
+/* ── Combat Log Alternating Rows ───────────────────────────────────────── */
+.log-alt {
+    background: rgba(255, 255, 255, 0.015);
+}
+.log-entry {
+    padding: 2px 6px;
+    border-radius: 1px;
+    transition: background 0.15s ease-out;
+}
+.log-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Result Overlay Animations ─────────────────────────────────────────── */
+.result-overlay {
+    animation: result-fade-in 0.4s ease-out;
+}
+@keyframes result-fade-in {
+    0% { opacity: 0; backdrop-filter: blur(0px); }
+    100% { opacity: 1; backdrop-filter: blur(4px); }
+}
+.result-overlay { backdrop-filter: blur(4px); }
+
+.result-glow-border {
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    z-index: -1;
+}
+.victory .result-glow-border {
+    box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.12), 0 0 40px rgba(0, 255, 65, 0.08);
+    animation: victory-glow 2.5s ease-in-out infinite;
+}
+.defeat .result-glow-border {
+    box-shadow: inset 0 0 30px rgba(255, 60, 60, 0.12), 0 0 40px rgba(255, 60, 60, 0.08);
+    animation: defeat-flicker 3s ease-in-out infinite;
+}
+@keyframes victory-glow {
+    0%, 100% { box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.12), 0 0 40px rgba(0, 255, 65, 0.08); }
+    50%      { box-shadow: inset 0 0 50px rgba(0, 255, 65, 0.2), 0 0 60px rgba(0, 255, 65, 0.15); }
+}
+@keyframes defeat-flicker {
+    0%, 100% { box-shadow: inset 0 0 30px rgba(255, 60, 60, 0.12), 0 0 40px rgba(255, 60, 60, 0.08); }
+    50%      { box-shadow: inset 0 0 45px rgba(255, 60, 60, 0.18), 0 0 50px rgba(255, 60, 60, 0.12); }
+}
+
+.result-title-anim {
+    animation: title-expand 0.5s ease-out;
+}
+@keyframes title-expand {
+    0%   { transform: scale(0.8); opacity: 0; letter-spacing: 2px; }
+    70%  { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); letter-spacing: 8px; }
+}
+
+.reward-stagger {
+    animation: reward-slide-in 0.4s ease-out both;
+}
+@keyframes reward-slide-in {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.result-continue-btn {
+    animation: continue-fade 0.6s ease-out 0.8s both;
+}
+@keyframes continue-fade {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* ── Frame Status Enhancements ─────────────────────────────────────────── */
+.player-side {
+    box-shadow: inset 0 0 20px rgba(0, 255, 170, 0.04);
+}
+.enemy-side {
+    box-shadow: inset 0 0 20px rgba(255, 60, 60, 0.04);
+}
+.frame-header {
+    text-shadow: 0 0 8px rgba(255, 220, 0, 0.15);
+}
+
+/* ── Battle Log Header ─────────────────────────────────────────────────── */
+.battle-log {
+    border-color: rgba(0, 255, 65, 0.15);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Briefing panel polish ─────────────────────────────────────────────── */
+.briefing-panel {
+    animation: briefing-slide 0.25s ease-out;
+}
+@keyframes briefing-slide {
+    0%   { opacity: 0; transform: translateX(10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Reduced Motion (Accessibility) ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .deploy-pulse,
+    .turn-tick,
+    .critical-pulse,
+    .result-title-anim,
+    .reward-stagger,
+    .result-continue-btn,
+    .briefing-panel,
+    .result-overlay {
+        animation: none !important;
+    }
+    .deploy-pulse { box-shadow: 0 0 10px rgba(0, 255, 170, 0.25); }
+    .scanline-overlay { display: none; }
+    .victory .result-glow-border,
+    .defeat .result-glow-border {
+        animation: none !important;
+    }
 }
 </style>

@@ -12,6 +12,11 @@
             "env": {},
             "disabled": false,
             "alwaysAllow": []
+        },
+        "ai-com-mcp-contabo": {
+            "url": "https://contabo.run.mcp.com.ai/mcp",
+            "disabled": false,
+            "alwaysAllow": []
         }
     }
 }

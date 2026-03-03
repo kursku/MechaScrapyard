@@ -203,7 +203,7 @@ export default {
         <div v-if="refinedResources.length > 0" class="section-group">
             <div class="section-toggle" @click="toggleSection('refined')">
                 <span>── REFINED</span>
-                <span class="toggle-chevron">{{ collapsedSections.refined ? '►' : '▼' }}</span>
+                <span class="toggle-chevron" :class="{ open: !collapsedSections.refined }">▶</span>
                 <span class="section-count">{{ refinedResources.length }}</span>
             </div>
             <div v-if="!collapsedSections.refined" class="compact-grid">
@@ -223,7 +223,7 @@ export default {
         <div v-if="combatResources.length > 0" class="section-group">
             <div class="section-toggle" @click="toggleSection('combat')">
                 <span>── COMBAT</span>
-                <span class="toggle-chevron">{{ collapsedSections.combat ? '►' : '▼' }}</span>
+                <span class="toggle-chevron" :class="{ open: !collapsedSections.combat }">▶</span>
                 <span class="section-count">{{ combatResources.length }}</span>
             </div>
             <div v-if="!collapsedSections.combat" class="compact-inline-row">
@@ -243,7 +243,7 @@ export default {
         <div v-if="reputationResources.length > 0" class="section-group">
             <div class="section-toggle" @click="toggleSection('reputation')">
                 <span>── REPUTATION</span>
-                <span class="toggle-chevron">{{ collapsedSections.reputation ? '►' : '▼' }}</span>
+                <span class="toggle-chevron" :class="{ open: !collapsedSections.reputation }">▶</span>
                 <span class="section-count">{{ reputationResources.length }}</span>
             </div>
             <div v-if="!collapsedSections.reputation" class="rep-badge-row">
@@ -302,14 +302,19 @@ export default {
     letter-spacing: 1.5px;
     padding: 4px 0;
     user-select: none;
-    transition: color 0.15s;
+    transition: color 0.15s, text-shadow 0.15s;
 }
 .section-toggle:hover {
     color: var(--primary);
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.2);
 }
 .toggle-chevron {
     font-size: var(--font-size-micro);
-    transition: transform 0.2s;
+    display: inline-block;
+    transition: transform 0.25s ease-out;
+}
+.toggle-chevron.open {
+    transform: rotate(90deg);
 }
 .section-count {
     margin-left: auto;
@@ -333,12 +338,16 @@ export default {
     padding: 6px 8px;
     text-align: center;
     cursor: default;
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
     font-family: var(--font-mono);
 }
 .compact-tile:hover {
     background: rgba(0, 255, 65, 0.08);
     border-color: var(--tile-color, var(--primary));
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
+}
+.compact-tile:hover .compact-tile-val {
+    text-shadow: 0 0 6px var(--tile-color, var(--primary));
 }
 .compact-tile-icon {
     font-size: var(--font-size-sm);
@@ -356,6 +365,7 @@ export default {
     font-size: var(--font-size-xs);
     color: var(--tile-color, var(--primary));
     font-weight: bold;
+    transition: text-shadow 0.2s;
 }
 
 /* ── Compact Inline Row (Combat) ───────────────────── */
@@ -375,12 +385,13 @@ export default {
     padding: 4px 8px;
     border: 1px solid rgba(0, 255, 65, 0.1);
     background: rgba(0, 255, 65, 0.03);
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
     flex: 1;
 }
 .compact-inline-item:hover {
     background: rgba(0, 255, 65, 0.08);
     border-color: var(--tile-color, var(--primary));
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
 }
 .cii-icon {
     font-size: var(--font-size-sm);
@@ -394,6 +405,24 @@ export default {
     color: var(--tile-color, var(--primary));
     font-weight: bold;
     font-size: var(--font-size-xs);
+}
+
+/* ── Progress Bar Segment Markers ──────────────────── */
+.res-progress-bar {
+    position: relative;
+}
+.res-progress-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 24%,
+        rgba(0, 0, 0, 0.4) 24%,
+        rgba(0, 0, 0, 0.4) 25%
+    );
 }
 
 /* ── Reputation Badge Row ──────────────────────────── */
@@ -415,11 +444,12 @@ export default {
     padding: 4px 6px;
     font-family: var(--font-mono);
     cursor: default;
-    transition: all 0.15s;
+    transition: all 0.2s ease-out;
 }
 .rep-badge:hover {
     background: rgba(136, 170, 255, 0.1);
     border-color: var(--rep-color);
+    box-shadow: 0 0 8px rgba(136, 170, 255, 0.1);
 }
 .rep-badge-label {
     font-size: var(--font-size-xxs);
@@ -461,6 +491,18 @@ export default {
         opacity: 1;
         max-height: 500px;
         transform: translateY(0);
+    }
+}
+
+/* ── Reduced Motion ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .compact-grid,
+    .compact-inline-row,
+    .rep-badge-row {
+        animation: none;
+    }
+    .toggle-chevron {
+        transition: none;
     }
 }
 </style>

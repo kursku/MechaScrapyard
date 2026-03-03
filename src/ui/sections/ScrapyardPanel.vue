@@ -252,13 +252,13 @@ export default {
                     <span class="list-card__name">{{ task.name.toUpperCase() }}</span>
                     <span v-if="isRunning(task)" class="task-active-label">&#x25B6; ACTIVE</span>
                 </div>
-                <div class="list-card__desc" style="font-size: var(--font-size-xxs); color: #888; font-family: var(--font-mono); line-height: 1.3; margin-bottom: 10px;">{{ task.desc }}</div>
+                <div class="list-card__desc" style="font-size: var(--font-size-xxs); color: #888; font-family: var(--font-body); line-height: 1.4; margin-bottom: 10px;">{{ task.desc }}</div>
                 <div class="list-card__bottom">
                     <div v-if="isRunning(task)">
                         <div class="hud-ascii-bar" style="color: var(--primary)">
                              {{ renderBar(getPercent(task), 100, 15) }}
                         </div>
-                        <div v-if="task.length" style="font-size: 13px; font-weight: bold; font-family: var(--font-mono); color: var(--primary); text-align: right; margin-top: 4px;">
+                        <div v-if="task.length" style="font-size: var(--font-size-xs); font-weight: bold; font-family: var(--font-mono); color: var(--primary); text-align: right; margin-top: 4px;">
                             &#x23F1; {{ getTaskTimeRemaining(task) }}s
                         </div>
                         <div style="font-size: var(--font-size-xxs); margin-top: 8px; font-weight: bold; color: var(--color-danger)">[ ABORT OPERATION ]</div>
@@ -287,9 +287,9 @@ export default {
                      @click="tryItem(upg)">
                     <div class="hud-card-header">
                         <span class="list-card__name">{{ upg.name.toUpperCase() }}</span>
-                        <span style="font-size: 12px; color: var(--text-dim)">[{{ upg.owned || 0 }}/{{ upg.max }}]</span>
+                        <span style="font-size: var(--font-size-xxs); color: var(--text-dim)">[{{ upg.owned || 0 }}/{{ upg.max }}]</span>
                     </div>
-                    <div class="list-card__desc" style="font-size: 11px; color: #888; font-family: var(--font-mono); line-height: 1.3; margin-bottom: 10px;">{{ upg.desc }}</div>
+                    <div class="list-card__desc" style="font-size: var(--font-size-xxs); color: #888; font-family: var(--font-body); line-height: 1.4; margin-bottom: 10px;">{{ upg.desc }}</div>
                     
                     <div v-if="upg.mod" class="upgrade-mods" style="margin-bottom: 10px; font-size: var(--font-size-xxs); color: var(--secondary); display: flex; flex-wrap: wrap; gap: 4px;">
                         <span v-for="(val, k) in upg.mod" :key="k" style="background: rgba(0, 255, 65, 0.05); padding: 3px 6px; border: 1px solid rgba(0, 255, 65, 0.2);">
@@ -506,7 +506,7 @@ export default {
     margin-bottom: 4px;
 }
 .salvage-subtitle {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xxs);
     color: #888;
     margin-bottom: 14px;
 }
@@ -521,13 +521,13 @@ export default {
     justify-content: space-between;
     margin-bottom: 4px;
 }
-.salvage-part-name { color: #ddd; font-size: 0.85rem; }
-.salvage-condition { font-size: 0.75rem; }
+.salvage-part-name { color: #ddd; font-size: var(--font-size-xs); }
+.salvage-condition { font-size: var(--font-size-xxs); }
 .cnd-good    { color: #4f4; }
 .cnd-worn    { color: #fa4; }
 .cnd-damaged { color: #f44; }
 .salvage-breakdown-preview {
-    font-size: 0.68rem;
+    font-size: var(--font-size-micro);
     color: #555;
     margin-bottom: 8px;
 }
@@ -635,5 +635,57 @@ export default {
 .lay-low-btn:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+/* ── P5 REDESIGN — Scrapyard Polish ──────────────────────────────────── */
+
+/* DTL glow — intensifies with threat level */
+.dtl-hud-block { transition: box-shadow 0.3s ease-out; }
+.dtl-2 { box-shadow: inset 0 0 12px rgba(238, 136, 51, 0.08); }
+.dtl-3 { box-shadow: inset 0 0 16px rgba(238, 85, 85, 0.1); }
+.dtl-4 { box-shadow: inset 0 0 20px rgba(224, 0, 85, 0.12); }
+.dtl-5 { box-shadow: inset 0 0 25px rgba(224, 0, 85, 0.18); }
+.dtl-pip.active { box-shadow: 0 0 4px currentColor; }
+
+/* Android status LED */
+.android-task-section { position: relative; }
+.android-task-section::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(0, 255, 170, 0.4);
+    box-shadow: 0 0 6px rgba(0, 255, 170, 0.3);
+    animation: android-led 2s ease-in-out infinite;
+}
+@keyframes android-led {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; box-shadow: 0 0 10px rgba(0, 255, 170, 0.6); }
+}
+
+.kita-bar-fill { box-shadow: 0 0 4px rgba(255, 255, 255, 0.15); }
+
+/* Upgrade card hover */
+.upgrade-card { transition: border-color 0.2s, box-shadow 0.2s; }
+.upgrade-card:hover { box-shadow: 0 0 12px rgba(0, 255, 65, 0.08); }
+.upgrade-maxed { opacity: 0.5; }
+
+/* Salvage boot animation */
+.salvage-modal { animation: salvage-boot 0.35s ease-out; }
+@keyframes salvage-boot {
+    0%   { opacity: 0; transform: scale(0.95) translateY(8px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.salvage-overlay { animation: overlay-fade 0.2s ease-out; }
+@keyframes overlay-fade { 0% { opacity: 0; } 100% { opacity: 1; } }
+.salvage-option { transition: border-color 0.2s; }
+.salvage-option:hover { border-color: #4a4; }
+
+@media (prefers-reduced-motion: reduce) {
+    .android-task-section::after { animation: none; opacity: 0.7; }
+    .salvage-modal, .salvage-overlay { animation: none; }
 }
 </style>

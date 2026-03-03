@@ -253,7 +253,7 @@ export default {
 }
 
 .dialogue-text {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: 1.6;
   color: #e2e8f0;
@@ -293,7 +293,7 @@ export default {
 }
 
 .skip-hint {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: var(--font-size-xxs);
   color: #334155;
   font-style: italic;
@@ -332,7 +332,7 @@ export default {
 }
 .choice-desc {
   display: block;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: var(--font-size-xs);
   opacity: 0.6;
   margin-top: 3px;
