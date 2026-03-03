@@ -9,13 +9,13 @@ import { getCanonicalAliases, resolveItemId } from '@/schema/idAliases';
  * Values are stat multipliers stacked after condition penalties.
  */
 const SYNERGY_BONUSES = {
-    kz_industrial:   { partial: { def: 1.05 },              full: { def: 1.10, atk: 1.05 } },
-    sora_motor:      { partial: { enr: 1.05 },              full: { enr: 1.10, atk: 1.03 } },
-    aegis_tac:       { partial: { def: 1.03, atk: 1.03 },  full: { def: 1.05, atk: 1.05 } },
-    kuroda_heavy:    { partial: { atk: 1.08 },              full: { atk: 1.12, def: 1.05 } },
-    phantom_works:   { partial: { enr: 1.08 },              full: { enr: 1.10, atk: 1.10 } },
-    hayabusa_eng:    { partial: { atk: 1.05, enr: 1.03 },  full: { atk: 1.10, enr: 1.05 } },
-    daewon_dynamics: { partial: { enr: 1.08 },              full: { enr: 1.12, atk: 1.03 } },
+    kz_industrial: { partial: { def: 1.05 }, full: { def: 1.10, atk: 1.05 } },
+    sora_motor: { partial: { enr: 1.05 }, full: { enr: 1.10, atk: 1.03 } },
+    aegis_tac: { partial: { def: 1.03, atk: 1.03 }, full: { def: 1.05, atk: 1.05 } },
+    kuroda_heavy: { partial: { atk: 1.08 }, full: { atk: 1.12, def: 1.05 } },
+    phantom_works: { partial: { enr: 1.08 }, full: { enr: 1.10, atk: 1.10 } },
+    hayabusa_eng: { partial: { atk: 1.05, enr: 1.03 }, full: { atk: 1.10, enr: 1.05 } },
+    daewon_dynamics: { partial: { enr: 1.08 }, full: { enr: 1.12, atk: 1.03 } },
 };
 
 /**
@@ -188,6 +188,12 @@ export default class GameState {
      * @param {Object} item
      */
     register(item) {
+        // Cache initial states for Prestige resets before any save data overwrites them
+        if (item._initialLocked === undefined) item._initialLocked = item.locked;
+        if (item._initialStatus === undefined && item.status !== undefined) item._initialStatus = item.status;
+        if (item._initialDiscovered === undefined && item.discovered !== undefined) item._initialDiscovered = item.discovered;
+        if (item._initialMax === undefined && item.max !== undefined) item._initialMax = item.max;
+
         this.items[item.id] = item;
 
         // Expose to g. namespace for require expressions

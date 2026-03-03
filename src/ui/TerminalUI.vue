@@ -715,12 +715,15 @@ export default {
 /* -- PRESTIGE MODAL -------------------------- */
 .prestige-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 10005; display: flex; align-items: center; justify-content: center;
+    z-index: 10005; display: flex; 
     backdrop-filter: blur(4px);
+    overflow-y: auto;
+    padding: 40px 20px;
 }
 .prestige-modal {
     background: #0b0e12; border: 2px solid var(--primary); width: 100%; max-width: 500px;
     padding: 30px; position: relative; box-shadow: 0 0 40px rgba(255,176,0,0.2);
+    margin: auto;
 }
 .prestige-title { color: var(--primary); text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
 .prestige-section { background: rgba(0,0,0,0.3); padding: 15px; margin-bottom: 20px; border: 1px solid #1a1a1a; }

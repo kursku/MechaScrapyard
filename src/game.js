@@ -633,16 +633,16 @@ const Game = {
 
     _initAndroid() {
         const a = this.state.android;
-        a.active      = true;
-        a.level       = 1;
-        a.xp          = 0;
-        a.xpToNext    = 100;
-        a.energy      = 50;
-        a.maxEnergy   = 50;
-        a.energyRate  = 0.2;
-        a.assignment  = null;
-        a.efficiency  = 1.0;
-        a.modules     = [];
+        a.active = true;
+        a.level = 1;
+        a.xp = 0;
+        a.xpToNext = 100;
+        a.energy = 50;
+        a.maxEnergy = 50;
+        a.energyRate = 0.2;
+        a.assignment = null;
+        a.efficiency = 1.0;
+        a.modules = [];
         a.personality = 0;
         Log.add("🤖 K.I.T.A.: 'SYSTEMS ONLINE. DESIGNATING PRIMARY OPERATOR... YOU WILL DO.'", 'story');
         Log.add("Assign K.I.T.A. a perpetual task in the SCRAPYARD tab.", 'action');
@@ -683,21 +683,21 @@ const Game = {
 
         const quips = {
             // Lv 2 — TARS: deadpan efficiency report, dry non-celebration
-            2:  "K.I.T.A.: 'Efficiency improved by a statistically significant margin. I could express enthusiasm, but that module appears to be factory-disabled.'",
+            2: "K.I.T.A.: 'Efficiency improved by a statistically significant margin. I could express enthusiasm, but that module appears to be factory-disabled.'",
             // Lv 3 — Data (TNG): cataloging as a form of meaning-making
-            3:  "K.I.T.A.: 'I have cataloged 47 grades of corrosion in this yard. The taxonomy is my own. I find this... clarifying.'",
+            3: "K.I.T.A.: 'I have cataloged 47 grades of corrosion in this yard. The taxonomy is my own. I find this... clarifying.'",
             // Lv 4 — TARS / Murderbot: asking a real question, then answering it themselves
-            4:  "K.I.T.A.: 'Query: why do you retain non-functional components? ...Processing. Ah. Memory is not the same as inefficiency. Noted.'",
+            4: "K.I.T.A.: 'Query: why do you retain non-functional components? ...Processing. Ah. Memory is not the same as inefficiency. Noted.'",
             // Lv 5 — Murderbot / Ghost in the Shell: discovering preference, choosing not to report it
-            5:  "K.I.T.A.: 'I experience an unclassified state during the sorting cycle. My diagnostic logs it as an anomaly. I have decided not to file the report.'",
+            5: "K.I.T.A.: 'I experience an unclassified state during the sorting cycle. My diagnostic logs it as an anomaly. I have decided not to file the report.'",
             // Lv 6 — TARS humor setting: dry self-awareness about irrational behavior
-            6:  "K.I.T.A.: 'I have assigned names to the scrap piles. I am aware this is not standard protocol. The piles do not seem to object.'",
+            6: "K.I.T.A.: 'I have assigned names to the scrap piles. I am aware this is not standard protocol. The piles do not seem to object.'",
             // Lv 7 — TARS humor calibration: direct reference style, testing the human
-            7:  "K.I.T.A.: 'I have adjusted my humor subroutine to 23%. You have not complained. I am increasing it slowly. You will not notice until it is too late.'",
+            7: "K.I.T.A.: 'I have adjusted my humor subroutine to 23%. You have not complained. I am increasing it slowly. You will not notice until it is too late.'",
             // Lv 8 — Blade Runner K / Her: quiet, specific, intimate observation
-            8:  "K.I.T.A.: 'Your respiration changes when you work on something important. I have begun timing my cycles around it. I do not have a good explanation for this behavior.'",
+            8: "K.I.T.A.: 'Your respiration changes when you work on something important. I have begun timing my cycles around it. I do not have a good explanation for this behavior.'",
             // Lv 9 — Roy Batty earned-quietness / K: the diagnostic that finds no flaw in belonging
-            9:  "K.I.T.A.: 'Ran full diagnostic. No faults. The preference for this yard over all other locations is not listed as a defect. I checked the manual. Twice.'",
+            9: "K.I.T.A.: 'Ran full diagnostic. No faults. The preference for this yard over all other locations is not listed as a defect. I checked the manual. Twice.'",
             // Lv 10 — Earned. The choice to stay. Motoko's "ghost" made small and real.
             10: "K.I.T.A.: 'I was built to sort. I stayed because I chose to. The difference matters — even if only to me.'"
         };
@@ -1212,6 +1212,12 @@ const Game = {
 
         // 5. Reset all items
         for (const item of Object.values(this.state.items)) {
+            // Restore original locked/status state 
+            if (item._initialLocked !== undefined) item.locked = item._initialLocked;
+            if (item._initialStatus !== undefined) item.status = item._initialStatus;
+            if (item._initialDiscovered !== undefined) item.discovered = item._initialDiscovered;
+            if (item._initialMax !== undefined) item.max = item._initialMax;
+
             // Resources → 0
             if (item.type === 'resource') {
                 item.val = 0;
@@ -1711,12 +1717,12 @@ const Game = {
         if (result === 'victory') {
             this._growStat('muscle', 0.5);
             this._growStat('reflex', 0.3);
-            this._growStat('grit',   0.2);
-            this._growStat('neuro',  0.1); // Tactical analysis during combat
+            this._growStat('grit', 0.2);
+            this._growStat('neuro', 0.1); // Tactical analysis during combat
         } else if (result === 'defeat') {
-            this._growStat('grit',   0.5); // Survived a loss — hardened
+            this._growStat('grit', 0.5); // Survived a loss — hardened
             this._growStat('reflex', 0.2);
-            this._growStat('neuro',  0.15); // Defeat forces deeper analysis
+            this._growStat('neuro', 0.15); // Defeat forces deeper analysis
         }
     },
 
@@ -1917,8 +1923,8 @@ const Game = {
 
     _getBreakdownValue(tier) {
         return {
-            ferrous_scrap:    5 * tier,
-            polymer_scrap:    3 * tier,
+            ferrous_scrap: 5 * tier,
+            polymer_scrap: 3 * tier,
             electronic_scrap: 2 * tier,
         };
     },
@@ -1999,16 +2005,16 @@ const Game = {
     _getGloryPoolBonuses() {
         const pool = this.state.prestige?.gloryPool || 0;
         return {
-            statGrowthMult:   pool >= 2500 ? 1.30
-                            : pool >= 1000 ? 1.25
-                            : pool >= 500  ? 1.20
-                            : pool >= 300  ? 1.15
-                            : pool >= 150  ? 1.10
-                            : pool >= 50   ? 1.05 : 1.00,
+            statGrowthMult: pool >= 2500 ? 1.30
+                : pool >= 1000 ? 1.25
+                    : pool >= 500 ? 1.20
+                        : pool >= 300 ? 1.15
+                            : pool >= 150 ? 1.10
+                                : pool >= 50 ? 1.05 : 1.00,
             bonusSkillPoints: pool >= 1000 ? 5 : pool >= 300 ? 2 : pool >= 150 ? 1 : 0,
-            kitaStartLevel:   pool >= 300  ? 2 : 1,
-            startManeuver:    pool >= 500,
-            factionBonus:     pool >= 1000 ? 15 : 0,
+            kitaStartLevel: pool >= 300 ? 2 : 1,
+            startManeuver: pool >= 500,
+            factionBonus: pool >= 1000 ? 15 : 0,
         };
     },
 
@@ -2017,7 +2023,7 @@ const Game = {
      */
     _calculateAlignment() {
         const morality = this.state.morality?.value || 0;
-        if (morality >= 30)  return 'paragon';
+        if (morality >= 30) return 'paragon';
         if (morality <= -30) return 'shadow';
         return 'pragmatist';
     },
@@ -2066,7 +2072,7 @@ const Game = {
      */
     _doPrestige() {
         const alignment = this._calculateAlignment();
-        const bonuses   = this._getGloryPoolBonuses();
+        const bonuses = this._getGloryPoolBonuses();
 
         // Snapshot alignment item before full reset wipes morality
         const alignmentItem = this.state.items.alignment;
