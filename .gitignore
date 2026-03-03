@@ -1,3 +1,16 @@
+# AI / Switchboard 
+.agent/
+.bot.lock
+.codex/
+.switchboard/
+.tmp/
+AGENTS.md
+MechaScrapyard.code-workspace
+antigravity.db
+llm-argumentation-protocol/
+output/
+progress.md
+
 node_modules/
 dist/
 .vite/
