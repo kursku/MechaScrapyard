@@ -111,7 +111,7 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 
 ## Phase 4-UI — UI/UX Polish
 
-**Status:** `✅ COMPLETE` — tagged `phase4-ui-complete`
+**Status:** `🔄 IN PROGRESS`
 **Goal:** Close the UI/UX gaps identified by the Phase 4 audit. No new systems — only feedback clarity, accessibility, and making existing Phase 4 mechanics legible to the player.
 **Spec folder:** `docs/phases/phase4_ui/`
 
@@ -121,9 +121,12 @@ content(p3): add Phase 3 story missions (corporate warning, arena registration)
 | 2 | `SPEC_stat_visibility.md` | HUD / Phase 4 Stats | ✅ complete | `11d5f7a` |
 | 3 | `SPEC_panel_ux_clarity.md` | Career, Factions, Zones | ✅ complete | `11d5f7a` |
 | 4 | `SPEC_prestige_ux_polish.md` | PilotPanel / Prestige | ✅ complete | `11d5f7a` |
-| 5 | `SPEC_font_readability.md` | Global Typography / CSS Variables | ✅ complete | `42eb5e6` |
+| 5 | `SPEC_font_readability.md` | Global Typography / CSS Variables | ⚠️ revised | `42eb5e6` — body font regression fixed in Spec 10 |
 | 6 | `SPEC_sidebar_redesign.md` | ResourceMonitor / Sidebar / Header | ✅ complete | `c292430` |
 | 7 | `SPEC_profile_subtabs.md` | PilotPanel / Profile / Tab System | ✅ complete | `11d5f7a` |
+| 8 | `SPEC_combat_ux.md` | Combat Tab UX / Layout | ✅ complete | `e1f467a` — Parts 2–5 fully implemented |
+| 9 | `SPEC_mecha_subtabs.md` | MechaPanel / Sub-Tab Restructure | ✅ complete | this session |
+| 10 | `SPEC_readability_overhaul.md` | Font Strategy + UX Polish | 🔄 in progress | — |
 
 ---
 

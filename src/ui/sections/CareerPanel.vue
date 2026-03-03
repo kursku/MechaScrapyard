@@ -164,8 +164,8 @@ export default {
             <div class="negotiation-tier-badge" :class="'neg-' + negotiationTier">
                 NEGOTIATION: {{ negotiationTier.toUpperCase() }}
             </div>
-            <div v-if="availableJobs.length === 0" class="career-empty">
-                No careers available yet. Complete missions and build your reputation.
+            <div v-if="availableJobs.length === 0" class="empty-state">
+                &gt; NO CONTRACTS AVAILABLE
             </div>
             <div class="job-grid">
                 <div v-for="job in availableJobs" :key="job.id"
@@ -220,7 +220,7 @@ export default {
     display: flex;
     justify-content: space-between;
     font-size: var(--font-size-xxs);
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     color: var(--text-dim);
     opacity: 0.45;
     padding: 4px 0;

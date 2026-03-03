@@ -40,6 +40,10 @@
     --action: #ffb000;
     --system: #475569;
 
+    /* Cost / Affordability */
+    --tip: #6ab47a;
+    --error: #bf360c;
+
     /* Typography Colors */
     --text: #e0d8c8;
     --text-dim: #a8a295;
@@ -58,14 +62,17 @@
     /* Adicionado um micro-arredondamento */
 
     /* Typography: Technical Brutalism / Retro CRT / Fluid Scaling */
-    --font-mono: 'VT323', 'Courier New', 'Lucida Console', monospace;
+    --font-body: 'Atkinson Hyperlegible', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: 'VT323', 'Courier New', 'Lucida Console', monospace;
+    --font-mono: var(--font-display);
     --font-size-xxl: clamp(24px, 2vw + 12px, 36px);
     --font-size-xl: clamp(20px, 1.5vw + 10px, 30px);
     --font-size-lg: clamp(18px, 1.2vw + 8px, 26px);
     --font-size-base: clamp(16px, 1vw + 6px, 22px);
-    --font-size-sm: clamp(14px, 0.9vw + 4px, 20px);
-    --font-size-xs: clamp(13px, 0.7vw + 4px, 17px);
-    --font-size-xxs: clamp(12px, 0.6vw + 2px, 14px);
+    --font-size-sm: clamp(15px, 0.95vw + 4px, 20px);
+    --font-size-xs: clamp(14px, 0.75vw + 4px, 18px);
+    --font-size-xxs: clamp(13px, 0.65vw + 3px, 16px);
+    --font-size-micro: clamp(12px, 0.45vw + 4px, 14px);
 
     /* Global Effects */
     --crt-glow: 0 0 3px rgba(255, 176, 0, 0.4);
@@ -154,7 +161,7 @@ body {
     color: var(--text);
     font-family: var(--font-mono);
     font-size: var(--font-size-base);
-    line-height: 1.5;
+    line-height: 1.6;
     text-shadow: var(--crt-glow);
     animation: flicker 0.15s infinite alternate;
 }
@@ -1097,7 +1104,7 @@ body {
 }
 
 .vendor-category-title {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--secondary);
     letter-spacing: 2px;
     border-bottom: 1px dashed var(--border-dim);
@@ -1152,7 +1159,7 @@ body {
 
 .hud-btn.small {
     padding: 3px 8px;
-    font-size: 10px;
+    font-size: var(--font-size-micro);
 }
 
 .hud-btn-danger {
@@ -1224,7 +1231,7 @@ body {
 }
 
 .stat-tier-label {
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     opacity: 0.5;
     margin-left: 5px;
     letter-spacing: 0.05em;
@@ -1272,7 +1279,7 @@ body {
 .morality-axis {
     display: flex;
     justify-content: space-between;
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     font-family: var(--font-mono);
     opacity: 0.5;
 }
@@ -1359,7 +1366,7 @@ body {
 }
 
 .task-active-label {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--primary);
     letter-spacing: 1px;
     display: flex;
@@ -1511,7 +1518,7 @@ body {
 }
 
 .stat-label {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-dim);
     font-family: var(--font-mono);
     margin-bottom: 2px;
@@ -1534,7 +1541,7 @@ body {
     display: grid;
     grid-template-columns: 2fr 3fr 0.5fr 4fr;
     gap: 15px;
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--secondary);
     border-bottom: 1px dashed var(--border-dim);
     padding-bottom: 8px;
@@ -1568,7 +1575,7 @@ body {
     flex-direction: column;
     gap: 4px;
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: var(--font-size-xxs);
 }
 
 .col-int {
@@ -1624,7 +1631,7 @@ body {
 
     .col-int::before {
         content: "INTEGRITY: ";
-        font-size: 10px;
+        font-size: var(--font-size-micro);
         color: var(--secondary);
     }
 }
@@ -1774,7 +1781,7 @@ body {
 }
 
 .stat-block-label {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-dim);
     letter-spacing: 1px;
 }
@@ -1798,7 +1805,7 @@ body {
     position: absolute;
     top: -2px;
     right: 5px;
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: #fff;
     text-shadow: 1px 1px 0 #000;
 }
@@ -1888,6 +1895,19 @@ body {
 .upgrade-maxed {
     opacity: 0.4;
     cursor: default;
+    position: relative;
+}
+
+.upgrade-maxed::after {
+    content: 'MAXED';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-micro);
+    color: var(--primary);
+    letter-spacing: 0.08em;
+    opacity: 1;
 }
 
 .upgrade-maxed:hover {
@@ -1915,10 +1935,10 @@ body {
 }
 
 .list-card__desc {
-    font-size: 11px;
+    font-size: var(--font-size-xxs);
     color: #888;
-    font-family: var(--font-mono);
-    line-height: 1.3;
+    font-family: var(--font-body);
+    line-height: 1.45;
     margin-bottom: 10px;
 }
 
@@ -1954,7 +1974,7 @@ body {
     border: 1px solid;
     border-radius: 2px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     font-weight: bold;
     color: var(--badge-color, var(--primary));
     letter-spacing: 0;
@@ -1978,7 +1998,7 @@ body {
 .res-max {
     font-family: var(--font-mono);
     color: var(--text-faint);
-    font-size: 10px;
+    font-size: var(--font-size-micro);
 }
 
 .res-progress-bar {
@@ -1994,7 +2014,7 @@ body {
 
 .res-group-divider {
     text-align: center;
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     color: var(--text-faint);
     letter-spacing: 2px;
     margin: 8px 0 4px;
@@ -2008,7 +2028,7 @@ body {
 }
 
 .energy-stable-tag {
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     color: var(--color-success);
     border: 1px solid var(--color-success);
     padding: 0 3px;
@@ -2017,7 +2037,7 @@ body {
 }
 
 .energy-drain-tag {
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     color: var(--color-danger, #f44);
     border: 1px solid currentColor;
     padding: 0 3px;
@@ -2035,7 +2055,7 @@ body {
 }
 
 .directive-header {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--primary);
     letter-spacing: 2px;
     margin-bottom: 4px;
@@ -2048,7 +2068,7 @@ body {
 }
 
 .directive-detail {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-dim);
     margin-bottom: 8px;
 }
@@ -2056,7 +2076,7 @@ body {
 .directive-progress {}
 
 .directive-count {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--primary);
     font-family: var(--font-mono);
     display: block;
@@ -2215,7 +2235,7 @@ body {
 }
 
 .job-start-hint {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-faint);
     margin-top: 8px;
 }
@@ -2291,7 +2311,7 @@ body {
 }
 
 .zone-phase {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-faint);
     font-family: var(--font-mono);
 }
@@ -2489,7 +2509,7 @@ body {
 }
 
 .bp-type {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     color: var(--text-faint);
     letter-spacing: 1px;
 }
@@ -2501,7 +2521,7 @@ body {
 }
 
 .mat-tag {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     font-family: var(--font-mono);
     padding: 2px 6px;
     border: 1px solid var(--border-dim);

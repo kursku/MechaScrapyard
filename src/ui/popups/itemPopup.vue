@@ -270,6 +270,7 @@ export default {
 
 .popup-flavor {
     margin-top: 6px;
+    font-family: var(--font-body);
     font-size: var(--font-size-xs);
     font-style: italic;
     color: var(--text-faint);

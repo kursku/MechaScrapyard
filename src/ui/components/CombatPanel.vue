@@ -761,7 +761,6 @@ export default {
 /* ── Container ──────────────────────────────────────────────────────────── */
 .combat-panel-container {
     padding: 10px;
-    font-family: var(--font-mono);
     position: relative;
 }
 
@@ -826,8 +825,9 @@ export default {
 .mission-tags-inline { display: flex; gap: 4px; flex: 1; }
 .mission-difficulty { color: #f5c542; letter-spacing: 2px; margin-left: auto; }
 .mission-desc {
+    font-family: var(--font-body);
     font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 4px;
-    line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden;
 }
 .mission-footer { display: flex; gap: 12px; font-size: var(--font-size-xxs); font-weight: bold; }
@@ -836,7 +836,7 @@ export default {
 .empty-msg { font-size: var(--font-size-xs); color: var(--text-dim); padding: 10px 0; }
 
 .zone-tag, .story-tag, .patrol-tag, .completed-tag, .narrative-tag {
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     padding: 0px 4px;
     border: 1px solid;
     letter-spacing: 0.5px;
@@ -1018,7 +1018,7 @@ export default {
 .mnvr-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
 .mnvr-name { font-size: var(--font-size-xs); font-weight: bold; color: var(--text); }
 .mnvr-type { font-size: var(--font-size-xxs); color: var(--text-dim); }
-.mnvr-desc { font-size: var(--font-size-xxs); color: var(--text-dim); line-height: 1.3; }
+.mnvr-desc { font-size: var(--font-size-xxs); color: var(--text-dim); line-height: 1.4; }
 
 /* ── Shop (collapsible) ─────────────────────────────────── */
 .shop-details {
@@ -1043,7 +1043,7 @@ export default {
 .shop-count {
     font-weight: normal;
     color: var(--text-dim);
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     letter-spacing: 0;
 }
 .shop-content {
@@ -1292,7 +1292,7 @@ export default {
     gap: 5px;
     padding-left: 6px;
     border-left: 2px solid;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 .tl-icon { font-size: var(--font-size-xs); }
 .tl-name { font-weight: bold; color: var(--text); letter-spacing: 0.5px; }
@@ -1416,6 +1416,7 @@ export default {
     margin-top: 2px;
 }
 .briefing-desc {
+    font-family: var(--font-body);
     font-size: var(--font-size-xxs);
     color: var(--text-dim);
     line-height: 1.5;
@@ -1536,7 +1537,7 @@ export default {
 .mcs-zone {
     margin-left: auto;
     color: #8899aa;
-    font-size: 10px;
+    font-size: var(--font-size-micro);
     padding: 0 5px;
     border: 1px solid #334;
 }

@@ -3,7 +3,7 @@
 **Phase:** 4-UI — Spec 5 of 7
 **Area:** Global Typography / CSS Variables
 **Priority:** 🔴 CRITICAL — Small fonts rendered unreadable across all panels
-**Status:** ✅ COMPLETE
+**Status:** ⚠️ REVISED — see regression note below
 
 ---
 
@@ -55,6 +55,18 @@ Replaced all hardcoded `font-size` values with CSS variable references across 12
 - [x] All components use `var(--font-size-*)` references
 - [x] Text remains readable at default zoom on 1080p+ displays
 - [x] No visual regressions in any panel
+
+## REGRESSION NOTE
+
+During implementation of this spec, the `body { font-family }` was changed from `var(--font-mono)` (VT323) to `var(--font-body)` (Atkinson Hyperlegible). This stripped the terminal/CRT aesthetic from every element that didn't explicitly set its own font-family — the opposite of the game's visual identity.
+
+**The clamp() size improvements and CSS variable references from this spec are correct and kept.**
+
+The font-family regression is addressed in **`SPEC_readability_overhaul.md` (Spec 10)**, which establishes the correct hybrid strategy:
+- `body { font-family: var(--font-mono); }` — VT323 as the universal default
+- Atkinson Hyperlegible applied explicitly only to long-form prose (dialogue, item descriptions, briefings)
+
+---
 
 ## FILE REFERENCE
 

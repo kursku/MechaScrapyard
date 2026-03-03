@@ -74,6 +74,7 @@ export default {
                         <span class="zone-icon">?</span>
                         <span class="zone-name">??? LOCKED ???</span>
                         <span class="zone-phase">P{{ zone.phase }}</span>
+                        <span v-if="zone.scoutCost" class="zone-scout-cost">SCOUT: {{ formatCost(zone.scoutCost) }}</span>
                     </div>
 
                     <!-- SCOUTED or UNLOCKED -->
@@ -89,6 +90,11 @@ export default {
                         <div class="zone-desc">{{ zone.desc }}</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- ALL LOCKED EMPTY STATE -->
+            <div v-if="zones.every(z => z.status === 'locked')" class="empty-state">
+                &gt; SCOUT A ZONE TO EXPAND OPERATIONS
             </div>
 
             <!-- DETAIL PANEL -->
@@ -144,6 +150,14 @@ export default {
 </template>
 
 <style scoped>
+.zone-scout-cost {
+    display: block;
+    font-size: var(--font-size-micro);
+    color: var(--text-faint);
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+}
+
 .zone-status-badge {
     display: inline-block;
     font-size: var(--font-size-xxs);
@@ -173,7 +187,7 @@ export default {
 .zone-unlock-desc {
     font-size: var(--font-size-xxs);
     color: #888;
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     margin-bottom: 8px;
 }
 

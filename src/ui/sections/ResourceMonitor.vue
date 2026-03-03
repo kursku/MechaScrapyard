@@ -308,7 +308,7 @@ export default {
     color: var(--primary);
 }
 .toggle-chevron {
-    font-size: 9px;
+    font-size: var(--font-size-micro);
     transition: transform 0.2s;
 }
 .section-count {
@@ -407,6 +407,9 @@ export default {
 .rep-badge {
     flex: 1 1 calc(50% - 4px);
     min-width: 70px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
     background: rgba(136, 170, 255, 0.04);
     border: 1px solid rgba(136, 170, 255, 0.12);
     padding: 4px 6px;
@@ -423,17 +426,22 @@ export default {
     color: var(--rep-color, #88aaff);
     font-weight: bold;
     letter-spacing: 1px;
+    grid-column: 1;
+    grid-row: 1;
 }
 .rep-badge-val {
     font-size: var(--font-size-xxs);
     color: var(--text-dim);
-    float: right;
-    margin-top: -14px;
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
 }
 .rep-badge-bar {
     height: 2px;
     background: rgba(136, 170, 255, 0.1);
     margin-top: 3px;
+    grid-column: 1 / -1;
+    grid-row: 2;
 }
 .rep-badge-fill {
     height: 100%;

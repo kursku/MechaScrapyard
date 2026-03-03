@@ -25,7 +25,7 @@
             class="list-card__cost-item"
             :class="canAffordOne && canAffordOne(k, v) ? 'cost--ok' : 'cost--no'"
           >
-            {{ resourceIcon ? resourceIcon(k) : '' }}{{ fmt ? fmt(v) : v }}
+            <span class="cost-check" aria-hidden="true">{{ canAffordOne && canAffordOne(k, v) ? '✓' : '✗' }}</span>{{ resourceIcon ? resourceIcon(k) : '' }}{{ fmt ? fmt(v) : v }}
           </span>
         </div>
 
@@ -152,6 +152,12 @@ export default {
 .list-card__cost-item {
   display: inline-block;
   margin-left: 6px;
+}
+
+.cost-check {
+  font-size: var(--font-size-micro);
+  opacity: 0.7;
+  margin-right: 1px;
 }
 
 .list-card__meta {

@@ -83,6 +83,9 @@ export default {
 <template>
     <section>
         <h3 class="hud-section-title">> REPUTATION & FACTIONS</h3>
+        <div v-if="!factions.length" class="empty-state">
+            &gt; NO FACTION CONTACTS — UNLOCK VIA STORY MISSIONS
+        </div>
         <div class="factions-grid">
             <div v-for="fac in factions" :key="fac.id" class="faction-card"
                  :style="{
@@ -184,7 +187,7 @@ export default {
 }
 .contacts-empty {
     font-size: var(--font-size-xxs);
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     color: var(--text-dim);
     opacity: 0.45;
     letter-spacing: 0.06em;
@@ -203,9 +206,9 @@ export default {
     align-items: baseline;
     margin-bottom: 2px;
 }
-.contact-name { font-size: 12px; font-weight: bold; color: var(--c-text); }
-.contact-spec { font-size: 9px; letter-spacing: 0.1em; color: var(--c-dim); }
-.contact-desc { font-size: 10px; color: var(--c-dim2); margin-bottom: 6px; }
+.contact-name { font-size: var(--font-size-xxs); font-weight: bold; color: var(--c-text); }
+.contact-spec { font-size: var(--font-size-micro); letter-spacing: 0.1em; color: var(--c-dim); }
+.contact-desc { font-size: var(--font-size-micro); color: var(--c-dim2); margin-bottom: 6px; }
 .contact-loyalty-wrap {
     display: flex;
     align-items: center;
@@ -227,8 +230,8 @@ export default {
     transition: width 0.3s;
 }
 .loyalty-fill.active { background: var(--c-accent); }
-.contact-loyalty-num { font-size: 9px; color: var(--c-dim); white-space: nowrap; }
-.contact-benefit { font-size: 10px; color: var(--c-dim2); }
+.contact-loyalty-num { font-size: var(--font-size-micro); color: var(--c-dim); white-space: nowrap; }
+.contact-benefit { font-size: var(--font-size-micro); color: var(--c-dim2); }
 .contact-benefit--active { color: var(--c-accent); }
 .contact-benefit--high { color: #4af; margin-top: 2px; }
 </style>
