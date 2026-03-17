@@ -21,6 +21,7 @@ export default {
             activeTree: 'combat',
             skillsCollapsed: false,
             gloryPurchaseError: false,
+            cycleLogCollapsed: true,
         };
     },
     mounted() {
@@ -88,6 +89,10 @@ export default {
             if (this.alignment === 'paragon') return '#4af';
             if (this.alignment === 'shadow') return '#f55';
             return '#fa0';
+        },
+        cycleLog() {
+            const history = this.state.prestige?.alignmentHistory || [];
+            return [...history].reverse();
         },
         showGloryShop() {
             return this.gloryPool >= 50 || this.prestigeCount > 0;
@@ -287,12 +292,15 @@ export default {
 
             <!-- Neural Skills — collapsible -->
             <div class="neural-section">
-                <div class="section-toggle" @click="skillsCollapsed = !skillsCollapsed">
-                    <span class="hud-section-title" style="margin:0;cursor:pointer">> NEURAL SKILLS</span>
+                <button type="button" class="section-toggle"
+                        :aria-expanded="!skillsCollapsed"
+                        aria-controls="neural-grid-content"
+                        @click="skillsCollapsed = !skillsCollapsed">
+                    <span class="hud-section-title" style="margin:0">> NEURAL SKILLS</span>
                     <span class="toggle-chevron" :class="{ open: !skillsCollapsed }">▶</span>
                     <span class="section-count">{{ skills.length }}</span>
-                </div>
-                <div v-if="!skillsCollapsed" class="neural-grid">
+                </button>
+                <div v-if="!skillsCollapsed" id="neural-grid-content" class="neural-grid">
                     <div v-for="skill in skills" :key="skill.id"
                          class="neural-badge"
                          @mouseover="itemOver($event, skill)"
@@ -319,6 +327,31 @@ export default {
                     <span class="intel-val">{{ Math.floor(state.g.rep_refugee || 0) }}</span>
                 </div>
             </div>
+
+            <!-- Cycle Log — only visible after first prestige -->
+            <div v-if="cycleLog.length > 0" class="cycle-log-section">
+                <button type="button" class="section-toggle"
+                        :aria-expanded="!cycleLogCollapsed"
+                        aria-controls="cycle-log-content"
+                        @click="cycleLogCollapsed = !cycleLogCollapsed">
+                    <span class="hud-section-title" style="margin:0">> CYCLE LOG</span>
+                    <span class="toggle-chevron" :class="{ open: !cycleLogCollapsed }">▶</span>
+                    <span class="section-count">{{ cycleLog.length }}</span>
+                </button>
+                <div v-if="!cycleLogCollapsed" id="cycle-log-content" class="cycle-log">
+                    <div v-for="entry in cycleLog" :key="entry.cycle" class="cycle-entry">
+                        <span class="cycle-num">CYCLE {{ entry.cycle + 1 }}</span>
+                        <span class="cycle-align"
+                              :class="{
+                                'align-paragon': entry.alignment === 'Paragon' || entry.alignment === 'PARAGON',
+                                'align-shadow':  entry.alignment === 'Shadow'  || entry.alignment === 'SHADOW',
+                              }">
+                            {{ entry.alignment.toUpperCase() }}
+                        </span>
+                        <span class="cycle-glory">★ {{ entry.glory }} GP</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ═══════════ TRAINING ═══════════ -->
@@ -328,11 +361,12 @@ export default {
             <div v-for="group in trainingGroups" :key="group.label" class="training-group">
                 <div class="training-group-label">── {{ group.label }} ──</div>
                 <div class="training-rows">
-                    <div v-for="task in group.tasks" :key="task.id"
-                         :class="['training-row', { running: isRunning(task) }]"
-                         @click="tryItem(task)"
-                         @mouseover="itemOver($event, task)"
-                         @mouseleave="itemOut">
+                    <button type="button"
+                            v-for="task in group.tasks" :key="task.id"
+                            :class="['training-row', { running: isRunning(task) }]"
+                            @click="tryItem(task)"
+                            @mouseover="itemOver($event, task)"
+                            @mouseleave="itemOut">
                         <span class="training-name">{{ task.name.toUpperCase() }}</span>
                         <span class="training-effect">{{ getStatEffect(task) }}</span>
                         <div class="training-progress">
@@ -345,7 +379,7 @@ export default {
                         </div>
                         <span v-if="isRunning(task)" class="training-action abort">[ ABORT ]</span>
                         <span v-else class="training-action">[ INITIATE ]</span>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -368,18 +402,20 @@ export default {
                 <div v-for="tier in [1,2,3,4]" :key="tier" class="tree-tier">
                     <div class="tier-label">TIER {{ tier }}</div>
                     <div class="tier-skills-wide">
-                        <div v-for="sk in treeSubSkills(activeTree, tier)" :key="sk.id"
-                             :class="['sub-skill-wide', {
-                                 owned: sk.owned,
-                                 available: canBuy(sk),
-                                 locked: !canBuy(sk) && !sk.owned
-                             }]"
-                             @click="buySubSkill(sk)">
+                        <button type="button"
+                                v-for="sk in treeSubSkills(activeTree, tier)" :key="sk.id"
+                                :class="['sub-skill-wide', {
+                                    owned: sk.owned,
+                                    available: canBuy(sk),
+                                    locked: !canBuy(sk) && !sk.owned
+                                }]"
+                                :disabled="sk.owned"
+                                @click="buySubSkill(sk)">
                             <div class="sk-name">{{ sk.name }}</div>
                             <div class="sk-desc">{{ sk.desc }}</div>
                             <div class="sk-cost" v-if="!sk.owned">{{ sk.cost }} SP</div>
                             <div class="sk-owned" v-else>&#x2713; OWNED</div>
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -414,17 +450,17 @@ export default {
     margin-bottom: 16px;
 }
 .stat-card {
-    background: rgba(0, 255, 65, 0.03);
-    border: 1px solid rgba(0, 255, 65, 0.12);
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
     padding: 10px;
     font-family: var(--font-mono);
     cursor: default;
     transition: all 0.2s ease-out;
 }
 .stat-card:hover {
-    background: rgba(0, 255, 65, 0.08);
+    background: var(--success-bg-hover);
     border-color: var(--stat-color, var(--primary));
-    box-shadow: 0 0 14px rgba(0, 255, 65, 0.1);
+    box-shadow: var(--success-glow);
 }
 .stat-card-icon {
     font-size: var(--font-size-lg);
@@ -455,8 +491,8 @@ export default {
 }
 .stat-card-bar {
     height: 3px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bar-bg);
+    border: 1px solid var(--bar-border);
     position: relative;
 }
 .stat-card-bar::before {
@@ -486,6 +522,10 @@ export default {
 }
 .morality-compact {
     flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
 }
 .morality-label {
     font-size: var(--font-size-xxs);
@@ -494,7 +534,6 @@ export default {
 }
 .morality-value {
     font-size: var(--font-size-xxs);
-    float: right;
     font-family: var(--font-mono);
 }
 .morality-track {
@@ -539,8 +578,8 @@ export default {
     border: 1px solid; padding: 4px 8px; font-family: var(--font-mono);
 }
 .glory-pool-hud {
-    font-size: var(--font-size-xxs); color: #fc5; font-family: var(--font-mono); font-weight: bold;
-    padding: 4px 8px; border: 1px solid #654; background: #1a1200;
+    font-size: var(--font-size-xxs); color: var(--glory); font-family: var(--font-mono); font-weight: bold;
+    padding: 4px 8px; border: 1px solid var(--glory-border); background: var(--glory-bg);
 }
 .glory-pool-hud.gp-error {
     color: #f44 !important;
@@ -592,6 +631,13 @@ export default {
     gap: 8px;
     cursor: pointer;
     user-select: none;
+    /* button resets */
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    width: 100%;
+    text-align: left;
 }
 .toggle-chevron {
     font-size: var(--font-size-micro);
@@ -620,17 +666,17 @@ export default {
     align-items: center;
     gap: 6px;
     padding: 5px 8px;
-    border: 1px solid rgba(0, 255, 65, 0.1);
-    background: rgba(0, 255, 65, 0.03);
+    border: 1px solid var(--success-border);
+    background: var(--success-bg);
     font-family: var(--font-mono);
     font-size: var(--font-size-xxs);
     cursor: default;
     transition: all 0.2s ease-out;
 }
 .neural-badge:hover {
-    background: rgba(0, 255, 65, 0.08);
+    background: var(--success-bg-hover);
     border-color: var(--primary);
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
+    box-shadow: var(--success-glow);
 }
 .neural-icon { font-size: var(--font-size-sm); }
 .neural-name { color: var(--text); }
@@ -659,20 +705,24 @@ export default {
     gap: 8px;
     padding: 8px 10px;
     border: 1px solid var(--border-dim);
-    background: rgba(0, 255, 65, 0.02);
+    background: var(--success-bg);
     cursor: pointer;
     font-family: var(--font-mono);
     transition: all 0.2s ease-out;
+    /* button resets */
+    color: inherit;
+    text-align: left;
+    width: 100%;
 }
 .training-row:hover {
-    background: rgba(0, 255, 65, 0.06);
+    background: var(--success-bg-hover);
     border-color: var(--primary);
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.06);
+    box-shadow: var(--success-glow);
 }
 .training-row.running {
     border-color: var(--secondary);
-    background: rgba(0, 255, 65, 0.08);
-    box-shadow: inset 3px 0 0 var(--secondary), 0 0 10px rgba(0, 255, 65, 0.06);
+    background: var(--success-bg-hover);
+    box-shadow: inset 3px 0 0 var(--secondary), var(--success-glow);
 }
 .training-name {
     font-size: var(--font-size-xs);
@@ -708,47 +758,51 @@ export default {
 .sp-row { font-size: var(--font-size-xs); color: var(--secondary); margin: 4px 0 10px; }
 .tree-selector { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
 .tree-tab {
-    padding: 5px 10px; font-size: var(--font-size-xxs); letter-spacing: 0.06em;
+    padding: 5px 10px; min-height: 44px; font-size: var(--font-size-xxs); letter-spacing: 0.06em;
     border: 1px solid var(--border-dim); background: transparent;
     color: var(--text-dim); cursor: pointer; display: flex; gap: 4px; align-items: center;
 }
 .tree-tab.active { border-color: var(--secondary); color: var(--secondary); }
-.tree-progress { font-size: var(--font-size-xxs); color: var(--text-dim2, #666); }
+.tree-progress { font-size: var(--font-size-xxs); color: var(--text-faint); }
 .skill-tree-panel-wide { padding-bottom: 8px; }
 .tree-tier { margin-bottom: 14px; }
 .tier-label { font-size: var(--font-size-xxs); letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 6px; }
 .tier-skills-wide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .sub-skill-wide {
     border: 1px solid var(--border-dim); padding: 10px 12px;
-    cursor: pointer; background: var(--bg2, #111); font-family: var(--font-mono);
+    cursor: pointer; background: var(--bg-panel); font-family: var(--font-mono);
     transition: all 0.15s;
+    /* button resets */
+    color: inherit;
+    text-align: left;
+    width: 100%;
 }
 .sub-skill-wide.available { border-color: var(--secondary); cursor: pointer; }
 .sub-skill-wide.available:hover { background: rgba(0, 255, 65, 0.08); box-shadow: 0 0 10px rgba(0, 255, 65, 0.08); }
 .sub-skill-wide.owned { border-color: var(--secondary); opacity: 0.6; cursor: default; }
 .sub-skill-wide.locked { opacity: 0.35; cursor: not-allowed; }
-.sk-name { font-size: var(--font-size-xs); font-weight: bold; margin-bottom: 4px; color: var(--text-bright, #eee); }
+.sk-name { font-size: var(--font-size-xs); font-weight: bold; margin-bottom: 4px; color: var(--text); }
 .sk-desc { font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 6px; line-height: 1.4; }
 .sk-cost { font-size: var(--font-size-xxs); color: var(--secondary); }
 .sk-owned { font-size: var(--font-size-xxs); color: var(--secondary); }
 
 /* ═══════════ GLORY SHOP ═══════════ */
 .glory-shop-deck { margin-top: 20px; }
-.glory-pool-balance { font-size: var(--font-size-xs); color: #fc5; margin: 4px 0 10px; font-family: var(--font-mono); }
+.glory-pool-balance { font-size: var(--font-size-xs); color: var(--glory); margin: 4px 0 10px; font-family: var(--font-mono); }
 .glory-shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
 .glory-item {
-    border: 1px solid #654; background: #1a1200; padding: 10px 12px;
+    border: 1px solid var(--glory-border); background: var(--glory-bg); padding: 10px 12px;
     font-family: var(--font-mono);
 }
-.glory-item-name { font-size: var(--font-size-xs); font-weight: bold; color: #fc5; margin-bottom: 4px; }
+.glory-item-name { font-size: var(--font-size-xs); font-weight: bold; color: var(--glory); margin-bottom: 4px; }
 .glory-item-desc { font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 6px; line-height: 1.4; }
-.glory-item-owned { font-size: var(--font-size-xxs); color: var(--text-dim2, #666); margin-bottom: 4px; }
+.glory-item-owned { font-size: var(--font-size-xxs); color: var(--text-faint); margin-bottom: 4px; }
 .glory-buy-btn {
-    font-size: var(--font-size-xxs); padding: 4px 10px; cursor: pointer;
-    border: 1px solid #fc5; background: transparent; color: #fc5;
+    font-size: var(--font-size-xxs); padding: 4px 10px; min-height: 44px; cursor: pointer;
+    border: 1px solid var(--glory); background: transparent; color: var(--glory);
     font-family: var(--font-mono); letter-spacing: 0.05em;
 }
-.glory-buy-btn:disabled { border-color: #444; color: #555; cursor: not-allowed; }
+.glory-buy-btn:disabled { border-color: var(--disabled); color: var(--text-faint); cursor: not-allowed; }
 
 /* ═══════════ ANIMATION ═══════════ */
 @keyframes slideDown {
@@ -756,9 +810,48 @@ export default {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* ═══════════ CYCLE LOG ═══════════ */
+.cycle-log-section { margin-top: 14px; }
+
+.cycle-log {
+    margin-top: 4px;
+    animation: slideDown 0.2s ease;
+}
+
+.cycle-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-dim);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+}
+
+.cycle-num {
+    color: var(--text-faint);
+    min-width: 60px;
+    letter-spacing: 0.5px;
+}
+
+.cycle-align {
+    flex: 1;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+.cycle-align.align-paragon { color: #4af; }
+.cycle-align.align-shadow  { color: #f55; }
+
+.cycle-glory {
+    color: var(--glory);
+    letter-spacing: 0.5px;
+}
+
 /* ── Reduced motion — P6 ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     .neural-grid { animation: none; }
+    .cycle-log { animation: none; }
     .toggle-chevron { transition: none; }
 }
 </style>

@@ -417,8 +417,8 @@ export default {
 .kita-bar-track {
     flex: 1;
     height: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bar-bg);
+    border: 1px solid var(--bar-border);
 }
 
 .kita-bar-fill {
@@ -592,10 +592,10 @@ export default {
     margin-left: auto;
 }
 
-.dtl-1 { color: #aaa; }
-.dtl-2 { color: #e83; }
-.dtl-3 { color: #e55; }
-.dtl-4, .dtl-5 { color: #e05; animation: dtl-pulse 1.5s ease-in-out infinite; }
+.dtl-1 { color: var(--dtl-1); }
+.dtl-2 { color: var(--dtl-2); }
+.dtl-3 { color: var(--dtl-3); }
+.dtl-4, .dtl-5 { color: var(--dtl-crisis); animation: dtl-pulse 1.5s ease-in-out infinite; }
 
 @keyframes dtl-pulse {
     0%, 100% { opacity: 1; }
@@ -641,10 +641,10 @@ export default {
 
 /* DTL glow — intensifies with threat level */
 .dtl-hud-block { transition: box-shadow 0.3s ease-out; }
-.dtl-2 { box-shadow: inset 0 0 12px rgba(238, 136, 51, 0.08); }
-.dtl-3 { box-shadow: inset 0 0 16px rgba(238, 85, 85, 0.1); }
-.dtl-4 { box-shadow: inset 0 0 20px rgba(224, 0, 85, 0.12); }
-.dtl-5 { box-shadow: inset 0 0 25px rgba(224, 0, 85, 0.18); }
+.dtl-2 { box-shadow: inset 0 0 12px color-mix(in srgb, var(--dtl-2) 8%, transparent); }
+.dtl-3 { box-shadow: inset 0 0 16px color-mix(in srgb, var(--dtl-3) 10%, transparent); }
+.dtl-4 { box-shadow: inset 0 0 20px color-mix(in srgb, var(--dtl-crisis) 12%, transparent); }
+.dtl-5 { box-shadow: inset 0 0 25px color-mix(in srgb, var(--dtl-crisis) 18%, transparent); }
 .dtl-pip.active { box-shadow: 0 0 4px currentColor; }
 
 /* Android status LED */
@@ -671,7 +671,7 @@ export default {
 /* Upgrade card hover */
 .upgrade-card { transition: border-color 0.2s, box-shadow 0.2s; }
 .upgrade-card:hover { box-shadow: 0 0 12px rgba(0, 255, 65, 0.08); }
-.upgrade-maxed { opacity: 0.5; }
+.upgrade-maxed { border-color: var(--border-dim); }
 
 /* Salvage boot animation */
 .salvage-modal { animation: salvage-boot 0.35s ease-out; }

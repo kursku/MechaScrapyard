@@ -1,9 +1,9 @@
 <template>
   <Transition name="fade">
-    <div v-if="visible" class="dialogue-overlay" @click="handleClick">
+    <div v-if="visible" class="dialogue-overlay" role="dialog" aria-modal="true" aria-labelledby="dialogue-speaker-name" @click="handleClick">
       <div class="dialogue-box" @click.stop>
         <div class="dialogue-header" :style="{ color: speakerColor }">
-          <span class="speaker-name">{{ speakerName }}</span>
+          <span class="speaker-name" id="dialogue-speaker-name">{{ speakerName }}</span>
           <div class="header-line"></div>
         </div>
         
@@ -15,7 +15,8 @@
 
         <!-- Choice buttons (shown on last page when choices exist) -->
         <div v-if="choices.length && isLastPage && isTypingComplete" class="choice-container">
-          <div
+          <button
+            type="button"
             v-for="choice in choices"
             :key="choice.id"
             class="choice-button"
@@ -23,7 +24,7 @@
           >
             <span class="choice-label">▸ {{ choice.label }}</span>
             <span class="choice-desc">{{ choice.desc }}</span>
-          </div>
+          </button>
         </div>
 
         <div class="dialogue-footer">
@@ -269,6 +270,10 @@ export default {
 
 @keyframes blink { 50% { opacity: 0; } }
 
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; }
+}
+
 .dialogue-footer {
   display: flex;
   justify-content: flex-end;
@@ -279,7 +284,7 @@ export default {
 .continue-btn {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: #8899aa; /* lifted from #64748b — contrast ~6.4:1 on #0d1117 */
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   cursor: pointer;
@@ -295,7 +300,7 @@ export default {
 .skip-hint {
   font-family: var(--font-body);
   font-size: var(--font-size-xxs);
-  color: #334155;
+  color: #7c8a9a; /* lifted from #334155 — contrast ~5.4:1 on #0d1117 */
   font-style: italic;
 }
 
@@ -314,6 +319,12 @@ export default {
   padding-top: 8px;
 }
 .choice-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
   padding: 8px 12px;
   margin: 6px 0;
   border: 1px solid var(--border-dim, #333);

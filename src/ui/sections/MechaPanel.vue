@@ -891,7 +891,7 @@ export default {
 .hf-name { font-size: var(--font-size-xxs); font-weight: bold; color: var(--text); }
 .hf-cat  { font-size: var(--font-size-xxs); color: var(--text-dim); display: flex; gap: 5px; align-items: center; }
 .hf-stats { display: flex; gap: 8px; font-size: var(--font-size-xxs); margin: 2px 0; }
-.hf-compare { display: flex; gap: 6px; font-size: var(--font-size-xxs); font-family: var(--font-body); padding: 3px 0; }
+.hf-compare { display: flex; gap: 6px; font-size: var(--font-size-xxs); font-family: var(--font-mono); padding: 3px 0; }
 .delta-pos { color: #4f4; }
 .delta-neg { color: #f66; }
 
@@ -968,7 +968,7 @@ export default {
     padding: 5px 6px;
     border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: var(--font-size-xxs);
-    font-family: var(--font-body);
+    font-family: var(--font-mono);
     transition: background 0.15s;
 }
 .storage-row:hover { background: rgba(255,255,255,0.03); }

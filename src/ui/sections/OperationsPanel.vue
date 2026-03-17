@@ -111,7 +111,11 @@ export default {
         <div v-else class="hud-task-grid">
             <div v-for="task in tasks" :key="task.id"
                  :class="['hud-task-card', 'ops-card', { running: isRunning(task) }]"
+                 role="button"
+                 tabindex="0"
                  @click="tryItem(task)"
+                 @keydown.enter.prevent="tryItem(task)"
+                 @keydown.space.prevent="tryItem(task)"
                  @mouseover="itemOver($event, task)"
                  @mouseleave="itemOut">
 
@@ -218,7 +222,7 @@ export default {
 .ops-empty-hint {
     font-size: var(--font-size-xxs);
     color: var(--text-faint, #555);
-    font-family: var(--font-body);
+    font-family: var(--font-mono);
 }
 
 /* ── Task card ────────────────────────────────────────────────────────── */
@@ -269,8 +273,8 @@ export default {
 }
 .ops-progress-bar-track {
     height: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bar-bg);
+    border: 1px solid var(--bar-border);
     position: relative;
 }
 .ops-progress-bar-fill {

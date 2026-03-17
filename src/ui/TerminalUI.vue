@@ -29,13 +29,13 @@ const TAB_GROUPS = {
         childLabels: { pilot_overview: 'OVERVIEW', pilot_training: 'TRAINING', pilot_skills: 'SKILL TREE' },
     },
     base: {
-        label: 'BASE',
+        label: 'YARD',
         children: ['scrapyard', 'income', 'exploration', 'refinery'],
         // Which child categories are task-groups (use OperationsPanel)
         taskGroupChildren: ['income', 'exploration', 'refinery'],
     },
     world: {
-        label: 'WORLD',
+        label: 'CITY',
         children: ['zones', 'factions', 'career'],
     },
 };
@@ -289,8 +289,14 @@ export default {
         },
         isCritical() {
             this.renderTick;
-            const energy = this.state.get('energy');
-            return energy && (energy.val / (energy.max || 1)) < 0.15;
+            const frame = this.state.player?.frame;
+            if (!frame || !frame.parts) return false;
+            let current = 0, max = 0;
+            for (const p of Object.values(frame.parts)) {
+                current += p.hp || 0;
+                max += p.maxHp || 1;
+            }
+            return max > 0 && (current / max) < 0.15;
         },
         frame() {
             this.renderTick;
@@ -299,7 +305,36 @@ export default {
         chassis() {
             this.renderTick;
             return this.state.get(this.frame?.chassisId);
-        }
+        },
+        isDev() {
+            return import.meta.env.DEV;
+        },
+        osVersion() {
+            const p = this.state.prestige;
+            if (!p) return 'v1.0.0';
+            return `v${p.storyLayer || 1}.${p.cycleCount || 0}.0`;
+        },
+        pilotTag() {
+            const cycle = this.state.prestige?.cycleCount || 0;
+            if (cycle === 0) return 'PLT: PILOT_01';
+            return `PLT: PILOT_01 // CYCLE ${cycle}`;
+        },
+        alignmentClass() {
+            this.renderTick;
+            const val = this.state.get?.('morality')?.val ?? 0;
+            if (val >= 40) return 'align-paragon';
+            if (val <= -40) return 'align-shadow';
+            return '';
+        },
+        footerStatus() {
+            this.renderTick;
+            const activeTask = Game.runner?.activeTask;
+            const credsRate = this.state.get?.('creds')?.rate || 0;
+            return {
+                task: activeTask ? activeTask.name.toUpperCase() : null,
+                rate: credsRate,
+            };
+        },
     },
     watch: {
         selectedCategory() {
@@ -335,17 +370,17 @@ export default {
 </script>
 
 <template>
-    <div class="terminal-screen hud-grid" :class="{ 'critical-alert': isCritical }">
+    <div class="terminal-screen hud-grid" :class="[{ 'critical-alert': isCritical }, alignmentClass]">
         <!-- HEADER WIDGET -->
         <header class="terminal-header hud-panel top-span">
-            <div class="glitch-title" data-text="MECHA SCRAPYARD OS v1.5.0">
-                {{ currentHome ? currentHome.name.toUpperCase() : 'SCRAPYARD' }} // OS v1.5.0
+            <div class="glitch-title" :data-text="`MECHA SCRAPYARD OS ${osVersion}`">
+                {{ currentHome ? currentHome.name.toUpperCase() : 'SCRAPYARD' }} // OS {{ osVersion }}
             </div>
             <div class="header-status">
                 <span class="emergency-rest-btn" v-if="isRunning(runner.activeTask)" @click="stopAllTasks">
                     [!] EMERGENCY_STOP [!]
                 </span>
-                <span class="emergency-rest-btn" style="color: var(--color-warning); border-color: var(--color-warning); margin-right: 15px;" @click="devUnlockAll" title="Unlock All For Testing">
+                <span v-if="isDev" class="emergency-rest-btn" style="color: var(--color-warning); border-color: var(--color-warning); margin-right: 15px;" @click="devUnlockAll" title="Unlock All For Testing">
                     [DEV UNLOCK]
                 </span>
                 <span v-if="state.prestige && state.prestige.gateCompleted"
@@ -354,7 +389,7 @@ export default {
                     &#x2605; GLORY RESET AVAILABLE &#x2605;
                 </span>
                 <span class="sector-phase-tag">[ PHASE: {{ currentHome ? currentHome.id.split('_')[1].toUpperCase() : '0' }} ]</span>
-                [ PLT: PILOT_01 ]
+                [ {{ pilotTag }} ]
             </div>
             <div v-if="currentDirective" class="header-directive">
                 <span class="directive-icon">▶</span>
@@ -377,7 +412,7 @@ export default {
                         :class="['hud-tab-btn', { active: selectedCategory === tab.id }]"
                         @click="setCategory(tab.id)">
                     <span class="tab-indicator"></span>
-                    {{ tab.label }}
+                    {{ tab.label }}<span v-if="tab.isGroup" class="tab-chevron">▾</span>
                     <span v-if="isNewGroup(tab.id)" class="tab-new-badge">NEW</span>
                 </button>
             </nav>
@@ -438,7 +473,21 @@ export default {
         <!-- SYSTEM INFO (Bottom Fragment) -->
         <footer class="terminal-footer hud-panel bottom-span">
             <div class="system-status">
-                <span class="status-label">SYS_READY</span> | <span class="blink">_</span>
+                <template v-if="footerStatus.task">
+                    <span class="status-label status-proc">▶ PROC</span>
+                    <span class="footer-task-name">{{ footerStatus.task }}</span>
+                </template>
+                <template v-else>
+                    <span class="status-label">SYS_READY</span>
+                </template>
+                <span class="blink">_</span>
+            </div>
+            <div class="footer-rate" v-if="footerStatus.rate !== 0">
+                <span class="footer-rate-label">¥/s</span>
+                <span class="footer-rate-val"
+                      :class="footerStatus.rate > 0 ? 'rate-pos' : 'rate-neg'">
+                    {{ footerStatus.rate > 0 ? '+' : '' }}{{ footerStatus.rate.toFixed(1) }}
+                </span>
             </div>
             <div class="home-info" v-if="currentHome">
                 SEC: {{ currentHome.name.toUpperCase() }} | {{ currentHome.desc }}
@@ -450,9 +499,14 @@ export default {
         <DialogueModal ref="dialogue" />
 
         <!-- PRESTIGE SUMMARY MODAL -->
-        <div v-if="_showPrestigeModal && _prestigeBreakdown" class="prestige-overlay" @click.self="cancelPrestige">
+        <div v-if="_showPrestigeModal && _prestigeBreakdown"
+             class="prestige-overlay"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="prestige-modal-title"
+             @click.self="cancelPrestige">
             <div class="prestige-modal">
-                <h2 class="prestige-title">&#x2550;&#x2550; CYCLE COMPLETE &#x2550;&#x2550;</h2>
+                <h2 id="prestige-modal-title" class="prestige-title">&#x2550;&#x2550; CYCLE COMPLETE &#x2550;&#x2550;</h2>
 
                 <div class="prestige-section">
                     <div class="prestige-row"><span>Story Layer</span><span>{{ state.prestige.storyLayer }} &#x2192; {{ state.prestige.storyLayer + 1 }}</span></div>
@@ -603,14 +657,58 @@ export default {
     width: 100%;
 }
 
-.bottom-span { 
-    grid-area: foot; 
-    display: flex; 
-    justify-content: space-between; 
-    font-size: var(--font-size-xs); 
-    color: var(--text-dim); 
+.bottom-span {
+    grid-area: foot;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+    color: var(--text-dim);
     background: var(--bg-main);
 }
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.status-proc {
+    color: var(--color-success);
+    letter-spacing: 1px;
+}
+
+.footer-task-name {
+    color: var(--text);
+    letter-spacing: 0.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 240px;
+}
+
+.footer-rate {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+}
+
+.footer-rate-label {
+    color: var(--text-faint);
+    font-size: var(--font-size-micro);
+}
+
+.footer-rate-val {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.footer-rate-val.rate-pos { color: var(--color-success); }
+.footer-rate-val.rate-neg { color: var(--color-danger); }
 
 /* -- TAB NAVIGATION -------------------------- */
 .terminal-category-tabs {
@@ -661,6 +759,18 @@ export default {
     box-shadow: 0 0 5px var(--primary);
 }
 
+.tab-chevron {
+    font-size: 10px;
+    opacity: 0.5;
+    margin-left: -4px;
+    display: inline-block;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.hud-tab-btn.active .tab-chevron {
+    opacity: 1;
+    transform: rotate(180deg);
+}
+
 .tab-new-badge {
     font-size: var(--font-size-xxs);
     color: var(--color-success);
@@ -686,6 +796,7 @@ export default {
     border-bottom: 2px solid transparent;
     color: var(--text-dim);
     padding: 4px 12px;
+    min-height: 44px;
     font-family: var(--font-mono);
     cursor: pointer;
     transition: all 0.2s;
@@ -697,14 +808,14 @@ export default {
 }
 
 .sub-tab-btn:hover {
-    color: var(--secondary, #fdc);
-    border-bottom-color: var(--secondary, #fdc);
+    color: var(--secondary, #c36a2d);
+    border-bottom-color: var(--secondary, #c36a2d);
 }
 
 .sub-tab-btn.active {
-    color: var(--secondary, #fdc);
-    border-bottom: 2px solid var(--secondary, #fdc);
-    background: rgba(255, 220, 0, 0.05);
+    color: var(--secondary, #c36a2d);
+    border-bottom: 2px solid var(--secondary, #c36a2d);
+    background: rgba(195, 106, 45, 0.05);
 }
 
 @keyframes pulse-new {
@@ -714,9 +825,8 @@ export default {
 
 /* -- PRESTIGE MODAL -------------------------- */
 .prestige-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 10005; display: flex; 
-    backdrop-filter: blur(4px);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    z-index: 10005; display: flex;
     overflow-y: auto;
     padding: 40px 20px;
 }
@@ -756,6 +866,23 @@ export default {
     to { background: rgba(255, 65, 54, 0.3); }
 }
 
+/* -- ALIGNMENT THEMING ----------------------- */
+/* Paragon: cold authority — silver-blue replaces amber */
+.hud-grid.align-paragon {
+    --primary: #a8c8ff;
+    --primary-dim: #6a8fcc;
+    --crt-glow: 0 0 3px rgba(168, 200, 255, 0.3);
+    --color-success: #00e5ff;
+}
+
+/* Shadow: hot aggression — blood-orange replaces amber */
+.hud-grid.align-shadow {
+    --primary: #ff6633;
+    --primary-dim: #cc3a14;
+    --crt-glow: 0 0 3px rgba(255, 102, 51, 0.4);
+    --border-focus: rgba(255, 102, 51, 0.5);
+}
+
 .critical-alert {
     animation: critical-jitter 0.2s infinite;
 }
@@ -766,5 +893,14 @@ export default {
     50% { transform: translate(-1px, 1px); }
     75% { transform: translate(1px, 1px); }
     100% { transform: translate(0, 0); }
+}
+
+/* -- REDUCED MOTION GUARDS ------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .tab-new-badge { animation: none; }
+    .blink { animation: none; }
+    .emergency-rest-btn { animation: none; }
+    .critical-alert { animation: none; }
+    .tab-chevron { transition: none; }
 }
 </style>

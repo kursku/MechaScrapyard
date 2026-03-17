@@ -6,7 +6,11 @@
       'list-card--disabled': disabled,
       'list-card--unaffordable': unaffordable,
     }"
+    role="button"
+    :tabindex="disabled ? -1 : 0"
     @click="$emit('click')"
+    @keydown.enter.prevent="if (!disabled) $emit('click')"
+    @keydown.space.prevent="if (!disabled) $emit('click')"
   >
     <div class="list-card__top">
       <div class="list-card__title">
@@ -75,28 +79,33 @@ export default {
 <style scoped>
 .list-card {
   padding: 15px;
-  border: 1px solid #1a2028;
-  border-left: 3px solid #1a2028;
-  background: #0b0e12;
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--border-dim);
+  background: var(--bg-panel);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 100%; 
+  max-width: 100%;
   transition: transform 0.2s, border-color 0.2s, background 0.2s;
 }
 
 .list-card:hover {
-  background: #12181f;
-  border-color: #736b58;
-  border-left-color: #008f11;
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  border-left-color: rgba(0, 255, 65, 0.5);
   transform: translateY(-2px);
 }
 
 .list-card--active {
-  border-color: #00ff41;
-  border-left-color: #00ff41;
-  background: rgba(0, 255, 65, 0.05);
+  border-color: var(--color-success);
+  border-left-color: var(--color-success);
+  background: var(--bg-surface-hover);
+}
+
+.list-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .list-card--disabled {
@@ -105,7 +114,7 @@ export default {
 }
 
 .list-card--unaffordable {
-  border-color: #3a1a1a;
+  border-color: rgba(191, 54, 12, 0.2);
 }
 
 .list-card__top {
@@ -123,13 +132,13 @@ export default {
 }
 
 .list-card__lead {
-  color: #00ff41;
+  color: var(--color-success);
   font-size: var(--font-size-xs);
 }
 
 .list-card__name {
   font-size: var(--font-size-xs);
-  color: #e6edf3;
+  color: var(--text);
   font-weight: 600;
   letter-spacing: 0.2px;
   white-space: nowrap;
@@ -162,19 +171,19 @@ export default {
 
 .list-card__meta {
   font-size: var(--font-size-xxs);
-  color: #94a3b8;
+  color: var(--color-neutral);
   white-space: nowrap;
 }
 
 .list-card__desc {
   font-size: var(--font-size-xxs);
-  color: #94a3b8;
+  color: var(--color-neutral);
   margin-top: 4px;
 }
 
 .list-card__flavor {
   font-size: var(--font-size-xxs);
-  color: #6a8a6a;
+  color: var(--tip);
   font-style: italic;
   margin-top: 2px;
 }
@@ -190,10 +199,11 @@ export default {
 
 .btn--xs {
   padding: 2px 6px;
+  min-height: 44px;
   font-size: var(--font-size-xxs);
-  border: 1px solid #008f11;
+  border: 1px solid rgba(0, 255, 65, 0.4);
   background: transparent;
-  color: #00ff41;
+  color: var(--color-success);
 }
 
 .btn--xs:disabled {

@@ -180,7 +180,7 @@ export default {
                     <div class="job-desc">{{ job.desc }}</div>
                     <div class="job-flavor">{{ job.flavor }}</div>
                     <div class="job-start-hint">
-                        Starting as: {{ (state.morality.value >= 30 ? job.tiers[0].high.title : state.morality.value <= -30 ? job.tiers[0].low.title : (state.morality.value >= 0 ? job.tiers[0].high.title : job.tiers[0].low.title)) }}
+                        Starting as: {{ ((state.morality?.value ?? 0) >= 30 ? job.tiers[0].high.title : (state.morality?.value ?? 0) <= -30 ? job.tiers[0].low.title : ((state.morality?.value ?? 0) >= 0 ? job.tiers[0].high.title : job.tiers[0].low.title)) }}
                     </div>
                     <div class="job-enroll-btn">[ ENROLL ]</div>
                 </div>
@@ -220,7 +220,7 @@ export default {
     display: flex;
     justify-content: space-between;
     font-size: var(--font-size-xxs);
-    font-family: var(--font-body);
+    font-family: var(--font-mono);
     color: var(--text-dim);
     opacity: 0.45;
     padding: 4px 0;

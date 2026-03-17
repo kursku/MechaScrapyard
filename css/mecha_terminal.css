@@ -32,7 +32,7 @@
     --color-warning: #f5c542;
     --color-danger: #bf360c;
     --color-info: #00aaff;
-    --color-neutral: #94a3b8;
+    --color-neutral: #8a7f6e; /* warm grey — consistent with amber/rust palette */
 
     --story: #455a64;
     --loot: #ffb000;
@@ -43,6 +43,11 @@
     /* Cost / Affordability */
     --tip: #6ab47a;
     --error: #bf360c;
+
+    /* Prestige / Glory System */
+    --glory: #ffcc55;
+    --glory-bg: #1a1200;
+    --glory-border: #665544;
 
     /* Typography Colors */
     --text: #e0d8c8;
@@ -78,6 +83,22 @@
     --crt-glow: 0 0 3px rgba(255, 176, 0, 0.4);
     --glow-success: 0 0 10px rgba(0, 255, 65, 0.3);
     --glow-danger: 0 0 10px rgba(191, 54, 12, 0.4);
+
+    /* Success color opacity set — used by interactive cards across all panels */
+    --success-bg:       rgba(0, 255, 65, 0.03);
+    --success-bg-hover: rgba(0, 255, 65, 0.08);
+    --success-border:   rgba(0, 255, 65, 0.1);
+    --success-glow:     0 0 8px rgba(0, 255, 65, 0.1);
+
+    /* Progress bar track — used by bar/meter components across all panels */
+    --bar-bg:     rgba(255, 255, 255, 0.06);
+    --bar-border: rgba(255, 255, 255, 0.08);
+
+    /* District Threat Level (DTL) escalation scale */
+    --dtl-1: #aaa;
+    --dtl-2: #e83;
+    --dtl-3: #e55;
+    --dtl-crisis: #e05;
 }
 
 @keyframes flicker {
@@ -163,7 +184,12 @@ body {
     font-size: var(--font-size-base);
     line-height: 1.6;
     text-shadow: var(--crt-glow);
-    animation: flicker 0.15s infinite alternate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    body {
+        animation: flicker 8s infinite;
+    }
 }
 
 *:focus-visible {
@@ -499,7 +525,6 @@ body {
 .progress-bar__fill {
     height: 100%;
     background: var(--primary);
-    box-shadow: 0 0 10px var(--primary);
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -509,7 +534,6 @@ body {
 
 .progress-bar__fill--recipe {
     background: var(--cta);
-    box-shadow: 0 0 10px var(--cta);
 }
 
 /* ── ASCII bars (for resources) ───────────── */
@@ -608,7 +632,7 @@ body {
     padding: 8px 10px;
     max-width: 280px;
     min-width: 180px;
-    box-shadow: 0 0 20px rgba(0, 255, 170, 0.08), 0 4px 12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     font-size: var(--font-size-sm);
     line-height: 1.5;
 }
@@ -622,12 +646,12 @@ body {
 }
 
 .tooltip__desc {
-    color: #aac;
+    color: var(--text-dim);
     margin-bottom: 4px;
 }
 
 .tooltip__flavor {
-    color: var(--text-dim);
+    color: var(--text-faint);
     font-style: italic;
     margin-bottom: 6px;
 }
@@ -635,7 +659,7 @@ body {
 .tooltip__stat {
     display: flex;
     justify-content: space-between;
-    color: #8ba;
+    color: var(--tip);
 }
 
 .tooltip__hint {
@@ -734,7 +758,6 @@ body {
     transition: all 0s;
     text-transform: uppercase;
     letter-spacing: 2px;
-    box-shadow: inset 0 0 5px rgba(255, 176, 0, 0.2);
 }
 
 .hud-btn:hover {
@@ -808,10 +831,17 @@ body {
 
 /* ── Empty state ──────────────────────────── */
 .empty-state {
-    color: var(--disabled);
-    padding: 16px;
-    text-align: center;
+    color: var(--text-faint);
+    padding: 20px 16px;
+    text-align: left;
     font-size: var(--font-size-sm);
+    letter-spacing: 1px;
+}
+
+.empty-state::before {
+    content: '> ';
+    color: var(--text-faint);
+    opacity: 0.5;
 }
 
 /* ── Constructed / collected lists ─────────── */
@@ -1245,7 +1275,6 @@ body {
 
 .hud-bar-fill {
     height: 100%;
-    box-shadow: 0 0 5px currentColor;
 }
 
 .morality-widget {
@@ -1322,6 +1351,11 @@ body {
 .hud-task-card.running {
     border-color: var(--primary);
     box-shadow: 0 0 15px rgba(0, 255, 65, 0.05);
+}
+
+.hud-task-card:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .hud-task-card:hover {
@@ -1893,9 +1927,19 @@ body {
 }
 
 .upgrade-maxed {
-    opacity: 0.4;
     cursor: default;
     position: relative;
+    isolation: isolate;
+}
+
+/* Dark overlay dims card content without using opacity (which would suppress ::after) */
+.upgrade-maxed::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 5, 7, 0.6);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .upgrade-maxed::after {
@@ -1907,7 +1951,7 @@ body {
     font-size: var(--font-size-micro);
     color: var(--primary);
     letter-spacing: 0.08em;
-    opacity: 1;
+    z-index: 2;
 }
 
 .upgrade-maxed:hover {
@@ -2449,6 +2493,15 @@ body {
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.2s;
+    background: transparent;
+    text-align: left;
+    display: block;
+    width: 100%;
+    min-height: 44px;
+}
+.hud-tab-vertical:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .hud-tab-vertical:hover,
@@ -2460,13 +2513,7 @@ body {
 
 .workshop-main {}
 
-.empty-state {
-    padding: 30px;
-    text-align: center;
-    color: var(--text-faint);
-    font-size: var(--font-size-sm);
-    letter-spacing: 1px;
-}
+/* .empty-state — defined globally above (line ~836), do not redefine */
 
 .blueprint-list {
     display: flex;
@@ -2483,6 +2530,11 @@ body {
     border: 1px solid var(--border-dim);
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
+    min-height: 44px;
+}
+.blueprint-entry:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .blueprint-entry:hover {

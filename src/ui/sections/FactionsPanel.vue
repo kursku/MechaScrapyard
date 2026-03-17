@@ -103,7 +103,7 @@ export default {
             <div v-for="fac in factions" :key="fac.id" class="faction-card"
                  :style="{
                     borderColor: fac.color,
-                    background: 'linear-gradient(180deg, transparent 0%, ' + fac.color + '1A 100%)'
+                    background: `linear-gradient(180deg, transparent 0%, ${fac.color || '#ffffff'}1A 100%)`
                  }">
                 <div class="faction-title" :style="{ color: fac.color }">
                     <span class="faction-icon-glow" :style="{ color: fac.color }">{{ fac.icon }}</span>
@@ -139,12 +139,16 @@ export default {
                     </div>
 
                     <div class="faction-vendor" v-if="getFactionVendorCategories(fac).length">
-                        <div class="vendor-toggle" @click="toggleVendor(fac.id)"
-                             :style="{ '--fac-color': fac.color }">
+                        <button type="button"
+                                class="vendor-toggle"
+                                :aria-expanded="isVendorOpen(fac.id)"
+                                :aria-controls="'vendor-' + fac.id"
+                                :style="{ '--fac-color': fac.color }"
+                                @click="toggleVendor(fac.id)">
                             <span class="vendor-toggle-chevron" :class="{ open: isVendorOpen(fac.id) }">▶</span>
                             ACCESS VOR-X VENDOR (UNLOCKED)
-                        </div>
-                        <div v-if="isVendorOpen(fac.id)" class="vendor-content-slide">
+                        </button>
+                        <div v-if="isVendorOpen(fac.id)" class="vendor-content-slide" :id="'vendor-' + fac.id">
                             <div class="faction-vendor-scroll">
                                 <div class="vendor-category" v-for="cat in getFactionVendorCategories(fac)" :key="cat.key">
                                     <div class="vendor-category-title">{{ cat.label }}</div>
@@ -219,8 +223,8 @@ export default {
 /* ── Rep progress bar ─────────────────────────────────────────────────── */
 .faction-rep-bar-track {
     height: 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bar-bg);
+    border: 1px solid var(--bar-border);
     position: relative;
     margin-bottom: 15px;
 }
@@ -301,6 +305,7 @@ export default {
     font-family: var(--font-mono);
     font-size: var(--font-size-xxs);
     padding: 2px 8px;
+    min-height: 44px;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.15s;
@@ -351,12 +356,12 @@ export default {
 /* ── Contacts section ─────────────────────────────────────────────────── */
 .contacts-section {
     margin-top: 16px;
-    border-top: 1px solid var(--c-border);
+    border-top: 1px solid var(--border-dim);
     padding-top: 8px;
 }
 .contacts-empty {
     font-size: var(--font-size-xxs);
-    font-family: var(--font-body);
+    font-family: var(--font-mono);
     color: var(--text-dim);
     opacity: 0.45;
     letter-spacing: 0.06em;
@@ -367,7 +372,7 @@ export default {
 .contact-row {
     margin-bottom: 12px;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--c-border);
+    border-bottom: 1px solid var(--border-dim);
     transition: background 0.2s;
 }
 .contact-row:hover {
@@ -379,9 +384,9 @@ export default {
     align-items: baseline;
     margin-bottom: 2px;
 }
-.contact-name { font-size: var(--font-size-xxs); font-weight: bold; color: var(--c-text); }
-.contact-spec { font-size: var(--font-size-micro); letter-spacing: 0.1em; color: var(--c-dim); }
-.contact-desc { font-size: var(--font-size-micro); color: var(--c-dim2); margin-bottom: 6px; }
+.contact-name { font-size: var(--font-size-xxs); font-weight: bold; color: var(--text); }
+.contact-spec { font-size: var(--font-size-micro); letter-spacing: 0.1em; color: var(--text-dim); }
+.contact-desc { font-size: var(--font-size-micro); color: var(--text-faint); margin-bottom: 6px; }
 .contact-loyalty-wrap {
     display: flex;
     align-items: center;
@@ -391,7 +396,7 @@ export default {
 .contact-loyalty-bar {
     flex: 1;
     height: 4px;
-    background: var(--c-bg3);
+    background: rgba(0, 0, 0, 0.2);
     position: relative;
 }
 .loyalty-fill {
@@ -399,17 +404,17 @@ export default {
     left: 0;
     top: 0;
     height: 100%;
-    background: var(--c-dim);
+    background: var(--text-dim);
     transition: width 0.3s;
 }
 .loyalty-fill.active {
-    background: var(--c-accent);
-    box-shadow: 0 0 6px var(--c-accent);
+    background: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
 }
-.contact-loyalty-num { font-size: var(--font-size-micro); color: var(--c-dim); white-space: nowrap; }
-.contact-benefit { font-size: var(--font-size-micro); color: var(--c-dim2); }
-.contact-benefit--active { color: var(--c-accent); text-shadow: 0 0 4px var(--c-accent); }
-.contact-benefit--high { color: #4af; margin-top: 2px; text-shadow: 0 0 4px rgba(68, 170, 255, 0.3); }
+.contact-loyalty-num { font-size: var(--font-size-micro); color: var(--text-dim); white-space: nowrap; }
+.contact-benefit { font-size: var(--font-size-micro); color: var(--text-faint); }
+.contact-benefit--active { color: var(--color-success); text-shadow: 0 0 4px var(--color-success); }
+.contact-benefit--high { color: var(--color-info); margin-top: 2px; text-shadow: 0 0 4px rgba(0, 170, 255, 0.3); }
 
 /* ── Reduced motion ───────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

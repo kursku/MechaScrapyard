@@ -71,12 +71,12 @@ export default {
         
         <div class="workshop-layout">
             <!-- Sidebar Filters -->
-            <aside class="workshop-sidebar">
-                <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'all' }" @click="selectedWorkshopTab = 'all'">[ ALL_FILES ]</div>
-                <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'frames' }" @click="selectedWorkshopTab = 'frames'">[ FRAMES ]</div>
-                <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'parts' }" @click="selectedWorkshopTab = 'parts'">[ COMPONENTS ]</div>
-                <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'weapons' }" @click="selectedWorkshopTab = 'weapons'">[ ARMAMENT ]</div>
-                <div class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'recycle' }" @click="selectedWorkshopTab = 'recycle'">[ RECYCLING ]</div>
+            <aside class="workshop-sidebar" role="tablist" aria-label="Blueprint filter">
+                <button type="button" class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'all' }" :aria-pressed="selectedWorkshopTab === 'all'" @click="selectedWorkshopTab = 'all'">[ ALL_FILES ]</button>
+                <button type="button" class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'frames' }" :aria-pressed="selectedWorkshopTab === 'frames'" @click="selectedWorkshopTab = 'frames'">[ FRAMES ]</button>
+                <button type="button" class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'parts' }" :aria-pressed="selectedWorkshopTab === 'parts'" @click="selectedWorkshopTab = 'parts'">[ COMPONENTS ]</button>
+                <button type="button" class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'weapons' }" :aria-pressed="selectedWorkshopTab === 'weapons'" @click="selectedWorkshopTab = 'weapons'">[ ARMAMENT ]</button>
+                <button type="button" class="hud-tab-vertical" :class="{ active: selectedWorkshopTab === 'recycle' }" :aria-pressed="selectedWorkshopTab === 'recycle'" @click="selectedWorkshopTab = 'recycle'">[ RECYCLING ]</button>
             </aside>
 
             <!-- Blueprint List -->
@@ -85,10 +85,14 @@ export default {
                     NO BLUEPRINTS FOUND IN THIS CATEGORY
                 </div>
                 <div class="blueprint-list">
-                    <div v-for="bp in filteredBlueprints" :key="bp.id" 
+                    <div v-for="bp in filteredBlueprints" :key="bp.id"
                          class="blueprint-entry"
                          :class="{ affordable: bp.materials && Object.entries(bp.materials).every(([m, a]) => canAfford(m, a)) }"
+                         role="button"
+                         tabindex="0"
                          @click="craftBlueprint(bp)"
+                         @keydown.enter.prevent="craftBlueprint(bp)"
+                         @keydown.space.prevent="craftBlueprint(bp)"
                          @mouseover="itemOver($event, bp)"
                          @mouseleave="itemOut">
                         <div class="bp-info">

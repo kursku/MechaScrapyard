@@ -201,12 +201,15 @@ export default {
 
         <!-- REFINED — collapsible, compact tiles -->
         <div v-if="refinedResources.length > 0" class="section-group">
-            <div class="section-toggle" @click="toggleSection('refined')">
+            <button type="button" class="section-toggle"
+                    :aria-expanded="!collapsedSections.refined"
+                    aria-controls="section-refined"
+                    @click="toggleSection('refined')">
                 <span>── REFINED</span>
                 <span class="toggle-chevron" :class="{ open: !collapsedSections.refined }">▶</span>
                 <span class="section-count">{{ refinedResources.length }}</span>
-            </div>
-            <div v-if="!collapsedSections.refined" class="compact-grid">
+            </button>
+            <div v-if="!collapsedSections.refined" id="section-refined" class="compact-grid">
                 <div v-for="res in refinedResources" :key="res.id"
                      class="compact-tile"
                      :style="{ '--tile-color': res.color || 'var(--primary)' }"
@@ -221,12 +224,15 @@ export default {
 
         <!-- COMBAT — collapsible, inline row -->
         <div v-if="combatResources.length > 0" class="section-group">
-            <div class="section-toggle" @click="toggleSection('combat')">
+            <button type="button" class="section-toggle"
+                    :aria-expanded="!collapsedSections.combat"
+                    aria-controls="section-combat"
+                    @click="toggleSection('combat')">
                 <span>── COMBAT</span>
                 <span class="toggle-chevron" :class="{ open: !collapsedSections.combat }">▶</span>
                 <span class="section-count">{{ combatResources.length }}</span>
-            </div>
-            <div v-if="!collapsedSections.combat" class="compact-inline-row">
+            </button>
+            <div v-if="!collapsedSections.combat" id="section-combat" class="compact-inline-row">
                 <div v-for="res in combatResources" :key="res.id"
                      class="compact-inline-item"
                      :style="{ '--tile-color': res.color || 'var(--primary)' }"
@@ -241,12 +247,15 @@ export default {
 
         <!-- REPUTATION — collapsible, compact badge row -->
         <div v-if="reputationResources.length > 0" class="section-group">
-            <div class="section-toggle" @click="toggleSection('reputation')">
+            <button type="button" class="section-toggle"
+                    :aria-expanded="!collapsedSections.reputation"
+                    aria-controls="section-reputation"
+                    @click="toggleSection('reputation')">
                 <span>── REPUTATION</span>
                 <span class="toggle-chevron" :class="{ open: !collapsedSections.reputation }">▶</span>
                 <span class="section-count">{{ reputationResources.length }}</span>
-            </div>
-            <div v-if="!collapsedSections.reputation" class="rep-badge-row">
+            </button>
+            <div v-if="!collapsedSections.reputation" id="section-reputation" class="rep-badge-row">
                 <div v-for="res in reputationResources" :key="res.id"
                      class="rep-badge"
                      :style="{ '--rep-color': res.color || '#88aaff' }"
@@ -303,6 +312,11 @@ export default {
     padding: 4px 0;
     user-select: none;
     transition: color 0.15s, text-shadow 0.15s;
+    /* button resets */
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
 }
 .section-toggle:hover {
     color: var(--primary);
@@ -333,8 +347,8 @@ export default {
 }
 
 .compact-tile {
-    background: rgba(0, 255, 65, 0.03);
-    border: 1px solid rgba(0, 255, 65, 0.1);
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
     padding: 6px 8px;
     text-align: center;
     cursor: default;
@@ -342,9 +356,9 @@ export default {
     font-family: var(--font-mono);
 }
 .compact-tile:hover {
-    background: rgba(0, 255, 65, 0.08);
+    background: var(--success-bg-hover);
     border-color: var(--tile-color, var(--primary));
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
+    box-shadow: var(--success-glow);
 }
 .compact-tile:hover .compact-tile-val {
     text-shadow: 0 0 6px var(--tile-color, var(--primary));
@@ -383,15 +397,15 @@ export default {
     font-size: var(--font-size-xxs);
     cursor: default;
     padding: 4px 8px;
-    border: 1px solid rgba(0, 255, 65, 0.1);
-    background: rgba(0, 255, 65, 0.03);
+    border: 1px solid var(--success-border);
+    background: var(--success-bg);
     transition: all 0.2s ease-out;
     flex: 1;
 }
 .compact-inline-item:hover {
-    background: rgba(0, 255, 65, 0.08);
+    background: var(--success-bg-hover);
     border-color: var(--tile-color, var(--primary));
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
+    box-shadow: var(--success-glow);
 }
 .cii-icon {
     font-size: var(--font-size-sm);
