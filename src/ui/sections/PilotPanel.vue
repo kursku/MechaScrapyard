@@ -193,6 +193,12 @@ export default {
             if (sk.require && !Game.evalRequire(sk.require)) return false;
             return true;
         },
+        skillState(sk) {
+            if (sk.owned) return 'owned';
+            if (sk.require && !Game.evalRequire(sk.require)) return 'locked';
+            if (this.skillPoints < sk.cost) return 'unaffordable';
+            return 'available';
+        },
         buySubSkill(sk) {
             Game.buySubSkill(sk.id);
             this.renderTick++;
@@ -404,17 +410,14 @@ export default {
                     <div class="tier-skills-wide">
                         <button type="button"
                                 v-for="sk in treeSubSkills(activeTree, tier)" :key="sk.id"
-                                :class="['sub-skill-wide', {
-                                    owned: sk.owned,
-                                    available: canBuy(sk),
-                                    locked: !canBuy(sk) && !sk.owned
-                                }]"
-                                :disabled="sk.owned"
+                                :class="['sub-skill-wide', skillState(sk)]"
+                                :disabled="sk.owned || skillState(sk) === 'locked'"
                                 @click="buySubSkill(sk)">
                             <div class="sk-name">{{ sk.name }}</div>
                             <div class="sk-desc">{{ sk.desc }}</div>
-                            <div class="sk-cost" v-if="!sk.owned">{{ sk.cost }} SP</div>
-                            <div class="sk-owned" v-else>&#x2713; OWNED</div>
+                            <div class="sk-owned" v-if="sk.owned">&#x2713; OWNED</div>
+                            <div class="sk-locked-label" v-else-if="skillState(sk) === 'locked'">[LOCKED]</div>
+                            <div class="sk-cost" v-else :class="{ 'sk-cost-unaffordable': skillState(sk) === 'unaffordable' }">{{ sk.cost }} SP</div>
                         </button>
                     </div>
                 </div>
@@ -777,14 +780,17 @@ export default {
     text-align: left;
     width: 100%;
 }
-.sub-skill-wide.available { border-color: var(--secondary); cursor: pointer; }
-.sub-skill-wide.available:hover { background: rgba(0, 255, 65, 0.08); box-shadow: 0 0 10px rgba(0, 255, 65, 0.08); }
-.sub-skill-wide.owned { border-color: var(--secondary); opacity: 0.6; cursor: default; }
-.sub-skill-wide.locked { opacity: 0.35; cursor: not-allowed; }
+.sub-skill-wide.available { border-color: var(--primary); cursor: pointer; }
+.sub-skill-wide.available:hover { background: rgba(255, 176, 0, 0.08); box-shadow: 0 0 10px rgba(255, 176, 0, 0.08); }
+.sub-skill-wide.owned { border-color: var(--color-success); opacity: 0.55; cursor: default; }
+.sub-skill-wide.unaffordable { opacity: 0.6; cursor: not-allowed; }
+.sub-skill-wide.locked { opacity: 0.25; cursor: not-allowed; filter: grayscale(0.4); }
 .sk-name { font-size: var(--font-size-xs); font-weight: bold; margin-bottom: 4px; color: var(--text); }
 .sk-desc { font-size: var(--font-size-xxs); color: var(--text-dim); margin-bottom: 6px; line-height: 1.4; }
-.sk-cost { font-size: var(--font-size-xxs); color: var(--secondary); }
-.sk-owned { font-size: var(--font-size-xxs); color: var(--secondary); }
+.sk-cost { font-size: var(--font-size-xxs); color: var(--primary); }
+.sk-cost-unaffordable { color: #e66 !important; }
+.sk-owned { font-size: var(--font-size-xxs); color: var(--color-success); }
+.sk-locked-label { font-size: var(--font-size-xxs); color: var(--text-faint); letter-spacing: 1px; }
 
 /* ═══════════ GLORY SHOP ═══════════ */
 .glory-shop-deck { margin-top: 20px; }

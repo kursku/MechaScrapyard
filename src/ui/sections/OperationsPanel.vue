@@ -85,6 +85,36 @@ export default {
         makeChoice(task, choice) {
             Game.runner.fulfillChoice(task, choice);
         },
+        getTaskIdleMeta(task) {
+            const meta = [];
+            // Cost tokens
+            if (task.cost) {
+                Object.entries(task.cost).forEach(([k, v]) => {
+                    meta.push({ type: 'cost', label: `${this.resourceIcon(k)} ${v} ${k.toUpperCase()}` });
+                });
+            }
+            // Duration
+            if (task.length) {
+                meta.push({ type: 'dur', label: `${task.length}s` });
+            }
+            // On-completion rewards
+            if (task.result) {
+                Object.entries(task.result).forEach(([k, v]) => {
+                    meta.push({ type: 'reward', label: `+${v} ${this.resourceIcon(k)} ${k.toUpperCase()}` });
+                });
+            }
+            // Loot chances
+            if (task.loot) {
+                Object.entries(task.loot).forEach(([k, v]) => {
+                    meta.push({ type: 'loot', label: `${Math.round(v * 100)}% ${k.toUpperCase()}` });
+                });
+            }
+            // Trigger flavor
+            if (task.onComplete?.trigger_combat) {
+                meta.push({ type: 'trigger', label: `→ ENCOUNTER` });
+            }
+            return meta;
+        },
     }
 };
 </script>
@@ -100,11 +130,10 @@ export default {
 
         <!-- Empty State -->
         <div v-if="tasks.length === 0" class="ops-empty-state">
-            <div class="ops-empty-icon">◌</div>
             <div class="ops-empty-text">
-                NO {{ theme.label }} OPERATIONS AVAILABLE
+                > NO {{ theme.label }} OPERATIONS AVAILABLE
             </div>
-            <div class="ops-empty-hint">Unlock new operations through story progression and upgrades.</div>
+            <div class="ops-empty-hint">> MORE UNLOCKED AS YOU PROGRESS</div>
         </div>
 
         <!-- Task Grid -->
@@ -145,6 +174,14 @@ export default {
                     </div>
                 </div>
                 
+                <!-- IDLE METADATA STRIP -->
+                <div v-if="!isRunning(task)" class="ops-meta-strip">
+                    <span v-for="(token, i) in getTaskIdleMeta(task)" :key="i"
+                          :class="['ops-meta-token', 'meta-' + token.type]">
+                        {{ token.label }}
+                    </span>
+                </div>
+
                 <!-- ACTION BUTTON FOOTER -->
                 <div v-if="!task.choices || !isRunning(task)" class="ops-action-footer">
                     <span v-if="isRunning(task)" class="ops-action-abort">[ ABORT OPERATION ]</span>
@@ -201,28 +238,21 @@ export default {
 .ops-empty-state {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    text-align: center;
-}
-.ops-empty-icon {
-    font-size: 32px;
-    color: var(--cat-color, var(--primary));
-    opacity: 0.3;
-    margin-bottom: 10px;
-    text-shadow: 0 0 12px var(--cat-color, var(--primary));
+    align-items: flex-start;
+    padding: 20px 0;
 }
 .ops-empty-text {
     font-size: var(--font-size-xs);
+    font-family: var(--font-mono);
     color: var(--text-dim);
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-bottom: 6px;
 }
 .ops-empty-hint {
     font-size: var(--font-size-xxs);
-    color: var(--text-faint, #555);
     font-family: var(--font-mono);
+    color: var(--text-faint, #555);
+    letter-spacing: 0.5px;
 }
 
 /* ── Task card ────────────────────────────────────────────────────────── */
@@ -341,6 +371,29 @@ export default {
     color: var(--text-dim);
     font-size: var(--font-size-micro, 9px);
 }
+
+/* ── Idle metadata strip ──────────────────────────────────────────────── */
+.ops-meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+.ops-meta-token {
+    font-size: var(--font-size-xxs);
+    font-family: var(--font-mono);
+    letter-spacing: 0.3px;
+    padding: 1px 5px;
+    border: 1px solid var(--border-dim);
+    color: var(--text-dim);
+}
+.ops-meta-token::before { content: '['; }
+.ops-meta-token::after  { content: ']'; }
+.meta-cost   { color: #e66; border-color: rgba(238, 102, 102, 0.25); }
+.meta-reward { color: #6a8; border-color: rgba(102, 170, 136, 0.25); }
+.meta-loot   { color: var(--cat-color, var(--primary)); border-color: rgba(255, 176, 0, 0.25); }
+.meta-trigger{ color: var(--text-dim); font-style: normal; }
+.meta-dur    { color: var(--text-dim); }
 
 /* ── Action footer ────────────────────────────────────────────────────── */
 .ops-action-footer {
