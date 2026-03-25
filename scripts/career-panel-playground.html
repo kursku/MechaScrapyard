@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Panel Playground — MechaScrapyard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Atkinson+Hyperlegible:wght@400;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #ffb000; --secondary: #c36a2d; --color-success: #00ff41;
+    --bg: #050505; --bg-panel: #0a0a0c; --bg-surface: #0d0d0f; --bg-hover: #141416;
+    --border-dim: rgba(255,255,255,0.08); --border-light: rgba(255,255,255,0.18);
+    --text: #e0d8c8; --text-dim: #a8a295; --text-faint: #5a5550;
+    --error: #f55;
+    --font-mono: 'VT323', 'Courier New', monospace;
+    --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  }
+  body { background:#111; color:#ccc; font-family:system-ui,sans-serif; font-size:13px; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  .shell { display:grid; grid-template-columns:280px 1fr; grid-template-rows:1fr auto; height:100vh; }
+  /* Controls */
+  .controls { background:#181818; border-right:1px solid #2a2a2a; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:20px; grid-row:1/3; }
+  .controls h1 { font-size:11px; letter-spacing:.15em; color:#666; text-transform:uppercase; border-bottom:1px solid #2a2a2a; padding-bottom:8px; }
+  .ctrl-group { display:flex; flex-direction:column; gap:10px; }
+  .ctrl-group-label { font-size:10px; letter-spacing:.12em; color:#555; text-transform:uppercase; margin-bottom:2px; }
+  .ctrl-row { display:flex; flex-direction:column; gap:4px; }
+  .ctrl-row label { font-size:11px; color:#999; }
+  select, input[type=range] { width:100%; background:#222; border:1px solid #333; color:#ccc; padding:4px 6px; font-size:12px; border-radius:3px; cursor:pointer; }
+  input[type=range] { padding:0; accent-color:#ffb000; }
+  .toggle-row { display:flex; justify-content:space-between; align-items:center; }
+  .toggle-row label { font-size:11px; color:#999; }
+  .toggle { position:relative; width:32px; height:17px; }
+  .toggle input { opacity:0; width:0; height:0; }
+  .toggle-slider { position:absolute; inset:0; background:#333; border-radius:17px; cursor:pointer; transition:background .2s; }
+  .toggle-slider::before { content:''; position:absolute; width:13px; height:13px; left:2px; top:2px; background:#777; border-radius:50%; transition:transform .2s, background .2s; }
+  .toggle input:checked + .toggle-slider { background:rgba(255,176,0,.3); }
+  .toggle input:checked + .toggle-slider::before { transform:translateX(15px); background:#ffb000; }
+  .presets { display:flex; flex-direction:column; gap:4px; }
+  .preset-btn { background:#222; border:1px solid #333; color:#999; padding:5px 10px; font-size:11px; cursor:pointer; text-align:left; letter-spacing:.05em; border-radius:2px; transition:border-color .15s, color .15s; }
+  .preset-btn:hover { border-color:#ffb000; color:#ffb000; }
+  .preset-btn.active { border-color:#ffb000; color:#ffb000; background:rgba(255,176,0,.06); }
+  /* Preview */
+  .preview-area { background:var(--bg); overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:16px; }
+  .preview-label { font-size:10px; letter-spacing:.15em; color:#333; text-transform:uppercase; }
+  /* Prompt */
+  .prompt-area { background:#0e0e0e; border-top:1px solid #2a2a2a; padding:12px 16px; display:flex; gap:10px; align-items:flex-start; }
+  .prompt-text { flex:1; font-size:12px; color:#bbb; line-height:1.5; }
+  .copy-btn { background:#222; border:1px solid #444; color:#999; padding:4px 10px; font-size:11px; cursor:pointer; white-space:nowrap; border-radius:2px; transition:border-color .15s, color .15s; flex-shrink:0; }
+  .copy-btn:hover { border-color:#ffb000; color:#ffb000; }
+  .copy-btn.copied { border-color:#00ff41; color:#00ff41; }
+
+  /* ═══ GAME COMPONENT STYLES ═══ */
+  .career-panel { font-family:var(--font-body); color:var(--text); max-width:640px; width:100%; margin:0 auto; }
+  .hud-section-title { font-family:var(--font-mono); font-size:18px; color:var(--primary); letter-spacing:.08em; margin-bottom:10px; }
+  .negotiation-tier-badge { font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; padding:2px 6px; border:1px solid currentColor; display:inline-block; margin-bottom:12px; }
+  .neg-low { color:#888; }
+  .job-registry { display:flex; flex-direction:column; }
+  .job-dossier { border:1px solid var(--border-dim); border-left:3px solid var(--secondary); background:rgba(255,176,0,.02); cursor:pointer; transition:border-color .15s, background .15s; }
+  .job-dossier:hover { border-color:var(--secondary); background:rgba(255,176,0,.05); }
+  .dossier-header { display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); margin-bottom:6px; }
+  .dossier-code { color:var(--secondary); font-weight:bold; flex-shrink:0; }
+  .dossier-name { color:var(--text); font-weight:bold; letter-spacing:.06em; flex:1; }
+  .dossier-cat { color:var(--text-faint); letter-spacing:.1em; flex-shrink:0; }
+  .dossier-desc { color:var(--text-dim); line-height:1.5; margin-bottom:8px; padding-left:4px; }
+  .dossier-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-family:var(--font-mono); margin-bottom:6px; }
+  .dossier-start { color:var(--text-dim); }
+  .dossier-income { color:var(--color-success); }
+  .dossier-faction { color:var(--primary); }
+  .dossier-skill { color:#7af; }
+  .dossier-links { display:flex; gap:6px; flex-wrap:wrap; font-family:var(--font-mono); margin-bottom:6px; }
+  .dossier-link-tag { border:1px solid; padding:0 5px; letter-spacing:.07em; }
+  .dossier-link-tag.faction { border-color:rgba(255,176,0,.4); color:var(--primary); }
+  .dossier-link-tag.skill { border-color:rgba(100,170,255,.4); color:#7af; }
+  .dossier-flavor { color:var(--text-faint); letter-spacing:.03em; margin-bottom:8px; }
+  .dossier-action { text-align:right; font-family:var(--font-mono); color:var(--secondary); letter-spacing:.1em; }
+  .locked-jobs-section { margin-top:10px; }
+  .locked-section-title { font-family:var(--font-mono); font-size:13px; color:var(--text-faint); opacity:.5; margin-bottom:4px; }
+  .locked-job-row { display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:13px; color:var(--text-dim); opacity:.4; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+  .locked-job-gate { color:#888; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="controls">
+    <h1>Career Panel</h1>
+    <div class="ctrl-group">
+      <div class="ctrl-group-label">Presets</div>
+      <div class="presets" id="preset-list"></div>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-group-label">Affinity Layout</div>
+      <div class="ctrl-row">
+        <label>Metadata style</label>
+        <select id="meta-style" onchange="updateAll()">
+          <option value="none">None (current)</option>
+          <option value="inline" selected>A — Inline dots</option>
+          <option value="links">B — Links row [ tags ]</option>
+        </select>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-group-label">Content</div>
+      <div class="toggle-row"><label>Show faction affinity</label><label class="toggle"><input type="checkbox" id="show-faction" checked onchange="updateAll()"><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><label>Show linked skill</label><label class="toggle"><input type="checkbox" id="show-skill" checked onchange="updateAll()"><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><label>Show flavor text</label><label class="toggle"><input type="checkbox" id="show-flavor" checked onchange="updateAll()"><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><label>Show [ ENROLL ] action</label><label class="toggle"><input type="checkbox" id="show-action" checked onchange="updateAll()"><span class="toggle-slider"></span></label></div>
+      <div class="toggle-row"><label>Show path-locked section</label><label class="toggle"><input type="checkbox" id="show-locked" checked onchange="updateAll()"><span class="toggle-slider"></span></label></div>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-group-label">Density</div>
+      <div class="ctrl-row"><label>Card padding: <span id="padding-val">12</span>px</label><input type="range" id="card-padding" min="6" max="24" value="12" oninput="updateAll()"></div>
+      <div class="ctrl-row"><label>Card gap: <span id="gap-val">2</span>px</label><input type="range" id="card-gap" min="0" max="12" value="2" oninput="updateAll()"></div>
+      <div class="ctrl-row"><label>Font scale: <span id="font-val">14</span>px</label><input type="range" id="font-scale" min="11" max="18" value="14" oninput="updateAll()"></div>
+    </div>
+  </aside>
+
+  <div class="preview-area" id="preview-area">
+    <div class="preview-label">Live Preview</div>
+    <div id="career-preview"></div>
+  </div>
+
+  <div class="prompt-area">
+    <div class="prompt-text" id="prompt-text"></div>
+    <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+  </div>
+</div>
+
+<script>
+const JOBS = [
+  { id:'job_police',   name:'Join the Force',          desc:"The NTPD is understaffed and desperate. They'll take anyone who can pilot a Frame.", flavor:'The badge is tarnished. But someone has to wear it.', icon:'NT', category:'law',    relatedFaction:'faction_ntpd',        relatedSkill:'skill_investigation', tier1Title:'Rookie Officer',  tier1Income:{creds:0.3} },
+  { id:'job_mechanic', name:'Scrapyard Mechanic',       desc:"The machines don't fix themselves. Neither do the people who depend on them.",      flavor:'Oil on your hands. Stars overhead. Not a bad life.',  icon:'⌨',  category:'craft',   relatedFaction:'faction_scrappers',   relatedSkill:'skill_repair',        tier1Title:'Grease Monkey',   tier1Income:{scrap:0.5, parts:0.02} },
+  { id:'job_enforcer', name:'Crew Enforcer',            desc:'The Kimura-Matsuda Collective needs muscle. You need credits.',                     flavor:'Loyalty is expensive. So is betrayal.',              icon:'⚔',  category:'combat',  relatedFaction:'faction_kmc',         relatedSkill:'skill_combat',        tier1Title:'Foot Soldier',    tier1Income:{creds:0.4, glory:0.01} },
+];
+const LOCKED_JOBS = [
+  { name:'Shadow Broker',  require_morality:'shadow' },
+  { name:'Civic Guardian', require_morality:'paragon' },
+];
+const FACTION_LABELS = { faction_ntpd:'NTPD', faction_underground:'UNDERGROUND', faction_kmc:'KIMURA-MATSUDA', faction_scrappers:'SCRAPPERS' };
+const SKILL_LABELS   = { skill_investigation:'INVESTIGATION', skill_hacking:'HACKING', skill_repair:'REPAIR', skill_combat:'COMBAT' };
+const RES_LABELS     = { creds:'¢', scrap:'Sc', data_chips:'Dc', glory:'Gl', parts:'Pt' };
+
+const DEFAULTS = { metaStyle:'inline', showFaction:true, showSkill:true, showFlavor:true, showAction:true, showLocked:true, padding:12, gap:2, fontSize:14 };
+const state = {...DEFAULTS};
+
+const PRESETS = {
+  'No Affinity (current)': { metaStyle:'none',   showFaction:false, showSkill:false, showFlavor:true,  showAction:true, showLocked:true,  padding:12, gap:2,  fontSize:14 },
+  'A — Inline':            { metaStyle:'inline', showFaction:true,  showSkill:true,  showFlavor:true,  showAction:true, showLocked:true,  padding:12, gap:2,  fontSize:14 },
+  'B — Links Row':         { metaStyle:'links',  showFaction:true,  showSkill:true,  showFlavor:true,  showAction:true, showLocked:true,  padding:12, gap:2,  fontSize:14 },
+  'Minimal':               { metaStyle:'inline', showFaction:true,  showSkill:false, showFlavor:false, showAction:true, showLocked:false, padding:8,  gap:1,  fontSize:13 },
+  'Rich':                  { metaStyle:'links',  showFaction:true,  showSkill:true,  showFlavor:true,  showAction:true, showLocked:true,  padding:16, gap:4,  fontSize:14 },
+};
+
+// Build preset buttons
+const presetList = document.getElementById('preset-list');
+Object.keys(PRESETS).forEach((name, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'preset-btn' + (i === 1 ? ' active' : '');
+  btn.textContent = name;
+  btn.addEventListener('click', () => applyPreset(name));
+  presetList.appendChild(btn);
+});
+
+function applyPreset(name) {
+  Object.assign(state, PRESETS[name]);
+  document.getElementById('meta-style').value        = state.metaStyle;
+  document.getElementById('show-faction').checked    = state.showFaction;
+  document.getElementById('show-skill').checked      = state.showSkill;
+  document.getElementById('show-flavor').checked     = state.showFlavor;
+  document.getElementById('show-action').checked     = state.showAction;
+  document.getElementById('show-locked').checked     = state.showLocked;
+  document.getElementById('card-padding').value      = state.padding;
+  document.getElementById('card-gap').value          = state.gap;
+  document.getElementById('font-scale').value        = state.fontSize;
+  presetList.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.textContent === name));
+  updateAll();
+}
+
+function readState() {
+  state.metaStyle   = document.getElementById('meta-style').value;
+  state.showFaction = document.getElementById('show-faction').checked;
+  state.showSkill   = document.getElementById('show-skill').checked;
+  state.showFlavor  = document.getElementById('show-flavor').checked;
+  state.showAction  = document.getElementById('show-action').checked;
+  state.showLocked  = document.getElementById('show-locked').checked;
+  state.padding     = +document.getElementById('card-padding').value;
+  state.gap         = +document.getElementById('card-gap').value;
+  state.fontSize    = +document.getElementById('font-scale').value;
+}
+
+function fmt(income) {
+  return Object.entries(income).map(([k,v]) => `+${RES_LABELS[k]||k}${v.toFixed(2)}/s`).join(' · ');
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) cls.split(' ').forEach(c => c && e.classList.add(c));
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function buildCard(job) {
+  const p = state.padding, fs = state.fontSize, fsXs = Math.max(10, fs-2), fsXxs = Math.max(9, fs-3);
+  const fLabel = FACTION_LABELS[job.relatedFaction] || (job.relatedFaction||'').replace('faction_','').toUpperCase();
+  const sLabel = SKILL_LABELS[job.relatedSkill]     || (job.relatedSkill||'').replace('skill_','').toUpperCase();
+
+  const card = el('div', 'job-dossier');
+  card.style.padding = `${p}px ${p+4}px`;
+
+  // Header
+  const header = el('div', 'dossier-header');
+  header.style.fontSize = fs + 'px';
+  const code = el('span', 'dossier-code', '[' + job.icon + ']');
+  const name = el('span', 'dossier-name', job.name.toUpperCase());
+  const cat  = el('span', 'dossier-cat',  '// ' + job.category.toUpperCase());
+  cat.style.fontSize = fsXxs + 'px';
+  header.append(code, name, cat);
+  card.appendChild(header);
+
+  // Desc
+  const desc = el('div', 'dossier-desc', '> ' + job.desc);
+  desc.style.fontSize = fsXs + 'px';
+  card.appendChild(desc);
+
+  // Meta row (always shows start + income)
+  const meta = el('div', 'dossier-meta');
+  meta.style.fontSize = fsXxs + 'px';
+  const startSpan = el('span', 'dossier-start', 'START: ' + job.tier1Title);
+  meta.appendChild(startSpan);
+
+  if (state.metaStyle === 'inline') {
+    if (state.showFaction && fLabel) meta.appendChild(el('span', 'dossier-faction', '\u2197 ' + fLabel));
+    if (state.showSkill   && sLabel) meta.appendChild(el('span', 'dossier-skill',   '\u2197 ' + sLabel));
+  }
+
+  const incomeSpan = el('span', 'dossier-income', fmt(job.tier1Income));
+  meta.appendChild(incomeSpan);
+  card.appendChild(meta);
+
+  // Links row (option B)
+  if (state.metaStyle === 'links' && (state.showFaction || state.showSkill)) {
+    const links = el('div', 'dossier-links');
+    if (state.showFaction && fLabel) {
+      const ft = el('span', 'dossier-link-tag faction', '[ ' + fLabel + ' ]');
+      ft.style.fontSize = fsXxs + 'px';
+      links.appendChild(ft);
+    }
+    if (state.showSkill && sLabel) {
+      const st = el('span', 'dossier-link-tag skill', '[ ' + sLabel + ' ]');
+      st.style.fontSize = fsXxs + 'px';
+      links.appendChild(st);
+    }
+    card.appendChild(links);
+  }
+
+  // Flavor
+  if (state.showFlavor) {
+    const flavor = el('div', 'dossier-flavor', '"' + job.flavor + '"');
+    flavor.style.fontSize = fsXxs + 'px';
+    card.appendChild(flavor);
+  }
+
+  // Action
+  if (state.showAction) {
+    const action = el('div', 'dossier-action', '[ \u25BA ENROLL ]');
+    action.style.fontSize = fsXs + 'px';
+    card.appendChild(action);
+  }
+
+  return card;
+}
+
+function buildLockedRow(job) {
+  const row = el('div', 'locked-job-row');
+  row.appendChild(el('span', '', job.name.toUpperCase()));
+  const gate = job.require_morality === 'paragon' ? 'PARAGON PATH' : 'SHADOW PATH';
+  row.appendChild(el('span', 'locked-job-gate', '\u2298 REQUIRES ' + gate));
+  return row;
+}
+
+function renderPreview() {
+  const root = document.getElementById('career-preview');
+  root.textContent = ''; // clear safely
+
+  const panel = el('div', 'career-panel');
+  panel.style.fontSize = state.fontSize + 'px';
+
+  const title = el('h3', 'hud-section-title', '> CAREER REGISTRY');
+  panel.appendChild(title);
+
+  const badge = el('div', 'negotiation-tier-badge neg-low', 'NEGOTIATION: LOW');
+  panel.appendChild(badge);
+
+  const registry = el('div', 'job-registry');
+  registry.style.gap = state.gap + 'px';
+  JOBS.forEach(j => registry.appendChild(buildCard(j)));
+  panel.appendChild(registry);
+
+  if (state.showLocked) {
+    const lockedSection = el('div', 'locked-jobs-section');
+    lockedSection.appendChild(el('div', 'locked-section-title', '> PATH-LOCKED OPPORTUNITIES'));
+    LOCKED_JOBS.forEach(j => lockedSection.appendChild(buildLockedRow(j)));
+    panel.appendChild(lockedSection);
+  }
+
+  root.appendChild(panel);
+}
+
+function updatePrompt() {
+  const styleDesc = {
+    none:   'no faction or skill affinity shown (current state)',
+    inline: 'faction affinity and linked skill shown inline in the meta row using ↗ prefix',
+    links:  'faction and skill affinity shown as bracket tags [ FACTION ] [ SKILL ] on a dedicated LINKS row',
+  }[state.metaStyle];
+
+  let text = `In CareerPanel.vue, update the job dossier cards to show ${styleDesc}.`;
+  const shown = [];
+  if (state.metaStyle !== 'none') {
+    if (state.showFaction) shown.push('relatedFaction (map to display label)');
+    if (state.showSkill)   shown.push('relatedSkill (map to display label)');
+  }
+  if (shown.length) text += ` Surface: ${shown.join(' and ')}.`;
+  if (!state.showFlavor) text += ' Remove flavor text from available-job cards.';
+  if (!state.showLocked) text += ' Remove the PATH-LOCKED OPPORTUNITIES section.';
+  const diffs = [];
+  if (state.padding !== DEFAULTS.padding) diffs.push(`card padding to ${state.padding}px`);
+  if (state.gap !== DEFAULTS.gap)         diffs.push(`card gap to ${state.gap}px`);
+  if (diffs.length) text += ` Adjust ${diffs.join(' and ')}.`;
+
+  document.getElementById('prompt-text').textContent = text;
+}
+
+function updateAll() {
+  readState();
+  document.getElementById('padding-val').textContent = state.padding;
+  document.getElementById('gap-val').textContent = state.gap;
+  document.getElementById('font-val').textContent = state.fontSize;
+  renderPreview();
+  updatePrompt();
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+updateAll();
+</script>
+</body>
+</html>

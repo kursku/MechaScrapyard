@@ -9,8 +9,8 @@
     role="button"
     :tabindex="disabled ? -1 : 0"
     @click="$emit('click')"
-    @keydown.enter.prevent="if (!disabled) $emit('click')"
-    @keydown.space.prevent="if (!disabled) $emit('click')"
+    @keydown.enter.prevent="!disabled && $emit('click')"
+    @keydown.space.prevent="!disabled && $emit('click')"
   >
     <div class="list-card__top">
       <div class="list-card__title">

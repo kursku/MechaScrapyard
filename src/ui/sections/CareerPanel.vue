@@ -120,6 +120,24 @@ export default {
         itemOut() {
             ItemOut();
         },
+        _morality() {
+            return this.state.morality?.value ?? 0;
+        },
+        _tier1Path(job) {
+            const m = this._morality();
+            return m >= 30 ? 'high' : m <= -30 ? 'low' : (m >= 0 ? 'high' : 'low');
+        },
+        getTier1Title(job) {
+            return job.tiers[0]?.[this._tier1Path(job)]?.title || '???';
+        },
+        formatTier1Income(job) {
+            const income = job.tiers[0]?.[this._tier1Path(job)]?.passiveIncome;
+            if (!income) return '';
+            const resLabel = { creds: '¢', scrap: 'Sc', data_chips: 'Dc', glory: 'Gl', nano_infra: 'Nf', ceramite: 'Ce', parts: 'Pt' };
+            return Object.entries(income)
+                .map(([k, v]) => `+${resLabel[k] || k}${v.toFixed(2)}/s`)
+                .join(' · ');
+        },
     },
 };
 </script>
@@ -160,29 +178,31 @@ export default {
 
         <!-- AVAILABLE JOBS -->
         <div v-else>
-            <h3 class="hud-section-title">> AVAILABLE CAREERS</h3>
+            <h3 class="hud-section-title">> CAREER REGISTRY</h3>
             <div class="negotiation-tier-badge" :class="'neg-' + negotiationTier">
                 NEGOTIATION: {{ negotiationTier.toUpperCase() }}
             </div>
             <div v-if="availableJobs.length === 0" class="empty-state">
                 &gt; NO CONTRACTS AVAILABLE
             </div>
-            <div class="job-grid">
+            <div class="job-registry">
                 <div v-for="job in availableJobs" :key="job.id"
-                     class="job-card"
+                     class="job-dossier"
                      @click="enrollJob(job.id)"
                      @mouseover="itemOver($event, job)"
                      @mouseleave="itemOut">
-                    <div class="job-header">
-                        <span class="job-icon">{{ job.icon }}</span>
-                        <span class="job-name">{{ job.name }}</span>
+                    <div class="dossier-header">
+                        <span class="dossier-code">[{{ job.icon }}]</span>
+                        <span class="dossier-name">{{ job.name.toUpperCase() }}</span>
+                        <span class="dossier-cat">// {{ (job.category || 'career').toUpperCase() }}</span>
                     </div>
-                    <div class="job-desc">{{ job.desc }}</div>
-                    <div class="job-flavor">{{ job.flavor }}</div>
-                    <div class="job-start-hint">
-                        Starting as: {{ ((state.morality?.value ?? 0) >= 30 ? job.tiers[0].high.title : (state.morality?.value ?? 0) <= -30 ? job.tiers[0].low.title : ((state.morality?.value ?? 0) >= 0 ? job.tiers[0].high.title : job.tiers[0].low.title)) }}
+                    <div class="dossier-desc">&gt; {{ job.desc }}</div>
+                    <div class="dossier-meta">
+                        <span class="dossier-start">START: {{ getTier1Title(job) }}</span>
+                        <span class="dossier-income">{{ formatTier1Income(job) }}</span>
                     </div>
-                    <div class="job-enroll-btn">[ ENROLL ]</div>
+                    <div class="dossier-flavor">"{{ job.flavor }}"</div>
+                    <div class="dossier-action">[ &#x25BA; ENROLL ]</div>
                 </div>
             </div>
             <!-- PATH-LOCKED JOBS -->
@@ -190,7 +210,7 @@ export default {
                 <div class="hud-section-title" style="opacity:0.4;font-size:var(--font-size-xxs);">&gt; PATH-LOCKED OPPORTUNITIES</div>
                 <div v-for="job in lockedJobs" :key="job.id" class="locked-job-row">
                     <span class="locked-job-name">{{ job.name.toUpperCase() }}</span>
-                    <span class="locked-job-gate">⊘ REQUIRES {{ job.require_morality === 'paragon' ? 'PARAGON' : 'SHADOW' }} PATH</span>
+                    <span class="locked-job-gate">&#x2298; REQUIRES {{ job.require_morality === 'paragon' ? 'PARAGON' : 'SHADOW' }} PATH</span>
                 </div>
             </div>
         </div>
@@ -215,6 +235,84 @@ export default {
 .neg-high { color: #4f4; }
 .neg-mid  { color: #fa0; }
 .neg-low  { color: #888; }
+
+/* ── DOSSIER LAYOUT (available jobs) ── */
+.job-registry {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.job-dossier {
+    border: 1px solid var(--border-dim);
+    border-left: 3px solid var(--secondary);
+    padding: 12px 16px;
+    cursor: pointer;
+    background: rgba(255, 176, 0, 0.02);
+    transition: border-color 0.15s, background 0.15s;
+}
+.job-dossier:hover {
+    border-color: var(--secondary);
+    background: rgba(255, 176, 0, 0.05);
+}
+.dossier-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+}
+.dossier-code {
+    color: var(--secondary);
+    font-weight: bold;
+    flex-shrink: 0;
+}
+.dossier-name {
+    color: var(--text);
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    flex: 1;
+}
+.dossier-cat {
+    color: var(--text-faint);
+    font-size: var(--font-size-xxs);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+}
+.dossier-desc {
+    font-size: var(--font-size-xs);
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    padding-left: 4px;
+}
+.dossier-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xxs);
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+.dossier-income {
+    color: var(--color-success);
+}
+.dossier-flavor {
+    font-size: var(--font-size-xxs);
+    color: var(--text-faint);
+    letter-spacing: 0.03em;
+    margin-bottom: 8px;
+}
+.dossier-action {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--secondary);
+    letter-spacing: 0.1em;
+}
+
+/* ── PATH-LOCKED JOBS ── */
 .locked-jobs-section { margin-top: 12px; }
 .locked-job-row {
     display: flex;
@@ -226,5 +324,5 @@ export default {
     padding: 4px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
-.locked-job-gate { color: #888; font-style: italic; }
+.locked-job-gate { color: #888; }
 </style>

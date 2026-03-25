@@ -7,8 +7,10 @@
 import Game from "@/game";
 import { RollOver, ItemOut } from "@/ui/popups/itemPopup.vue";
 import { renderBar } from "@/ui/uiHelpers";
+import TerminalPicker from "@/ui/components/TerminalPicker.vue";
 
 export default {
+    components: { TerminalPicker },
     props: {
         state: { type: Object, required: true },
     },
@@ -25,6 +27,7 @@ export default {
             compareFrame: null,
             _pauseRenderTick: false,
             _dismantleTarget: null,
+            pickerSlot: null,
         };
     },
     mounted() {
@@ -124,8 +127,33 @@ export default {
             this.renderTick;
             return Game._getManufacturerSynergy ? Game._getManufacturerSynergy() : null;
         },
+        pickerWeaponOptions() {
+            if (!this.pickerSlot) return [];
+            const weapons = this.getValidWeapons(this.pickerSlot);
+            const opts = [{ value: '', label: '[ EMPTY_SLOT ]' }];
+            for (const w of weapons) {
+                opts.push({
+                    value:      w.id,
+                    label:      w.name ? w.name.toUpperCase() : w.id,
+                    tag:        (w.category || w.slot || '').toUpperCase() || null,
+                    icon:       this.getMfrIcon(w.mfr),
+                    iconColor:  this.getMfrColor(w.mfr),
+                    active:     this.installedWeaponIds.has(w.id),
+                });
+            }
+            return opts;
+        },
+        pickerCurrentWeapon() {
+            return this.frame?.installedEquip?.[this.pickerSlot] || '';
+        },
     },
     methods: {
+        mountedWeaponLabel(slotId) {
+            const id = this.frame?.installedEquip?.[slotId];
+            if (!id) return '[ EMPTY_SLOT ]';
+            const w = this.state.items[id];
+            return w?.name ? w.name.toUpperCase() : id;
+        },
         renderBar,
         itemOver(e, it) { RollOver(e, it); },
         itemOut() { ItemOut(); },
@@ -173,19 +201,17 @@ export default {
                 return i.type === 'weapon' && i.slot === accepts;
             });
         },
-        equipItem(slotId, event) {
-            Game.equipItem(slotId, event.target.value);
+        equipItem(slotId, weaponId) {
+            Game.equipItem(slotId, weaponId);
         },
-        onMountSelectFocus() {
-            this._pauseRenderTick = true;
+        openMountPicker(slotId) {
+            this.pickerSlot = slotId;
         },
-        onMountSelectBlur() {
-            this._pauseRenderTick = false;
-        },
-        onMountSelectChange(slotId, event) {
-            this.equipItem(slotId, event);
-            this._pauseRenderTick = false;
+        onPickWeapon(weaponId) {
+            Game.equipItem(this.pickerSlot, weaponId);
+            this.pickerSlot = null;
             this.renderTick++;
+            this.$emit('action');
         },
         getLinkedEquipSlots(partSlotId) {
             const chassis = this.state.get(this.frame.chassisId);
@@ -306,19 +332,20 @@ export default {
                     <div v-if="frame && mountSlots.length">
                         <div v-for="ms in mountSlots" :key="ms.id" class="mount-slot-row">
                             <div class="mount-slot-label">MOUNT: {{ ms.id.replace(/_/g, ' ').toUpperCase() }}</div>
-                            <select class="hud-select"
-                                    :value="frame.installedEquip ? frame.installedEquip[ms.id] || '' : ''"
-                                    @focus="onMountSelectFocus"
-                                    @blur="onMountSelectBlur"
-                                    @change="onMountSelectChange(ms.id, $event)">
-                                <option value="">[ EMPTY_SLOT ]</option>
-                                <option v-for="w in getValidWeapons(ms.id)" :key="w.id" :value="w.id">
-                                    {{ w.name ? w.name.toUpperCase() : w.id }}
-                                </option>
-                            </select>
+                            <button class="mount-picker-trigger" @click="openMountPicker(ms.id)">
+                                {{ mountedWeaponLabel(ms.id) }} <span class="mount-picker-arrow">▾</span>
+                            </button>
                         </div>
                     </div>
                     <div v-else class="rig-cell-empty">No mount points on this chassis.</div>
+                    <TerminalPicker
+                        v-if="pickerSlot !== null"
+                        :title="'EQUIP // ' + pickerSlot.replace(/_/g, ' ').toUpperCase()"
+                        :options="pickerWeaponOptions"
+                        :model-value="pickerCurrentWeapon"
+                        @update:model-value="onPickWeapon"
+                        @close="pickerSlot = null"
+                    />
                 </div>
 
                 <div v-if="activeSynergy" class="synergy-badge rig-synergy">
@@ -721,6 +748,28 @@ export default {
     min-width: 140px;
     color: var(--text-dim);
     letter-spacing: 1px;
+}
+
+.mount-picker-trigger {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-dim, #333);
+    color: var(--text-primary, #e0d8c8);
+    font-family: 'VT323', monospace;
+    font-size: var(--font-size-xxs);
+    padding: 3px 8px;
+    text-align: left;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: border-color 0.1s, color 0.1s;
+}
+.mount-picker-trigger:hover {
+    border-color: var(--primary, #ffb000);
+    color: var(--primary, #ffb000);
+}
+.mount-picker-arrow {
+    float: right;
+    opacity: 0.6;
 }
 
 /* PARTS tab slot filter bar */

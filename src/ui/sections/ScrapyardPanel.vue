@@ -5,10 +5,11 @@
  */
 import Game from "@/game";
 import ResourceBufferBadge from "../components/ResourceBufferBadge.vue";
+import TerminalPicker from "../components/TerminalPicker.vue";
 import { renderBar, resourceIcon, formatName, formatModKey, fmtRate } from "../uiHelpers";
 
 export default {
-    components: { ResourceBufferBadge },
+    components: { ResourceBufferBadge, TerminalPicker },
     props: {
         state: { type: Object, required: true },
         tasks: { type: Array, required: true },
@@ -17,6 +18,7 @@ export default {
         return {
             renderTick: 0,
             selectedAndroidTask: '',
+            androidPickerOpen: false,
         };
     },
     mounted() {
@@ -62,6 +64,22 @@ export default {
             this.renderTick;
             return Object.values(this.state.items)
                 .filter(i => i.type === 'task' && i.androidEligible && !i.locked);
+        },
+        androidTaskPickerOptions() {
+            const opts = [{ value: '', label: '[ SELECT_TASK ]' }];
+            for (const task of this.androidEligibleTasks) {
+                opts.push({
+                    value: task.id,
+                    label: task.name.toUpperCase(),
+                    tag:   task.perpetual ? 'CONT.' : (task.length ? task.length + 's' : null),
+                });
+            }
+            return opts;
+        },
+        androidTaskTriggerLabel() {
+            if (!this.selectedAndroidTask) return '[ SELECT_TASK ]';
+            const task = this.state.items[this.selectedAndroidTask];
+            return task ? task.name.toUpperCase() : this.selectedAndroidTask;
         },
         androidSlot() {
             this.renderTick;
@@ -223,14 +241,19 @@ export default {
                 <button class="hud-btn small" @click="stopAndroid">HALT</button>
             </div>
             <div v-else class="task-assign-row">
-                <select class="hud-select" v-model="selectedAndroidTask">
-                    <option value="">[ SELECT_TASK ]</option>
-                    <option v-for="task in androidEligibleTasks" :key="task.id" :value="task.id">
-                        {{ task.name.toUpperCase() }}
-                    </option>
-                </select>
+                <button class="android-picker-trigger" @click="androidPickerOpen = true">
+                    {{ androidTaskTriggerLabel }} <span class="mount-picker-arrow">▾</span>
+                </button>
                 <button class="hud-btn small" :disabled="!selectedAndroidTask" @click="startAndroid">DEPLOY</button>
             </div>
+            <TerminalPicker
+                v-if="androidPickerOpen"
+                title="ASSIGN // ANDROID_UNIT"
+                :options="androidTaskPickerOptions"
+                :model-value="selectedAndroidTask"
+                @update:model-value="selectedAndroidTask = $event"
+                @close="androidPickerOpen = false"
+            />
         </div>
 
         <ResourceBufferBadge
@@ -452,6 +475,24 @@ export default {
     gap: 6px;
     margin-top: 6px;
     align-items: center;
+}
+
+.android-picker-trigger {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-dim, #333);
+    color: var(--text-primary, #e0d8c8);
+    font-family: 'VT323', monospace;
+    font-size: var(--font-size-xxs);
+    padding: 3px 8px;
+    text-align: left;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: border-color 0.1s, color 0.1s;
+}
+.android-picker-trigger:hover {
+    border-color: var(--primary, #ffb000);
+    color: var(--primary, #ffb000);
 }
 
 .hud-select {

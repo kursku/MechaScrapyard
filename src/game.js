@@ -1122,15 +1122,15 @@ const Game = {
         let missionBonus = 0;
         for (const item of Object.values(items)) {
             if (item.type !== 'mission' || !item.completed) continue;
-            const isStory = item.tags?.includes('story') || item.encounter === 'none' || item.narrative;
+            const isStory = item.missionType === 'story' || item.tags?.includes('story') || item.narrative;
             missionBonus += isStory ? 5 : 2;
         }
 
-        // Combat bonus (completed combat missions × 3)
+        // Combat bonus (completed non-story missions with enemies × 3, capped at 3 repeats)
         let combatBonus = 0;
         for (const item of Object.values(items)) {
-            if (item.type === 'mission' && item.completed && item.encounter && item.encounter !== 'none') {
-                combatBonus += Math.min(item.completed, 3) * 3; // diminishing for repeats
+            if (item.type === 'mission' && item.completed && item.missionType !== 'story' && item.enemies?.length > 0) {
+                combatBonus += Math.min(item.completed, 3) * 3;
             }
         }
 
